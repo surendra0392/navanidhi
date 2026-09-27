@@ -5,9 +5,14 @@ use Webkul\Admin\Http\Controllers\Settings\ChannelController;
 use Webkul\Admin\Http\Controllers\Settings\CurrencyController;
 use Webkul\Admin\Http\Controllers\Settings\DataTransfer\ImportController;
 use Webkul\Admin\Http\Controllers\Settings\ExchangeRateController;
+use Webkul\Admin\Http\Controllers\Settings\InventoryAdjustmentController;
+use Webkul\Admin\Http\Controllers\Settings\InventoryLedgerController;
 use Webkul\Admin\Http\Controllers\Settings\InventorySourceController;
+use Webkul\Admin\Http\Controllers\Settings\InventoryTransferController;
 use Webkul\Admin\Http\Controllers\Settings\LocaleController;
+use Webkul\Admin\Http\Controllers\Settings\ProductBatchController;
 use Webkul\Admin\Http\Controllers\Settings\RoleController;
+use Webkul\Admin\Http\Controllers\Settings\ShippingZoneController;
 use Webkul\Admin\Http\Controllers\Settings\Tax\TaxCategoryController;
 use Webkul\Admin\Http\Controllers\Settings\Tax\TaxRateController;
 use Webkul\Admin\Http\Controllers\Settings\ThemeController;
@@ -98,8 +103,42 @@ Route::prefix('settings')->group(function () {
     /**
      * Inventory Ledger routes.
      */
-    Route::controller(\Webkul\Admin\Http\Controllers\Settings\InventoryLedgerController::class)->prefix('inventory-ledger')->group(function () {
+    Route::controller(InventoryLedgerController::class)->prefix('inventory-ledger')->group(function () {
         Route::get('', 'index')->name('admin.settings.inventory_ledger.index');
+    });
+
+    /**
+     * Inventory Adjustments routes.
+     */
+    Route::controller(InventoryAdjustmentController::class)->prefix('inventory-adjustments')->group(function () {
+        Route::get('', 'index')->name('admin.settings.inventory_adjustments.index');
+        Route::get('create', 'create')->name('admin.settings.inventory_adjustments.create');
+        Route::post('create', 'store')->name('admin.settings.inventory_adjustments.store');
+        Route::get('view/{id}', 'view')->name('admin.settings.inventory_adjustments.view');
+    });
+
+    /**
+     * Inventory Transfers routes.
+     */
+    Route::controller(InventoryTransferController::class)->prefix('inventory-transfers')->group(function () {
+        Route::get('', 'index')->name('admin.settings.inventory_transfers.index');
+        Route::get('create', 'create')->name('admin.settings.inventory_transfers.create');
+        Route::post('create', 'store')->name('admin.settings.inventory_transfers.store');
+        Route::get('view/{id}', 'view')->name('admin.settings.inventory_transfers.view');
+        Route::post('dispatch/{id}', 'dispatchTransfer')->name('admin.settings.inventory_transfers.dispatch');
+        Route::post('receive/{id}', 'receiveTransfer')->name('admin.settings.inventory_transfers.receive');
+    });
+
+    /**
+     * Product Batches routes.
+     */
+    Route::controller(ProductBatchController::class)->prefix('product-batches')->group(function () {
+        Route::get('', 'index')->name('admin.settings.product_batches.index');
+        Route::get('create', 'create')->name('admin.settings.product_batches.create');
+        Route::post('create', 'store')->name('admin.settings.product_batches.store');
+        Route::get('edit/{id}', 'edit')->name('admin.settings.product_batches.edit');
+        Route::put('edit/{id}', 'update')->name('admin.settings.product_batches.update');
+        Route::delete('{id}', 'destroy')->name('admin.settings.product_batches.delete');
     });
 
     Route::prefix('taxes')->group(function () {
@@ -239,7 +278,7 @@ Route::prefix('settings')->group(function () {
             Route::get('download-error-report/{id}', 'downloadErrorReport')->name('admin.settings.data_transfer.imports.download_error_report');
         });
     });
-    
+
     /**
      * Shipping routes.
      */
@@ -247,7 +286,7 @@ Route::prefix('settings')->group(function () {
         /**
          * Shipping Zones routes.
          */
-        Route::controller(\Webkul\Admin\Http\Controllers\Settings\ShippingZoneController::class)->prefix('shipping-zones')->group(function () {
+        Route::controller(ShippingZoneController::class)->prefix('shipping-zones')->group(function () {
             Route::get('', 'index')->name('admin.settings.shipping.zones.index');
 
             Route::get('create', 'create')->name('admin.settings.shipping.zones.create');

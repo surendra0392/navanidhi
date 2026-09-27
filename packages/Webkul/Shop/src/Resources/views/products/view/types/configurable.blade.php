@@ -10,7 +10,7 @@
             type="text/x-template"
             id="v-product-configurable-options-template"
         >
-            <div class="w-[455px] max-w-full max-sm:w-full">
+            <div class="w-full max-w-full">
                 <input
                     type="hidden"
                     name="selected_configurable_option"
@@ -20,22 +20,20 @@
                 >
 
                 <div
-                    class="mt-5"
+                    class="mt-4 first:mt-0"
                     v-for='(attribute, index) in childAttributes'
                 >
                     <!-- Dropdown Options Container -->
                     <template v-if="! attribute.swatch_type || attribute.swatch_type == '' || attribute.swatch_type == 'dropdown'">
-                        <!-- Dropdown Label -->
-                        <h2 class="mb-4 text-xl max-sm:mb-1.5 max-sm:text-base max-sm:font-medium">
+                        <h3 class="mb-2 text-xs uppercase tracking-wider font-semibold text-white">
                             @{{ attribute.label }}
-                        </h2>
+                        </h3>
                         
-                        <!-- Dropdown Options -->
                         <v-field
                             as="select"
                             :name="'super_attribute[' + attribute.id + ']'"
-                            class="custom-select mb-3 block w-full cursor-pointer rounded-xl border border-elior-border bg-white px-4 py-3 text-sm text-elior-charcoal focus:border-elior-botanical focus:ring-elior-botanical"
-                            :class="[errors['super_attribute[' + attribute.id + ']'] ? 'border border-red-500' : '']"
+                            class="custom-select mb-2 block w-full cursor-pointer rounded-xl border border-white/20 bg-[#041a0e]/80 backdrop-blur-md px-4 py-2.5 text-sm text-white transition-colors focus:border-emerald-400 focus:ring-emerald-400"
+                            :class="[errors['super_attribute[' + attribute.id + ']'] ? 'border-red-500' : '']"
                             :id="'attribute_' + attribute.id"
                             v-model="attribute.selectedValue"
                             rules="required"
@@ -55,19 +53,26 @@
 
                     <!-- Swatch Options Container -->
                     <template v-else>
-                        <!-- Option Label -->
-                        <h2 class="mb-3 text-xs uppercase tracking-wider font-semibold text-elior-charcoal">
-                            @{{ attribute.label }}
-                        </h2>
+                        <div class="flex items-center justify-between mb-2">
+                            <h3 class="text-xs uppercase tracking-wider font-semibold text-white">
+                                Select @{{ attribute.label }}
+                            </h3>
+                            <span
+                                v-if="attribute.selectedValue"
+                                class="text-xs font-medium text-emerald-400"
+                            >
+                                Selected: @{{ attribute.options.find(o => o.id == attribute.selectedValue)?.label }}
+                            </span>
+                        </div>
 
                         <!-- Swatch Options -->
-                        <div class="flex items-center gap-2.5 flex-wrap">
+                        <div class="flex items-center gap-2 flex-wrap">
                             <template v-for="(option, index) in attribute.options">
                                 <template v-if="option.id">
                                     <!-- Color Swatch Options -->
                                     <label
-                                        class="relative -m-0.5 flex cursor-pointer items-center justify-center rounded-full p-0.5 focus:outline-none"
-                                        :class="{'ring-2 ring-elior-botanical' : option.id == attribute.selectedValue}"
+                                        class="relative -m-0.5 flex cursor-pointer items-center justify-center rounded-full p-0.5 focus:outline-none transition-all"
+                                        :class="{'ring-2 ring-emerald-400 ring-offset-2 ring-offset-[#041a0e]' : option.id == attribute.selectedValue}"
                                         :title="option.label"
                                         v-if="attribute.swatch_type == 'color'"
                                     >
@@ -93,7 +98,7 @@
                                         </v-field>
 
                                         <span
-                                            class="h-8 w-8 rounded-full border border-elior-border max-sm:h-[25px] max-sm:w-[25px]"
+                                            class="h-8 w-8 rounded-full border border-white/20 shadow-sm"
                                             tabindex="0"
                                             :style="{ 'background-color': option.swatch_value }"
                                         ></span>
@@ -101,8 +106,8 @@
 
                                     <!-- Image Swatch Options -->
                                     <label 
-                                        class="group relative flex h-[50px] w-[50px] cursor-pointer items-center justify-center overflow-hidden rounded-xl border bg-white font-medium uppercase text-elior-charcoal hover:bg-gray-50"
-                                        :class="{'border-2 border-elior-botanical ring-1 ring-elior-botanical/20' : option.id == attribute.selectedValue, 'border-elior-border' : option.id != attribute.selectedValue }"
+                                        class="group relative flex h-[52px] w-[52px] cursor-pointer items-center justify-center overflow-hidden rounded-xl border bg-white/10 font-medium uppercase text-white transition-all backdrop-blur-sm"
+                                        :class="{'border-2 border-emerald-400 ring-2 ring-emerald-400/30 shadow-md' : option.id == attribute.selectedValue, 'border-white/20 hover:border-emerald-400/60' : option.id != attribute.selectedValue }"
                                         :title="option.label"
                                         v-if="attribute.swatch_type == 'image'"
                                     >
@@ -131,13 +136,14 @@
                                         <img
                                             :src="option.swatch_value"
                                             :title="option.label"
+                                            class="w-full h-full object-cover"
                                         />
                                     </label>
 
-                                    <!-- Text Swatch Options -->
+                                    <!-- Text Swatch Options (Pack Sizes: 100g, 250g, 500g) -->
                                     <label 
-                                        class="group relative flex h-fit min-w-fit cursor-pointer items-center justify-center rounded-xl border px-4 py-2 text-xs font-semibold uppercase tracking-wider transition-all duration-200"
-                                        :class="{'border-elior-botanical bg-elior-botanical text-white shadow-sm' : option.id == attribute.selectedValue, 'border-elior-border bg-white text-elior-charcoal hover:border-elior-botanical/50': option.id != attribute.selectedValue }"
+                                        class="group relative flex h-fit min-w-fit cursor-pointer items-center justify-center rounded-xl border px-3.5 py-2 text-xs font-semibold tracking-wide transition-all duration-200 select-none backdrop-blur-sm"
+                                        :class="{'border-emerald-500 bg-emerald-600 text-white shadow-md' : option.id == attribute.selectedValue, 'border-white/20 bg-white/10 text-white/90 hover:border-emerald-400 hover:bg-white/20': option.id != attribute.selectedValue }"
                                         :title="option.label"
                                         v-if="attribute.swatch_type == 'text'"
                                     >
@@ -163,21 +169,15 @@
                                             />
                                         </v-field>
 
-                                        <span class="text-lg max-sm:text-sm">
-                                            @{{ option.label }}
-                                        </span>
-
-                                        <span
-                                            class="pointer-events-none absolute -inset-px rounded-full"
-                                            role="presentation"
-                                        >
+                                        <span class="inline-flex items-center gap-1.5">
+                                            <span>@{{ option.label }}</span>
                                         </span>
                                     </label>
                                 </template>
                             </template>
 
                             <span
-                                class="text-sm text-gray-600 max-sm:text-xs"
+                                class="text-xs text-[#6E7765]"
                                 v-if="! attribute.options.length"
                             >
                                 @lang('shop::app.products.view.type.configurable.select-above-options')
@@ -349,49 +349,60 @@
                     reloadPrice () {
                         let selectedOptionCount = this.childAttributes.filter(attribute => attribute.selectedValue).length;
 
-                        let finalPrice = document.querySelector('.final-price');
-
-                        let regularPrice = document.querySelector('.regular-price');
+                        let finalPriceElements = document.querySelectorAll('.final-price');
+                        let regularPriceElements = document.querySelectorAll('.regular-price');
+                        let priceLabel = document.querySelector('.price-label');
 
                         let configVariant = this.config.variant_prices[this.possibleOptionVariant];
 
-                        if (this.childAttributes.length == selectedOptionCount) {
-                            document.querySelector('.price-label').style.display = 'none';
+                        if (this.childAttributes.length == selectedOptionCount && configVariant) {
+                            if (priceLabel) priceLabel.style.display = 'none';
 
                             if (parseFloat(configVariant.regular.price) > parseFloat(configVariant.final.price)) {
-                                regularPrice.style.display = 'block';
+                                regularPriceElements.forEach(el => {
+                                    el.style.display = 'block';
+                                    el.innerHTML = configVariant.regular.formatted_price;
+                                });
 
-                                finalPrice.innerHTML = configVariant.final.formatted_price;
-
-                                regularPrice.innerHTML = configVariant.regular.formatted_price;
+                                finalPriceElements.forEach(el => {
+                                    el.innerHTML = configVariant.final.formatted_price;
+                                });
                             } else {
-                                finalPrice.innerHTML = configVariant.regular.formatted_price;
+                                finalPriceElements.forEach(el => {
+                                    el.innerHTML = configVariant.regular.formatted_price;
+                                });
 
-                                regularPrice.style.display = 'none';
-
-                                regularPrice.innerHTML = '';
+                                regularPriceElements.forEach(el => {
+                                    el.style.display = 'none';
+                                    el.innerHTML = '';
+                                });
                             }
 
-                            this.$emitter.emit('configurable-variant-selected-event',this.possibleOptionVariant);
+                            this.$emitter.emit('configurable-variant-selected-event', this.possibleOptionVariant);
                         } else {
-                            document.querySelector('.price-label').style.display = 'inline-block';
+                            if (priceLabel) priceLabel.style.display = 'inline-block';
 
                             const baseRegular = parseFloat(this.config.regular?.price ?? 0);
-
                             const baseFinal = parseFloat(this.config.final?.price ?? baseRegular);
 
                             if (baseFinal < baseRegular) {
-                                regularPrice.style.display = 'block';
+                                regularPriceElements.forEach(el => {
+                                    el.style.display = 'block';
+                                    el.innerHTML = this.config.regular.formatted_price;
+                                });
 
-                                regularPrice.innerHTML = this.config.regular.formatted_price;
-
-                                finalPrice.innerHTML = this.config.final.formatted_price;
+                                finalPriceElements.forEach(el => {
+                                    el.innerHTML = this.config.final.formatted_price;
+                                });
                             } else {
-                                regularPrice.style.display = 'none';
+                                regularPriceElements.forEach(el => {
+                                    el.style.display = 'none';
+                                    el.innerHTML = '';
+                                });
 
-                                regularPrice.innerHTML = '';
-
-                                finalPrice.innerHTML = this.config.regular.formatted_price;
+                                finalPriceElements.forEach(el => {
+                                    el.innerHTML = this.config.regular.formatted_price;
+                                });
                             }
 
                             this.$emitter.emit('configurable-variant-selected-event', 0);
@@ -399,32 +410,34 @@
                     },
 
                     reloadImages () {
-                        galleryImages.splice(0, galleryImages.length)
+                        galleryImages.splice(0, galleryImages.length);
 
                         if (this.possibleOptionVariant) {
-                            this.config.variant_images[this.possibleOptionVariant].forEach(function(image) {
-                                galleryImages.push(image);
-                            });
+                            if (this.config.variant_images && this.config.variant_images[this.possibleOptionVariant]) {
+                                this.config.variant_images[this.possibleOptionVariant].forEach(function(image) {
+                                    galleryImages.push(image);
+                                });
+                            }
 
-                            this.config.variant_videos[this.possibleOptionVariant].forEach(function(video) {
-                                galleryImages.push(video);
-                            });
+                            if (this.config.variant_videos && this.config.variant_videos[this.possibleOptionVariant]) {
+                                this.config.variant_videos[this.possibleOptionVariant].forEach(function(video) {
+                                    galleryImages.push(video);
+                                });
+                            }
                         }
 
                         this.galleryImages.forEach(function(image) {
                             galleryImages.push(image);
                         });
 
-                        if (galleryImages.length) {
-                            this.$parent.$parent.$refs.gallery.media.images =  [...galleryImages];
+                        if (galleryImages.length && this.$parent?.$parent?.$refs?.gallery?.media) {
+                            this.$parent.$parent.$refs.gallery.media.images = [...galleryImages];
                         }
 
                         this.$emitter.emit('configurable-variant-update-images-event', galleryImages);
                     },
                 }
             });
-
         </script>
     @endpush
-
 @endif

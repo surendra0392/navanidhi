@@ -23,7 +23,9 @@ Route::prefix('customer')->group(function () {
     Route::controller(ForgotPasswordController::class)->prefix('forgot-password')->group(function () {
         Route::get('', 'create')->name('shop.customers.forgot_password.create');
 
-        Route::post('', 'store')->name('shop.customers.forgot_password.store');
+        Route::post('', 'store')
+            ->middleware('throttle:5,1')
+            ->name('shop.customers.forgot_password.store');
     });
 
     /**
@@ -32,7 +34,9 @@ Route::prefix('customer')->group(function () {
     Route::controller(ResetPasswordController::class)->prefix('reset-password')->group(function () {
         Route::get('{token}', 'create')->name('shop.customers.reset_password.create');
 
-        Route::post('', 'store')->name('shop.customers.reset_password.store');
+        Route::post('', 'store')
+            ->middleware('throttle:5,1')
+            ->name('shop.customers.reset_password.store');
     });
 
     /**
@@ -41,7 +45,9 @@ Route::prefix('customer')->group(function () {
     Route::controller(SessionController::class)->prefix('login')->group(function () {
         Route::get('', 'index')->name('shop.customer.session.index');
 
-        Route::post('', 'store')->name('shop.customer.session.create');
+        Route::post('', 'store')
+            ->middleware('throttle:10,1')
+            ->name('shop.customer.session.create');
     });
 
     /**
@@ -51,7 +57,9 @@ Route::prefix('customer')->group(function () {
         Route::prefix('register')->group(function () {
             Route::get('', 'index')->name('shop.customers.register.index');
 
-            Route::post('', 'store')->name('shop.customers.register.store');
+            Route::post('', 'store')
+                ->middleware('throttle:5,1')
+                ->name('shop.customers.register.store');
         });
 
         /**

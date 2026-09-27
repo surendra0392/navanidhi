@@ -17,7 +17,7 @@
         ->get();
 @endphp
 
-<div class="bg-[#f4f0e6] min-h-screen">
+<div class="bg-[#f4f0e6] min-h-screen" style="padding-bottom: 5rem !important;">
     @if (core()->getConfigData('general.general.breadcrumbs.shop'))
         <!-- Breadcrumbs -->
         <div class="site-container pt-4 pb-2 sm:pt-6 sm:pb-3">
@@ -32,7 +32,7 @@
     @endif
 
     <!-- Article Header & Reading Column -->
-    <article class="site-container pt-8 pb-20 space-y-10">
+    <article class="site-container pt-8 space-y-10" style="padding-bottom: 5rem !important;">
         <!-- Article Header -->
         <header class="space-y-4 text-center max-w-3xl mx-auto">
             <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#e8f2ec] text-[#205132] text-[10px] sm:text-xs font-bold tracking-widest uppercase">
@@ -64,10 +64,10 @@
             </div>
 
             <!-- Back to Recipes Link -->
-            <div class="pt-8 border-t border-elior-border/70 flex items-center justify-between">
+            <div class="pt-8 border-t border-[#e5decb] flex items-center justify-between">
                 <a
-                    href="{{ route('shop.cms.page', 'recipes') }}"
-                    class="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-widest text-elior-botanical hover:text-elior-botanicalDark transition-colors"
+                    href="{{ route('shop.recipes.index') }}"
+                    class="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-widest text-[#205132] hover:text-[#163923] transition-colors"
                 >
                     <span class="icon-arrow-left text-xs"></span>
                     <span>All Recipes</span>
@@ -75,7 +75,7 @@
 
                 <a
                     href="{{ route('shop.search.index') }}"
-                    class="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-widest text-elior-charcoal hover:text-elior-botanical transition-colors"
+                    class="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-widest text-[#163923] hover:text-[#205132] transition-colors"
                 >
                     <span>Explore Products</span>
                     <span class="icon-arrow-right text-xs"></span>
@@ -86,13 +86,13 @@
         <!-- Related Recipes Section -->
         @if ($relatedRecipes->isNotEmpty())
             <section class="pt-8 space-y-6">
-                <div class="flex items-center justify-between border-b border-elior-border/70 pb-4">
-                    <h3 class="font-serif text-2xl font-bold text-elior-charcoal">
+                <div class="flex items-center justify-between border-b border-[#e5decb] pb-4">
+                    <h3 class="font-serif text-2xl font-bold text-[#163923]">
                         More Botanical Recipes
                     </h3>
                     <a
-                        href="{{ route('shop.cms.page', 'recipes') }}"
-                        class="text-xs font-semibold uppercase tracking-wider text-elior-botanical hover:underline"
+                        href="{{ route('shop.recipes.index') }}"
+                        class="text-xs font-semibold uppercase tracking-wider text-[#205132] hover:underline"
                     >
                         View All
                     </a>

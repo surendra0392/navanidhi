@@ -34,7 +34,7 @@
     >
     <meta
         name="generator"
-        content="ELIOR"
+        content="Navanidhi Naturals"
     >
 
     @stack('meta')
@@ -333,7 +333,7 @@
                 <!-- Copyright Footer -->
                 <div class="mt-auto">
                     <div class="border-t border-slate-200 bg-[#F8FAFC] py-3 text-center text-xs sm:text-sm text-slate-500">
-                        &copy; {{ date('Y') }} <strong>{{ config('app.name', 'ELIOR Botanical Nutrition') }}</strong> — <span class="text-[#205132] font-semibold">Pure by Nature, Made for You</span>. All rights reserved.
+                        &copy; {{ date('Y') }} <strong>Navanidhi Naturals (A brand of MAN Agro Foods)</strong> — <span class="text-[#205132] font-semibold">Pure Botanical Nutrition</span>. All rights reserved.
                     </div>
                 </div>
             </div>

@@ -52,11 +52,11 @@ class ProductCardResource extends JsonResource
         if ($weight > 0) {
             $unit = core()->getConfigData('general.general.locale_options.weight_unit') ?: 'kgs';
             if ($unit === 'lbs') {
-                $formattedWeight = ((float) $weight) . ' lbs Net Wt';
+                $formattedWeight = ((float) $weight).' lbs Net Wt';
             } elseif ($unit === 'grams') {
-                $formattedWeight = ($weight < 1 ? ((int) round($weight * 1000)) : ((float) $weight)) . 'g Net Wt';
+                $formattedWeight = ($weight < 1 ? ((int) round($weight * 1000)) : ((float) $weight)).'g Net Wt';
             } else {
-                $formattedWeight = $weight < 1 ? ((int) round($weight * 1000)) . 'g Net Wt' : ((float) $weight) . 'kg Net Wt';
+                $formattedWeight = $weight < 1 ? ((int) round($weight * 1000)).'g Net Wt' : ((float) $weight).'kg Net Wt';
             }
         }
 
@@ -69,34 +69,35 @@ class ProductCardResource extends JsonResource
         $categoryName = $firstCategory?->name ?? null;
 
         return [
-            'id'               => $this->id,
-            'sku'              => $this->sku,
-            'name'             => $this->name,
-            'url_key'          => $this->url_key,
-            'category_name'    => $categoryName,
-            'base_image'       => product_image()->getProductBaseImage($this),
-            'gallery_images'   => product_image()->getGalleryImages($this),
-            'weight'           => $weight,
+            'id' => $this->id,
+            'type' => $this->type,
+            'sku' => $this->sku,
+            'name' => $this->name,
+            'url_key' => $this->url_key,
+            'category_name' => $categoryName,
+            'base_image' => product_image()->getProductBaseImage($this),
+            'gallery_images' => product_image()->getGalleryImages($this),
+            'weight' => $weight,
             'formatted_weight' => $formattedWeight,
-            'is_new'           => (bool) $this->new,
-            'is_featured'      => (bool) $this->featured,
-            'on_sale'          => $haveDiscount,
-            'is_saleable'      => (bool) $productTypeInstance->isSaleable(),
-            'is_wishlist'      => (bool) auth()->guard()->user()?->wishlist_items
+            'is_new' => (bool) $this->new,
+            'is_featured' => (bool) $this->featured,
+            'on_sale' => $haveDiscount,
+            'is_saleable' => (bool) $productTypeInstance->isSaleable(),
+            'is_wishlist' => (bool) auth()->guard()->user()?->wishlist_items
                 ->where('channel_id', core()->getCurrentChannel()->id)
                 ->where('product_id', $this->id)->count(),
-            'min_price'        => core()->formatPrice($minimalPrice),
-            'regular_price'    => core()->currency($regularPrice),
-            'special_price'    => $haveDiscount ? core()->currency($minimalPrice) : null,
+            'min_price' => core()->formatPrice($minimalPrice),
+            'regular_price' => core()->currency($regularPrice),
+            'special_price' => $haveDiscount ? core()->currency($minimalPrice) : null,
             'discount_percent' => $discountPercent,
-            'price_html'       => $productTypeInstance->getPriceHtml(),
-            'short_description'=> strip_tags($this->short_description ?? ''),
-            'ratings'          => [
+            'price_html' => $productTypeInstance->getPriceHtml(),
+            'short_description' => strip_tags($this->short_description ?? ''),
+            'ratings' => [
                 'average' => $this->reviewHelper->getAverageRating($this),
-                'total'   => $this->reviewHelper->getTotalRating($this),
+                'total' => $this->reviewHelper->getTotalRating($this),
             ],
-            'reviews'          => [
-                'total'   => $this->reviewHelper->getTotalReviews($this),
+            'reviews' => [
+                'total' => $this->reviewHelper->getTotalReviews($this),
             ],
         ];
     }

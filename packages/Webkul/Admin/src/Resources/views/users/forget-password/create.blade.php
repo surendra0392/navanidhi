@@ -1,7 +1,7 @@
 <x-admin::layouts.anonymous>
     <!-- Page Title -->
     <x-slot:title>
-        @lang('admin::app.users.forget-password.create.title') — {{ config('app.name', 'ELIOR') }}
+        @lang('admin::app.users.forget-password.create.title') — {{ config('app.name', 'Navanidhi Naturals') }}
     </x-slot>
 
     @push('styles')
@@ -108,7 +108,7 @@
                 <div class="relative z-10 flex items-center justify-start">
                     <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#0A241E]/80 border border-[#43A08C]/50 text-xs font-semibold text-[#D4F4DC] shadow-md backdrop-blur-sm">
                         <span class="w-2 h-2 rounded-full bg-[#4EBA88] animate-pulse"></span>
-                        <span class="tracking-wide text-[11px] sm:text-xs">ELIOR Security Recovery</span>
+                        <span class="tracking-wide text-[11px] sm:text-xs">Navanidhi Naturals Security Recovery</span>
                     </div>
                 </div>
             </div>
@@ -119,7 +119,7 @@
                 <!-- Top Utility Bar -->
                 <div class="flex items-center justify-between pb-4">
                     <a href="{{ route('shop.home.index') }}" class="font-serif text-2xl font-bold text-white tracking-wide">
-                        Elior
+                        Navanidhi Naturals
                     </a>
 
                     <a 
@@ -161,7 +161,7 @@
                                 name="email" 
                                 rules="required|email" 
                                 :label="trans('admin::app.users.forget-password.create.email')"
-                                placeholder="name@elior.com"
+                                placeholder="admin@managrofoods.com"
                                 :value="old('email')"
                             />
 

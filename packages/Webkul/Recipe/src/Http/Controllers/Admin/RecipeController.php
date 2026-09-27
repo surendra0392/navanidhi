@@ -2,19 +2,22 @@
 
 namespace Webkul\Recipe\Http\Controllers\Admin;
 
-use Illuminate\Routing\Controller;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Foundation\Validation\ValidatesRequests;
-use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Storage;
-use Webkul\Recipe\Repositories\RecipeRepository;
+use Spatie\ResponseCache\Facades\ResponseCache;
 use Webkul\Product\Repositories\ProductRepository;
+use Webkul\Recipe\DataGrids\RecipeDataGrid;
+use Webkul\Recipe\Repositories\RecipeRepository;
 
 class RecipeController extends Controller
 {
     use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
 
     protected $recipeRepository;
+
     protected $productRepository;
 
     public function __construct(
@@ -28,7 +31,7 @@ class RecipeController extends Controller
     public function index()
     {
         if (request()->ajax()) {
-            return app(\Webkul\Recipe\DataGrids\RecipeDataGrid::class)->toJson();
+            return app(RecipeDataGrid::class)->toJson();
         }
 
         return view(request('_config.view'));
@@ -44,9 +47,10 @@ class RecipeController extends Controller
     public function store()
     {
         $this->validate(request(), [
-            'name'        => 'required',
-            'url_key'     => 'required|unique:recipe_translations,url_key',
+            'name' => 'required',
+            'url_key' => 'required|unique:recipe_translations,url_key',
             'description' => 'nullable',
+            'featured_image' => 'nullable|image|mimes:jpeg,png,jpg,webp,avif|max:5120',
         ]);
 
         $data = request()->all();
@@ -67,21 +71,21 @@ class RecipeController extends Controller
 
         $locale = app()->getLocale();
         $recipeData = [
-            'status'         => $data['status'] ?? 0,
+            'status' => $data['status'] ?? 0,
             'featured_image' => $data['featured_image'] ?? null,
-            'prep_time'      => $data['prep_time'] ?? 0,
-            'cook_time'      => $data['cook_time'] ?? 0,
-            'difficulty'     => $data['difficulty'] ?? 1,
-            'servings'       => $data['servings'] ?? 1,
-            $locale          => [
-                'name'             => $data['name'],
-                'url_key'          => $data['url_key'],
-                'description'      => $data['description'] ?? '',
-                'ingredients'      => $data['ingredients'] ?? [],
-                'instructions'     => $data['instructions'] ?? [],
-                'meta_title'       => $data['meta_title'] ?? $data['name'],
+            'prep_time' => $data['prep_time'] ?? 0,
+            'cook_time' => $data['cook_time'] ?? 0,
+            'difficulty' => $data['difficulty'] ?? 1,
+            'servings' => $data['servings'] ?? 1,
+            $locale => [
+                'name' => $data['name'],
+                'url_key' => $data['url_key'],
+                'description' => $data['description'] ?? '',
+                'ingredients' => $data['ingredients'] ?? [],
+                'instructions' => $data['instructions'] ?? [],
+                'meta_title' => $data['meta_title'] ?? $data['name'],
                 'meta_description' => $data['meta_description'] ?? $data['description'] ?? '',
-                'meta_keywords'    => $data['meta_keywords'] ?? '',
+                'meta_keywords' => $data['meta_keywords'] ?? '',
             ],
         ];
 
@@ -91,7 +95,7 @@ class RecipeController extends Controller
             $recipe->products()->sync($data['product_ids']);
         }
 
-        \Spatie\ResponseCache\Facades\ResponseCache::forget('/');
+        ResponseCache::forget('/');
 
         session()->flash('success', 'Recipe created successfully.');
 
@@ -109,9 +113,10 @@ class RecipeController extends Controller
     public function update($id)
     {
         $this->validate(request(), [
-            'name'        => 'required',
-            'url_key'     => 'required|unique:recipe_translations,url_key,' . $id . ',recipe_id',
+            'name' => 'required',
+            'url_key' => 'required|unique:recipe_translations,url_key,'.$id.',recipe_id',
             'description' => 'nullable',
+            'featured_image' => 'nullable|image|mimes:jpeg,png,jpg,webp,avif|max:5120',
         ]);
 
         $data = request()->all();
@@ -136,21 +141,21 @@ class RecipeController extends Controller
 
         $locale = app()->getLocale();
         $recipeData = [
-            'status'         => $data['status'] ?? 0,
+            'status' => $data['status'] ?? 0,
             'featured_image' => $data['featured_image'],
-            'prep_time'      => $data['prep_time'] ?? 0,
-            'cook_time'      => $data['cook_time'] ?? 0,
-            'difficulty'     => $data['difficulty'] ?? 1,
-            'servings'       => $data['servings'] ?? 1,
-            $locale          => [
-                'name'             => $data['name'],
-                'url_key'          => $data['url_key'],
-                'description'      => $data['description'] ?? '',
-                'ingredients'      => $data['ingredients'] ?? [],
-                'instructions'     => $data['instructions'] ?? [],
-                'meta_title'       => $data['meta_title'] ?? $data['name'],
+            'prep_time' => $data['prep_time'] ?? 0,
+            'cook_time' => $data['cook_time'] ?? 0,
+            'difficulty' => $data['difficulty'] ?? 1,
+            'servings' => $data['servings'] ?? 1,
+            $locale => [
+                'name' => $data['name'],
+                'url_key' => $data['url_key'],
+                'description' => $data['description'] ?? '',
+                'ingredients' => $data['ingredients'] ?? [],
+                'instructions' => $data['instructions'] ?? [],
+                'meta_title' => $data['meta_title'] ?? $data['name'],
                 'meta_description' => $data['meta_description'] ?? $data['description'] ?? '',
-                'meta_keywords'    => $data['meta_keywords'] ?? '',
+                'meta_keywords' => $data['meta_keywords'] ?? '',
             ],
         ];
 
@@ -162,7 +167,7 @@ class RecipeController extends Controller
             $recipe->products()->sync([]);
         }
 
-        \Spatie\ResponseCache\Facades\ResponseCache::forget('/');
+        ResponseCache::forget('/');
 
         session()->flash('success', 'Recipe updated successfully.');
 
@@ -173,7 +178,7 @@ class RecipeController extends Controller
     {
         $this->recipeRepository->delete($id);
 
-        \Spatie\ResponseCache\Facades\ResponseCache::forget('/');
+        ResponseCache::forget('/');
 
         return response()->json(['message' => 'Recipe deleted successfully.']);
     }

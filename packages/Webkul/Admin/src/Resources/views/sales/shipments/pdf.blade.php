@@ -307,8 +307,8 @@
             $customLogoPath = core()->getConfigData('sales.invoice_settings.pdf_print_outs.logo');
             if ($customLogoPath && Storage::disk('public')->exists($customLogoPath)) {
                 $logoBase64 = 'data:image/png;base64,' . base64_encode(Storage::disk('public')->get($customLogoPath));
-            } elseif (file_exists(public_path('images/brand/elior_logo_horizontal.png'))) {
-                $logoBase64 = 'data:image/png;base64,' . base64_encode(file_get_contents(public_path('images/brand/elior_logo_horizontal.png')));
+            } elseif (file_exists(public_path('images/brand/navanidhi_logo_horizontal.png'))) {
+                $logoBase64 = 'data:image/png;base64,' . base64_encode(file_get_contents(public_path('images/brand/navanidhi_logo_horizontal.png')));
             } elseif (file_exists(public_path('storage/admin/logo.png'))) {
                 $logoBase64 = 'data:image/png;base64,' . base64_encode(file_get_contents(public_path('storage/admin/logo.png')));
             } elseif (file_exists(public_path('storage/channel/1/logo.png'))) {
@@ -322,7 +322,7 @@
             $slipDate = $shipment ? $shipment->created_at : $order->created_at;
             $carrierTitle = $shipment?->carrier_title ?? $order->shipping_title ?? 'Standard Delivery';
             $trackNumber = $shipment?->track_number ?: 'Pending / Local Delivery';
-            $sourceName = $shipment?->inventory_source?->name ?? $shipment?->inventory_source_name ?? 'Elior Central Warehouse';
+            $sourceName = $shipment?->inventory_source?->name ?? $shipment?->inventory_source_name ?? 'Navanidhi Central Warehouse';
             $totalUnits = $shipment?->total_qty ?? ($order->total_qty_ordered ?: $order->items->sum('qty_ordered'));
         @endphp
 
@@ -331,9 +331,9 @@
             <tr>
                 <td style="width: 58%;">
                     @if ($logoBase64)
-                        <img src="{{ $logoBase64 }}" style="max-height: 48px; max-width: 220px; margin-bottom: 6px; display: block;" alt="ELIOR" />
+                        <img src="{{ $logoBase64 }}" style="max-height: 48px; max-width: 220px; margin-bottom: 6px; display: block;" alt="Navanidhi Naturals" />
                     @else
-                        <div class="brand-title">{{ core()->getConfigData('general.design.admin_logo.title') ?? 'ELIOR' }}</div>
+                        <div class="brand-title">{{ core()->getConfigData('general.design.admin_logo.title') ?? 'Navanidhi Naturals' }}</div>
                     @endif
                     <div class="brand-subtitle">Pure by Nature, Made for You • Packing Slip</div>
                 </td>
@@ -504,8 +504,8 @@
 
         <!-- Footer Notice -->
         <div class="footer-notes">
-            Please inspect all packages upon arrival. For questions regarding this shipment or to request a return, contact our support team at <strong>{{ core()->getSenderEmailDetails()['email'] ?? 'support@elior.com' }}</strong>.<br>
-            Thank you for choosing Elior. Pure by Nature, Made for You.
+            Please inspect all packages upon arrival. For questions regarding this shipment or to request a return, contact our support team at <strong>{{ core()->getSenderEmailDetails()['email'] ?? 'support@navanidhinaturals.com' }}</strong>.<br>
+            Thank you for choosing Navanidhi Naturals. Pure Botanical Nutrition.
         </div>
     </body>
 </html>

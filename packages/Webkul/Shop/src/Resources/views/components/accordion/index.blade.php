@@ -2,7 +2,7 @@
     'isActive' => true,
 ])
 
-<div {{ $attributes->merge(['class' => 'border-b border-zinc-200']) }}>
+<div {{ $attributes->merge(['class' => 'border-b border-white/10']) }}>
     <v-accordion
         {{ $attributes->except('class') }}
         is-active="{{ $isActive }}"
@@ -18,7 +18,7 @@
                     {{ $header }}
 
                     <span
-                        v-bind:class="isOpen ? 'icon-arrow-up text-2xl' : 'icon-arrow-down text-2xl'"
+                        v-bind:class="isOpen ? 'icon-arrow-up text-xl text-emerald-400' : 'icon-arrow-down text-xl text-emerald-400'"
                         role="button"
                         aria-label="Toggle accordion"
                         tabindex="0"
@@ -30,7 +30,7 @@
         @isset($content)
             <template v-slot:content="{ isOpen }">
                 <div
-                    {{ $content->attributes->merge(['class' => 'z-10 rounded-lg bg-white p-1.5']) }}
+                    {{ $content->attributes->merge(['class' => 'z-10 rounded-lg bg-transparent p-1.5 text-white']) }}
                     v-show="isOpen"
                 >
                     {{ $content }}

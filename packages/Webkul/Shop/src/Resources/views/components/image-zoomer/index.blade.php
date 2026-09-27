@@ -17,7 +17,8 @@
                     leave-to-class="opacity-0"
                 >
                     <div
-                        class="fixed inset-0 z-[999] bg-black/60 backdrop-blur-sm transition-opacity"
+                        class="fixed inset-0"
+                        style="position: fixed !important; inset: 0px !important; z-index: 99999 !important; background-color: rgba(13, 36, 22, 0.72) !important; backdrop-filter: blur(14px) !important; -webkit-backdrop-filter: blur(14px) !important;"
                         @click="toggle"
                     ></div>
                 </transition>
@@ -32,7 +33,8 @@
                     leave-to-class="opacity-0 scale-95 translate-y-4"
                 >
                     <div
-                        class="fixed inset-0 z-[1000] flex items-center justify-center p-4 sm:p-6 overflow-y-auto"
+                        class="fixed inset-0 flex items-center justify-center p-4 sm:p-6 overflow-y-auto"
+                        style="position: fixed !important; inset: 0px !important; z-index: 100000 !important;"
                         @click.self="toggle"
                     >
                         <!-- Modal Frame with Visible Overflow for Close Button -->
@@ -217,7 +219,25 @@
                 };
             },
 
+            mounted() {
+                window.addEventListener('keydown', this.handleKeydown);
+            },
+
+            beforeUnmount() {
+                window.removeEventListener('keydown', this.handleKeydown);
+
+                if (this.isOpen) {
+                    document.body.style.overflow = '';
+                }
+            },
+
             methods: {
+                handleKeydown(e) {
+                    if (e.key === 'Escape' && this.isOpen) {
+                        this.close();
+                    }
+                },
+
                 toggle() {
                     this.isOpen = ! this.isOpen;
 

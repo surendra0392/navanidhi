@@ -4,6 +4,7 @@ namespace Webkul\Customer\Providers;
 
 use Webkul\Core\Providers\CoreModuleServiceProvider;
 use Webkul\Customer\Models\CompareItem;
+use Webkul\Customer\Models\ContactEnquiry;
 use Webkul\Customer\Models\Customer;
 use Webkul\Customer\Models\CustomerAddress;
 use Webkul\Customer\Models\CustomerGroup;
@@ -23,6 +24,7 @@ class ModuleServiceProvider extends CoreModuleServiceProvider
         CustomerAddress::class,
         CustomerGroup::class,
         CustomerNote::class,
+        ContactEnquiry::class,
         Wishlist::class,
     ];
 }

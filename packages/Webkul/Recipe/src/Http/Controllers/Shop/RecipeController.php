@@ -2,9 +2,9 @@
 
 namespace Webkul\Recipe\Http\Controllers\Shop;
 
-use Illuminate\Routing\Controller;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Foundation\Validation\ValidatesRequests;
+use Illuminate\Routing\Controller;
 use Webkul\Recipe\Repositories\RecipeRepository;
 
 class RecipeController extends Controller
@@ -27,9 +27,10 @@ class RecipeController extends Controller
     {
         $cleanKey = ltrim($urlKey, '/');
         $rawKey = str_replace('recipes/', '', $cleanKey);
-        $recipesKey = 'recipes/' . $rawKey;
+        $recipesKey = 'recipes/'.$rawKey;
 
         $recipe = $this->recipeRepository->getModel()
+            ->with(['translations', 'products.attribute_values', 'products.images'])
             ->where('status', 1)
             ->whereHas('translations', function ($query) use ($cleanKey, $recipesKey, $rawKey) {
                 $query->whereIn('url_key', [$cleanKey, $recipesKey, $rawKey]);

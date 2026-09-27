@@ -18,18 +18,19 @@
 
     @isset($header)
         <template v-slot:header="{ close }">
-            <div {{ $header->attributes->merge(['class' => 'relative flex items-center justify-between p-6 pb-5 border-b border-elior-border bg-[#FAF8F5]']) }}>
-                <div class="flex-1">
+            <div {{ $header->attributes->merge(['class' => 'relative p-6 pb-5 border-b border-white/10 text-white', 'style' => 'background: rgba(4, 26, 14, 0.98); color: #ffffff;']) }}>
+                <div class="{{ core()->getCurrentLocale()->direction === 'rtl' ? 'pl-12' : 'pr-12' }}">
                     {{ $header }}
                 </div>
 
                 <button
                     type="button"
-                    class="flex h-9 w-9 items-center justify-center rounded-full text-elior-charcoal hover:bg-black/5 hover:text-elior-botanical transition-colors focus:outline-none focus:ring-2 focus:ring-elior-botanical"
-                    aria-label="Close Navigation"
+                    class="flex h-9 w-9 sm:h-10 sm:w-10 items-center justify-center rounded-full text-white/80 bg-white/10 hover:bg-emerald-600 hover:text-white border border-white/15 transition-all focus:outline-none focus:ring-2 focus:ring-emerald-400 cursor-pointer shadow-sm z-20"
+                    style="position: absolute; top: 20px; {{ core()->getCurrentLocale()->direction === 'rtl' ? 'left: 20px; right: auto;' : 'right: 20px; left: auto;' }}"
+                    aria-label="Close"
                     @click="close"
                 >
-                    <span class="icon-cancel text-2xl" role="presentation"></span>
+                    <span class="icon-cancel text-xl" role="presentation"></span>
                 </button>
             </div>
         </template>
@@ -37,7 +38,7 @@
 
     @isset($content)
         <template v-slot:content>
-            <div {{ $content->attributes->merge(['class' => 'flex-1 overflow-auto bg-[#FAF8F5]']) }}>
+            <div {{ $content->attributes->merge(['class' => 'flex-1 overflow-auto text-white', 'style' => 'background: transparent; color: #ffffff;']) }}>
                 {{ $content }}
             </div>
         </template>
@@ -45,7 +46,7 @@
 
     @isset($footer)
         <template v-slot:footer>
-            <div {{ $footer->attributes->merge(['class' => 'p-6 border-t border-elior-border bg-[#FAF8F5]']) }}>
+            <div {{ $footer->attributes->merge(['class' => 'p-6 border-t border-white/10 text-white', 'style' => 'background: rgba(4, 26, 14, 0.98); color: #ffffff;']) }}>
                 {{ $footer }}
             </div>
         </template>
@@ -63,47 +64,49 @@
                 <slot name="toggle"></slot>
             </div>
 
-            <!-- Overlay Backdrop -->
-            <transition
-                tag="div"
-                name="drawer-overlay"
-                enter-class="duration-300 ease-out"
-                enter-from-class="opacity-0"
-                enter-to-class="opacity-100"
-                leave-class="duration-200 ease-in"
-                leave-from-class="opacity-100"
-                leave-to-class="opacity-0"
-            >
-                <div
-                    class="fixed inset-0 z-[999] bg-black/50 backdrop-blur-sm transition-opacity"
-                    v-show="isOpen"
-                    @click="close"
-                ></div>
-            </transition>
-
-            <!-- Content Drawer -->
-            <transition
-                tag="div"
-                name="drawer"
-                :enter-from-class="enterFromLeaveToClasses"
-                enter-active-class="transform transition duration-300 ease-in-out"
-                enter-to-class="translate-x-0"
-                leave-from-class="translate-x-0"
-                leave-active-class="transform transition duration-300 ease-in-out"
-                :leave-to-class="enterFromLeaveToClasses"
-            >
-                <div
-                    class="fixed z-[1000] overflow-hidden bg-[#FAF8F5] shadow-2xl h-screen"
-                    :class="{
-                        'inset-x-0 top-0': position == 'top',
-                        'inset-x-0 bottom-0 max-sm:max-h-full': position == 'bottom',
-                        'inset-y-0 ltr:right-0 rtl:left-0': position == 'right',
-                        'inset-y-0 ltr:left-0 rtl:right-0': position == 'left'
-                    }"
-                    :style="'width:' + width"
-                    v-show="isOpen"
+            <teleport to="body">
+                <!-- Overlay Backdrop -->
+                <transition
+                    tag="div"
+                    name="drawer-overlay"
+                    enter-active-class="transition-opacity duration-300 ease-out"
+                    enter-from-class="opacity-0"
+                    enter-to-class="opacity-100"
+                    leave-active-class="transition-opacity duration-200 ease-in"
+                    leave-from-class="opacity-100"
+                    leave-to-class="opacity-0"
                 >
-                    <div class="pointer-events-auto h-full w-full overflow-auto bg-[#FAF8F5]">
+                    <div
+                        class="fixed inset-0"
+                        style="position: fixed !important; inset: 0px !important; z-index: 99999 !important; background-color: rgba(13, 36, 22, 0.62) !important; backdrop-filter: blur(14px) !important; -webkit-backdrop-filter: blur(14px) !important;"
+                        v-show="isOpen"
+                        @click="close"
+                    ></div>
+                </transition>
+
+                <!-- Content Drawer -->
+                <transition
+                    tag="div"
+                    name="drawer"
+                    :enter-from-class="enterFromLeaveToClasses"
+                    enter-active-class="transform transition duration-300 ease-in-out"
+                    enter-to-class="translate-x-0"
+                    leave-from-class="translate-x-0"
+                    leave-active-class="transform transition duration-300 ease-in-out"
+                    :leave-to-class="enterFromLeaveToClasses"
+                >
+                    <div
+                        class="fixed overflow-hidden shadow-2xl h-screen border-l border-white/10"
+                        :class="{
+                            'inset-x-0 top-0': position == 'top',
+                            'inset-x-0 bottom-0 max-sm:max-h-full': position == 'bottom',
+                            'inset-y-0 ltr:right-0 rtl:left-0': position == 'right',
+                            'inset-y-0 ltr:left-0 rtl:right-0': position == 'left'
+                        }"
+                        :style="'width:' + width + '; z-index: 100000 !important; background: rgba(4, 26, 14, 0.96) !important; backdrop-filter: blur(24px) !important; -webkit-backdrop-filter: blur(24px) !important; box-shadow: -10px 0 30px rgba(0, 0, 0, 0.6);'"
+                        v-show="isOpen"
+                    >
+                    <div class="pointer-events-auto h-full w-full overflow-auto text-white" style="background: rgba(4, 26, 14, 0.96) !important;">
                         <div class="flex h-full w-full flex-col">
                             <div class="min-h-0 min-w-0 flex-1 overflow-auto">
                                 <div class="flex h-full flex-col">
@@ -125,6 +128,7 @@
                     </div>
                 </div>
             </transition>
+            </teleport>
         </div>
     </script>
 
@@ -156,6 +160,11 @@
 
             beforeUnmount() {
                 window.removeEventListener('keydown', this.handleKeydown);
+
+                if (this.isOpen) {
+                    document.body.style.overflow = 'auto';
+                    document.body.style.paddingRight = '';
+                }
             },
 
             computed: {

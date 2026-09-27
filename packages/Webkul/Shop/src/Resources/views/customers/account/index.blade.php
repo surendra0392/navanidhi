@@ -1,41 +1,271 @@
+@php
+    $customer = auth()->guard('customer')->user();
+    $ordersCount = $customer->orders()->count();
+    $addressesCount = $customer->addresses()->count();
+    $wishlistCount = $customer->wishlist_items()->count();
+    $recentOrders = $customer->orders()->latest()->take(3)->get();
+    $defaultAddress = $customer->default_address ?? $customer->addresses()->first();
+@endphp
+
 <x-shop::layouts.account>
     <!-- Page Title -->
     <x-slot:title>
-        @lang('shop::app.customers.account.orders.title')
+        Account Dashboard | Navanidhi Naturals
     </x-slot>
 
     <!-- Breadcrumbs -->
-    @if ((core()->getConfigData('general.general.breadcrumbs.shop')))
-        @section('breadcrumbs')
-            <x-shop::breadcrumbs name="orders" />
-        @endSection
-    @endif
+    @section('breadcrumbs')
+        <div class="flex items-center gap-2">
+            <a href="{{ route('shop.home.index') }}" class="text-[#8B6F45] hover:underline">Home</a>
+            <span>/</span>
+            <span class="text-[#111111] font-semibold">Dashboard</span>
+        </div>
+    @endSection
 
-    <div class="mx-4">
-        <x-shop::layouts.account.navigation />
-    </div>
+    <!-- Account Navigation Sidebar -->
+    <x-shop::layouts.account.navigation />
 
-    <span class="mb-5 mt-2 w-full border-t border-zinc-300 md:hidden"></span>
+    <!-- Main Content Area -->
+    <div class="flex-1 w-full space-y-6">
+        <!-- Welcome Banner -->
+        <div class="rounded-2xl border border-[#DCD3C3] bg-white p-6 sm:p-8 shadow-sm relative overflow-hidden">
+            <div class="absolute -right-10 -bottom-10 opacity-5 pointer-events-none">
+                <span class="material-symbols-outlined text-[160px] text-[#0F4D2E]">eco</span>
+            </div>
 
-    <!--Customers logout-->
-    @auth('customer')
-        <div class="mx-4">
-            <div class="mx-auto w-[400px] rounded-lg border border-navyBlue py-2.5 text-center max-sm:w-full max-sm:py-1.5">
-                <x-shop::form
-                    method="DELETE"
-                    action="{{ route('shop.customer.session.destroy') }}"
-                    id="customerLogout"
-                />
+            <div class="relative z-10 space-y-2">
+                <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#EBF3EE] text-[#0F4D2E] text-xs font-bold tracking-widest uppercase">
+                    <span class="material-symbols-outlined text-sm">spa</span>
+                    <span>Botanical Sanctuary</span>
+                </div>
 
-                <a
-                    class="flex items-center justify-center gap-1.5 text-base hover:bg-gray-100"
-                    href="{{ route('shop.customer.session.destroy') }}"
-                    onclick="event.preventDefault(); document.getElementById('customerLogout').submit();"
-                >
-                    @lang('shop::app.components.layouts.header.desktop.bottom.logout')
-                </a>
+                <h1 class="font-serif text-2xl sm:text-3xl font-bold text-[#111111]" v-pre>
+                    Namaste, {{ $customer->first_name }}!
+                </h1>
+
+                <p class="text-xs sm:text-sm text-[#666666] leading-relaxed max-w-2xl">
+                    Welcome to your personal Navanidhi Naturals portal. Review your whole-plant nutrition orders, track real-time fulfillment, manage shipping destinations, and update your personal wellness preferences.
+                </p>
             </div>
         </div>
-    @endauth
 
-</x-shop::layouts.accounts>
+        <!-- Metrics Cards Grid -->
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <!-- Orders Metric -->
+            <a
+                href="{{ route('shop.customers.account.orders.index') }}"
+                class="rounded-2xl border border-[#DCD3C3] bg-white p-5 shadow-sm hover:border-[#0F4D2E] transition-all group flex items-center justify-between"
+            >
+                <div class="space-y-1">
+                    <span class="text-xs font-semibold uppercase tracking-wider text-[#8B6F45]">Total Orders</span>
+                    <p class="font-serif text-3xl font-bold text-[#111111] group-hover:text-[#0F4D2E] transition-colors">
+                        {{ $ordersCount }}
+                    </p>
+                    <span class="text-[11px] text-[#666666] flex items-center gap-1">
+                        <span>View history</span>
+                        <span class="material-symbols-outlined text-xs">arrow_forward</span>
+                    </span>
+                </div>
+                <div class="w-12 h-12 rounded-xl bg-[#F7F5EE] text-[#0F4D2E] flex items-center justify-center group-hover:bg-[#0F4D2E] group-hover:text-white transition-all">
+                    <span class="material-symbols-outlined text-2xl">shopping_bag</span>
+                </div>
+            </a>
+
+            <!-- Saved Addresses Metric -->
+            <a
+                href="{{ route('shop.customers.account.addresses.index') }}"
+                class="rounded-2xl border border-[#DCD3C3] bg-white p-5 shadow-sm hover:border-[#0F4D2E] transition-all group flex items-center justify-between"
+            >
+                <div class="space-y-1">
+                    <span class="text-xs font-semibold uppercase tracking-wider text-[#8B6F45]">Saved Addresses</span>
+                    <p class="font-serif text-3xl font-bold text-[#111111] group-hover:text-[#0F4D2E] transition-colors">
+                        {{ $addressesCount }}
+                    </p>
+                    <span class="text-[11px] text-[#666666] flex items-center gap-1">
+                        <span>Manage address book</span>
+                        <span class="material-symbols-outlined text-xs">arrow_forward</span>
+                    </span>
+                </div>
+                <div class="w-12 h-12 rounded-xl bg-[#F7F5EE] text-[#0F4D2E] flex items-center justify-center group-hover:bg-[#0F4D2E] group-hover:text-white transition-all">
+                    <span class="material-symbols-outlined text-2xl">location_on</span>
+                </div>
+            </a>
+
+            <!-- Wishlist Metric -->
+            <a
+                href="{{ route('shop.customers.account.wishlist.index') }}"
+                class="rounded-2xl border border-[#DCD3C3] bg-white p-5 shadow-sm hover:border-[#0F4D2E] transition-all group flex items-center justify-between"
+            >
+                <div class="space-y-1">
+                    <span class="text-xs font-semibold uppercase tracking-wider text-[#8B6F45]">Saved In Wishlist</span>
+                    <p class="font-serif text-3xl font-bold text-[#111111] group-hover:text-[#0F4D2E] transition-colors">
+                        {{ $wishlistCount }}
+                    </p>
+                    <span class="text-[11px] text-[#666666] flex items-center gap-1">
+                        <span>View saved items</span>
+                        <span class="material-symbols-outlined text-xs">arrow_forward</span>
+                    </span>
+                </div>
+                <div class="w-12 h-12 rounded-xl bg-[#F7F5EE] text-[#0F4D2E] flex items-center justify-center group-hover:bg-[#0F4D2E] group-hover:text-white transition-all">
+                    <span class="material-symbols-outlined text-2xl">favorite</span>
+                </div>
+            </a>
+        </div>
+
+        <!-- Recent Orders & Primary Address Row -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <!-- Recent Orders (2 cols) -->
+            <div class="lg:col-span-2 rounded-2xl border border-[#DCD3C3] bg-white p-6 shadow-sm space-y-5">
+                <div class="flex items-center justify-between border-b border-[#DCD3C3]/60 pb-3">
+                    <div class="flex items-center gap-2">
+                        <span class="material-symbols-outlined text-xl text-[#0F4D2E]">history</span>
+                        <h2 class="font-serif text-lg font-bold text-[#111111]">Recent Orders</h2>
+                    </div>
+                    @if($ordersCount > 0)
+                        <a href="{{ route('shop.customers.account.orders.index') }}" class="text-xs text-[#0F4D2E] font-semibold hover:underline flex items-center gap-1">
+                            <span>All Orders ({{ $ordersCount }})</span>
+                            <span class="material-symbols-outlined text-xs">arrow_forward</span>
+                        </a>
+                    @endif
+                </div>
+
+                @if($recentOrders->isNotEmpty())
+                    <div class="space-y-3">
+                        @foreach($recentOrders as $order)
+                            @php
+                                $statusBadgeClass = 'bg-amber-100 text-amber-900 border-amber-200';
+                                $statusLabel = $order->status_label ?? ucfirst($order->status);
+
+                                if ($order->operational_status) {
+                                    $statusLabel = ucwords(strtolower($order->operational_status));
+                                    if (in_array($order->operational_status, ['SHIPPED', 'DELIVERED'])) {
+                                        $statusBadgeClass = 'bg-emerald-100 text-emerald-900 border-emerald-200';
+                                    } elseif (in_array($order->operational_status, ['PACKING', 'READY TO SHIP', 'PAYMENT CONFIRMED'])) {
+                                        $statusBadgeClass = 'bg-blue-100 text-blue-900 border-blue-200';
+                                    }
+                                } elseif ($order->status == 'completed') {
+                                    $statusBadgeClass = 'bg-emerald-100 text-emerald-900 border-emerald-200';
+                                } elseif ($order->status == 'canceled') {
+                                    $statusBadgeClass = 'bg-red-100 text-red-900 border-red-200';
+                                }
+                            @endphp
+
+                            <div class="p-4 rounded-xl border border-[#DCD3C3]/70 bg-[#F7F5EE]/40 hover:bg-[#F7F5EE] transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                                <div class="space-y-1">
+                                    <div class="flex items-center gap-2.5">
+                                        <span class="font-serif text-sm font-bold text-[#111111]">Order #{{ $order->increment_id }}</span>
+                                        <span class="px-2 py-0.5 rounded-full text-[10px] font-bold border uppercase tracking-wider {{ $statusBadgeClass }}">
+                                            {{ $statusLabel }}
+                                        </span>
+                                    </div>
+                                    <p class="text-xs text-[#666666]">
+                                        Placed on {{ $order->created_at->format('d M, Y') }} &bull; {{ $order->items->count() }} {{ Str::plural('item', $order->items->count()) }}
+                                    </p>
+                                </div>
+
+                                <div class="flex items-center justify-between sm:justify-end gap-4">
+                                    <span class="font-serif text-sm font-bold text-[#0F4D2E]">
+                                        {{ core()->formatPrice($order->grand_total, $order->order_currency_code) }}
+                                    </span>
+
+                                    <a
+                                        href="{{ route('shop.customers.account.orders.view', $order->id) }}"
+                                        class="px-3.5 py-1.5 rounded-lg border border-[#0F4D2E] text-xs font-semibold text-[#0F4D2E] hover:bg-[#0F4D2E] hover:text-white transition-all inline-flex items-center gap-1"
+                                    >
+                                        <span>Details</span>
+                                        <span class="material-symbols-outlined text-xs">arrow_forward</span>
+                                    </a>
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
+                @else
+                    <!-- Empty Orders State -->
+                    <div class="py-10 text-center space-y-3">
+                        <div class="w-12 h-12 rounded-full bg-[#EBF3EE] text-[#0F4D2E] mx-auto flex items-center justify-center">
+                            <span class="material-symbols-outlined text-2xl">local_mall</span>
+                        </div>
+                        <h3 class="font-serif text-base font-bold text-[#111111]">No orders yet</h3>
+                        <p class="text-xs text-[#666666] max-w-sm mx-auto leading-relaxed">
+                            Explore NAVANIDHI NATURALS pure botanical powders and whole-food wellness formulations.
+                        </p>
+                        <div class="pt-2">
+                            <a
+                                href="{{ url('/botanical-herbal-powders') }}"
+                                class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs uppercase tracking-widest font-semibold shadow-sm transition-all"
+                                style="background-color: #0F4D2E !important; color: #FFFFFF !important;"
+                            >
+                                <span>Discover Catalog</span>
+                                <span class="material-symbols-outlined text-xs">arrow_forward</span>
+                            </a>
+                        </div>
+                    </div>
+                @endif
+            </div>
+
+            <!-- Default Address / Contact (1 col) -->
+            <div class="rounded-2xl border border-[#DCD3C3] bg-white p-6 shadow-sm space-y-5 flex flex-col justify-between">
+                <div class="space-y-4">
+                    <div class="flex items-center justify-between border-b border-[#DCD3C3]/60 pb-3">
+                        <div class="flex items-center gap-2">
+                            <span class="material-symbols-outlined text-xl text-[#0F4D2E]">home</span>
+                            <h2 class="font-serif text-lg font-bold text-[#111111]">Primary Address</h2>
+                        </div>
+                        <a href="{{ route('shop.customers.account.addresses.index') }}" class="text-xs text-[#0F4D2E] font-semibold hover:underline">
+                            Manage
+                        </a>
+                    </div>
+
+                    @if($defaultAddress)
+                        <div class="p-4 rounded-xl border border-[#DCD3C3]/70 bg-[#F7F5EE]/40 space-y-2 text-xs">
+                            <div class="flex items-center justify-between">
+                                <p class="font-bold text-[#111111] text-sm" v-pre>
+                                    {{ $defaultAddress->first_name }} {{ $defaultAddress->last_name }}
+                                </p>
+                                @if($defaultAddress->default_address)
+                                    <span class="px-2 py-0.5 rounded-full bg-[#EBF3EE] text-[#0F4D2E] text-[10px] font-bold uppercase tracking-wider">
+                                        Default
+                                    </span>
+                                @endif
+                            </div>
+                            <p class="text-[#666666] leading-relaxed" v-pre>
+                                {{ $defaultAddress->address }}<br>
+                                {{ $defaultAddress->city }}, {{ $defaultAddress->state }} {{ $defaultAddress->postcode }}<br>
+                                {{ $defaultAddress->country }}
+                            </p>
+                            @if($defaultAddress->phone)
+                                <p class="text-[11px] text-[#8B6F45] pt-1 flex items-center gap-1" v-pre>
+                                    <span class="material-symbols-outlined text-sm">phone</span>
+                                    <span>{{ $defaultAddress->phone }}</span>
+                                </p>
+                            @endif
+                        </div>
+                    @else
+                        <div class="py-6 text-center space-y-2">
+                            <p class="text-xs text-[#666666]">No delivery address saved yet.</p>
+                            <a
+                                href="{{ route('shop.customers.account.addresses.create') }}"
+                                class="inline-flex items-center gap-1.5 text-xs text-[#0F4D2E] font-bold hover:underline"
+                            >
+                                <span class="material-symbols-outlined text-sm">add_circle</span>
+                                <span>Add New Address</span>
+                            </a>
+                        </div>
+                    @endif
+                </div>
+
+                <!-- Customer Care Assistance -->
+                <div class="pt-4 border-t border-[#DCD3C3]/60 space-y-2 text-xs">
+                    <span class="text-[11px] font-bold uppercase tracking-wider text-[#8B6F45] block">Post-Purchase Assistance</span>
+                    <p class="text-[#666666] text-[11px] leading-relaxed">
+                        Questions regarding your batch dispatch or botanical usage? Reach our team directly:
+                    </p>
+                    <a href="mailto:support@navanidhinaturals.com" class="text-xs text-[#0F4D2E] font-semibold hover:underline flex items-center gap-1.5">
+                        <span class="material-symbols-outlined text-sm">mail</span>
+                        <span>support@navanidhinaturals.com</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</x-shop::layouts.account>

@@ -169,6 +169,12 @@ return [
         'route' => 'admin.customers.gdpr.index',
         'sort' => 4,
         'icon' => '',
+    ], [
+        'key' => 'customers.enquiries',
+        'name' => 'Enquiries',
+        'route' => 'admin.customers.enquiries.index',
+        'sort' => 5,
+        'icon' => '',
     ],
 
     /**
@@ -355,10 +361,28 @@ return [
         'sort' => 5,
         'icon' => '',
     ], [
+        'key' => 'settings.inventory_adjustments',
+        'name' => 'Adjustments',
+        'route' => 'admin.settings.inventory_adjustments.index',
+        'sort' => 6,
+        'icon' => '',
+    ], [
+        'key' => 'settings.inventory_transfers',
+        'name' => 'Transfers',
+        'route' => 'admin.settings.inventory_transfers.index',
+        'sort' => 7,
+        'icon' => '',
+    ], [
+        'key' => 'settings.product_batches',
+        'name' => 'Product Batches',
+        'route' => 'admin.settings.product_batches.index',
+        'sort' => 8,
+        'icon' => '',
+    ], [
         'key' => 'settings.channels',
         'name' => 'admin::app.components.layouts.sidebar.channels',
         'route' => 'admin.settings.channels.index',
-        'sort' => 6,
+        'sort' => 9,
         'icon' => '',
     ], [
         'key' => 'settings.users',

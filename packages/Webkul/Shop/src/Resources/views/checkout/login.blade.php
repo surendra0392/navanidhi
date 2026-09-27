@@ -44,14 +44,14 @@
                     <!-- Login modal -->
                     <x-shop::modal
                         ref="loginModel"
-                        panel-class="max-w-[480px] !rounded-3xl !shadow-2xl !bg-[#FAF8F5] !border !border-[#e5decb] overflow-hidden"
+                        panel-class="max-w-[480px] !rounded-3xl !shadow-2xl !bg-[#FAF8F5] !border !border-[#e5decb] !text-[#1C2A22] overflow-hidden"
                     >
                         <!-- Modal Header -->
-                        <x-slot:header class="!bg-[#FAF8F5] !border-b !border-[#e5decb]/60 !px-6 sm:!px-8 !py-5 sm:!py-6">
+                        <x-slot:header class="!bg-[#FAF8F5] !border-b !border-[#e5decb]/60 !px-6 sm:!px-8 !py-5 sm:!py-6 !text-[#1C2A22]">
                             <div class="flex flex-col gap-1 text-left">
                                 <div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-[#EBF3EE] w-fit text-[11px] font-bold uppercase tracking-wider text-[#205132]">
                                     <span class="material-symbols-outlined text-[13px]">eco</span>
-                                    <span>ELIOR CUSTOMER</span>
+                                    <span>NAVANIDHI NATURALS CUSTOMER</span>
                                 </div>
 
                                 <h2 class="font-serif text-2xl font-bold text-[#163923] tracking-tight mt-1">
@@ -65,7 +65,7 @@
                         </x-slot>
 
                         <!-- Modal Content -->
-                        <x-slot:content class="!bg-[#FAF8F5] !px-6 sm:!px-8 !pt-5 !pb-2 space-y-4">
+                        <x-slot:content class="!bg-[#FAF8F5] !px-6 sm:!px-8 !pt-5 !pb-2 space-y-4 !text-[#1C2A22]">
                             <!-- Email -->
                             <x-shop::form.control-group class="!mb-0">
                                 <x-shop::form.control-group.label class="required !mt-0 !mb-1.5 text-xs font-semibold uppercase tracking-wider text-[#163923]">
@@ -141,7 +141,7 @@
                         </x-slot>
 
                         <!-- Modal Footer -->
-                        <x-slot:footer class="!mt-0 !bg-[#FAF8F5] !px-6 sm:!px-8 !pt-3 !pb-6 sm:!pb-8 !border-t-0 space-y-4">
+                        <x-slot:footer class="!mt-0 !bg-[#FAF8F5] !px-6 sm:!px-8 !pt-3 !pb-6 sm:!pb-8 !border-t-0 space-y-4 !text-[#1C2A22]">
                             <div>
                                 <x-shop::button
                                     class="elior-btn-primary h-12 w-full !rounded-xl text-xs uppercase tracking-widest font-bold shadow-elior-card flex items-center justify-center gap-2"

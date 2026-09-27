@@ -117,7 +117,7 @@ return [
 
     'from' => [
         'address' => env('MAIL_FROM_ADDRESS'),
-        'name' => env('MAIL_FROM_NAME'),
+        'name' => env('MAIL_FROM_NAME', 'Navanidhi Naturals'),
     ],
 
     /*
@@ -131,7 +131,7 @@ return [
 
     'admin' => [
         'address' => env('ADMIN_MAIL_ADDRESS'),
-        'name' => env('ADMIN_MAIL_NAME', 'Admin'),
+        'name' => env('ADMIN_MAIL_NAME', 'Navanidhi Naturals Admin'),
     ],
 
     /*
@@ -148,7 +148,7 @@ return [
 
     'contact' => [
         'address' => env('CONTACT_MAIL_ADDRESS'),
-        'name' => env('CONTACT_MAIL_NAME', 'Contact'),
+        'name' => env('CONTACT_MAIL_NAME', 'Navanidhi Naturals Care'),
     ],
 
 ];

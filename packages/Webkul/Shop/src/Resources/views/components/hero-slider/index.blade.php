@@ -1,5 +1,5 @@
 @props([
-    'code' => 'elior-homepage-hero',
+    'code' => 'navanidhi-homepage-hero',
 ])
 
 @inject('heroSliderRepository', 'Webkul\Theme\Repositories\HeroSliderRepository')
@@ -7,7 +7,8 @@
 @php
     $slider = $heroSliderRepository->findOneByField('code', $code);
     if (! $slider || ! $slider->status) {
-        $slider = $heroSliderRepository->findOneByField('code', 'homepage-hero');
+        $slider = $heroSliderRepository->findOneByField('code', 'elior-homepage-hero')
+            ?: $heroSliderRepository->findOneByField('code', 'homepage-hero');
     }
     
     $activeSlides = $slider && $slider->status 
@@ -129,7 +130,7 @@
 
     @pushOnce('scripts')
         <script>
-            window.__eliorHeroSlides = {!! json_encode($slidesJson, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) !!};
+            window.__navanidhiHeroSlides = {!! json_encode($slidesJson, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) !!};
         </script>
 
         <script type="text/x-template" id="v-hero-slider-template">
@@ -251,7 +252,7 @@
                 },
                 data() {
                     return {
-                        slides: window.__eliorHeroSlides || [],
+                        slides: window.__navanidhiHeroSlides || [],
                         currentSlide: 0,
                         isPlaying: this.autoplay,
                         progress: 0,

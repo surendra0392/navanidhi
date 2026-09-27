@@ -30,7 +30,7 @@ class SecureHeaders
 
         $response = $next($request);
 
-        $this->setHeaders($response);
+        $this->setHeaders($response, $request);
 
         return $response;
     }
@@ -39,15 +39,25 @@ class SecureHeaders
      * Set production security headers.
      *
      * @param  Response  $response
+     * @param  Request  $request
      * @return void
      */
-    private function setHeaders($response)
+    private function setHeaders($response, $request)
     {
         $response->headers->set('Referrer-Policy', 'strict-origin-when-cross-origin');
         $response->headers->set('X-Content-Type-Options', 'nosniff');
         $response->headers->set('X-XSS-Protection', '1; mode=block');
         $response->headers->set('X-Frame-Options', 'SAMEORIGIN');
         $response->headers->set('Permissions-Policy', 'geolocation=(), microphone=(), camera=()');
+
+        if ($request->isSecure() || app()->environment('production')) {
+            $response->headers->set('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
+        }
+
+        if (env('CSP_ENABLED', false)) {
+            $csp = env('CSP_POLICY', "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://fonts.googleapis.com https://checkout.razorpay.com https://js.stripe.com https://www.paypal.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https:; frame-src 'self' https://api.razorpay.com https://js.stripe.com https://www.paypal.com; connect-src 'self' https:;");
+            $response->headers->set('Content-Security-Policy', $csp);
+        }
     }
 
     /**

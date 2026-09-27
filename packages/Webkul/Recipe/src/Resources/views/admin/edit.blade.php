@@ -231,7 +231,7 @@
                         <x-admin::form.control-group.control type="file" name="featured_image" accept="image/*" />
                     </x-admin::form.control-group>
 
-                    <!-- Linked ELIOR Products -->
+                    <!-- Linked Navanidhi Naturals Products -->
                     <x-admin::form.control-group class="!mb-0">
                         <x-admin::form.control-group.label>Associated Products</x-admin::form.control-group.label>
                         @php

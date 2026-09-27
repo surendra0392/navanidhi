@@ -31,44 +31,68 @@ class InventoryAdjustmentDataGrid extends DataGrid
     public function prepareColumns()
     {
         $this->addColumn([
-            'index'      => 'id',
-            'label'      => trans('admin::app.datagrid.id'),
-            'type'       => 'integer',
+            'index' => 'id',
+            'label' => trans('admin::app.datagrid.id'),
+            'type' => 'integer',
             'searchable' => false,
-            'sortable'   => true,
+            'sortable' => true,
             'filterable' => true,
         ]);
         $this->addColumn([
-            'index'      => 'reference_number',
-            'label'      => 'Reference',
-            'type'       => 'string',
+            'index' => 'reference_number',
+            'label' => 'Reference',
+            'type' => 'string',
             'searchable' => true,
-            'sortable'   => true,
+            'sortable' => true,
             'filterable' => true,
         ]);
         $this->addColumn([
-            'index'      => 'type',
-            'label'      => 'Type',
-            'type'       => 'string',
+            'index' => 'type',
+            'label' => 'Type',
+            'type' => 'string',
             'searchable' => true,
-            'sortable'   => true,
+            'sortable' => true,
             'filterable' => true,
         ]);
         $this->addColumn([
-            'index'      => 'location_name',
-            'label'      => 'Location',
-            'type'       => 'string',
+            'index' => 'location_name',
+            'label' => 'Location',
+            'type' => 'string',
             'searchable' => true,
-            'sortable'   => true,
+            'sortable' => true,
             'filterable' => true,
         ]);
         $this->addColumn([
-            'index'      => 'status',
-            'label'      => 'Status',
-            'type'       => 'string',
+            'index' => 'status',
+            'label' => 'Status',
+            'type' => 'string',
             'searchable' => true,
-            'sortable'   => true,
+            'sortable' => true,
             'filterable' => true,
+            'closure' => function ($row) {
+                $status = strtolower($row->status);
+                if ($status === 'completed') {
+                    return '<span class="badge badge-sm badge-success">COMPLETED</span>';
+                } elseif ($status === 'pending') {
+                    return '<span class="badge badge-sm badge-warning">PENDING</span>';
+                } elseif ($status === 'canceled') {
+                    return '<span class="badge badge-sm badge-danger">CANCELED</span>';
+                }
+
+                return '<span class="badge badge-sm badge-info">'.strtoupper($row->status).'</span>';
+            },
+        ]);
+    }
+
+    public function prepareActions()
+    {
+        $this->addAction([
+            'icon' => 'icon-view',
+            'title' => 'View Adjustment',
+            'method' => 'GET',
+            'url' => function ($row) {
+                return route('admin.settings.inventory_adjustments.view', $row->id);
+            },
         ]);
     }
 }

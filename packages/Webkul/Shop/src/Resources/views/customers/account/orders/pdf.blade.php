@@ -393,6 +393,8 @@
             $customLogoPath = core()->getConfigData('sales.invoice_settings.pdf_print_outs.logo');
             if ($customLogoPath && Storage::disk('public')->exists($customLogoPath)) {
                 $logoBase64 = 'data:image/png;base64,' . base64_encode(Storage::disk('public')->get($customLogoPath));
+            } elseif (file_exists(public_path('images/brand/navanidhi_logo_horizontal.png'))) {
+                $logoBase64 = 'data:image/png;base64,' . base64_encode(file_get_contents(public_path('images/brand/navanidhi_logo_horizontal.png')));
             } elseif (file_exists(public_path('images/brand/elior_logo_horizontal.png'))) {
                 $logoBase64 = 'data:image/png;base64,' . base64_encode(file_get_contents(public_path('images/brand/elior_logo_horizontal.png')));
             } elseif (file_exists(public_path('storage/admin/logo.png'))) {
@@ -407,9 +409,9 @@
             <tr>
                 <td style="width: 58%;">
                     @if ($logoBase64)
-                        <img src="{{ $logoBase64 }}" style="max-height: 48px; max-width: 220px; margin-bottom: 6px; display: block;" alt="ELIOR" />
+                        <img src="{{ $logoBase64 }}" style="max-height: 48px; max-width: 220px; margin-bottom: 6px; display: block;" alt="Navanidhi Naturals" />
                     @else
-                        <div class="brand-title">{{ core()->getConfigData('general.design.admin_logo.title') ?? 'ELIOR' }}</div>
+                        <div class="brand-title">{{ core()->getConfigData('general.design.admin_logo.title') ?? 'Navanidhi Naturals' }}</div>
                     @endif
                     <div class="brand-subtitle">Pure by Nature, Made for You • Official Tax Invoice</div>
                 </td>
@@ -436,7 +438,7 @@
                 </td>
                 <td>
                     <div class="meta-label">Seller / Store</div>
-                    <div class="meta-value">{{ core()->getConfigData('sales.shipping.origin.store_name') ?: 'Elior Official Store' }}</div>
+                    <div class="meta-value">{{ core()->getConfigData('sales.shipping.origin.store_name') ?: 'Navanidhi Official Store' }}</div>
                 </td>
                 <td>
                     <div class="meta-label">Currency</div>
@@ -718,8 +720,8 @@
 
         <!-- Footer Notice -->
         <div class="footer-notes">
-            This is a computer-generated tax invoice and does not require a physical signature. For support or order inquiries, contact <strong>{{ core()->getSenderEmailDetails()['email'] ?? 'support@elior.com' }}</strong>.<br>
-            Thank you for shopping with Elior. Pure by Nature, Made for You.
+            This is a computer-generated tax invoice and does not require a physical signature. For support or order inquiries, contact <strong>{{ core()->getSenderEmailDetails()['email'] ?? 'support@navanidhinaturals.com' }}</strong>.<br>
+            Thank you for shopping with Navanidhi Naturals. Pure by Nature, Made for You.
         </div>
     </body>
 </html>

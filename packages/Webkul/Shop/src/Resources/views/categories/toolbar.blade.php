@@ -4,7 +4,7 @@
 
 {!! view_render_event('bagisto.shop.categories.view.toolbar.after') !!}
 
-@inject('toolbar' , 'Webkul\Product\Helpers\Toolbar')
+@inject('toolbar', 'Webkul\Product\Helpers\Toolbar')
 
 @pushOnce('scripts')
     <script
@@ -13,103 +13,108 @@
     >
         <div>
             <!-- Desktop Toolbar -->
-            <div class="flex justify-between max-md:hidden">
+            <div class="flex items-center justify-between gap-4 max-md:hidden pb-4 mb-3 border-b border-white/10">
                 {!! view_render_event('bagisto.shop.categories.toolbar.filter.before') !!}
 
-                <!-- Product Sorting Filters -->
-                <x-shop::dropdown
-                    class="z-[1]"
-                    position="bottom-left"
-                >
-                    <x-slot:toggle>
-                        <!-- Dropdown Toggler -->
-                        <button class="flex w-full max-w-[200px] cursor-pointer items-center justify-between gap-4 rounded-lg border border-zinc-200 bg-white p-3.5 text-base transition-all hover:border-gray-400 focus:border-gray-400 max-md:w-[110px] max-md:border-0 max-md:pl-2.5 max-md:pr-2.5">
-                            @{{ sortLabel ?? "@lang('shop::app.products.sort-by.title')" }}
-
-                            <span
-                                class="icon-arrow-down text-2xl"
-                                role="presentation"
-                            ></span>
-                        </button>
-                    </x-slot>
-
-                    <!-- Dropdown Content -->
-                    <x-slot:menu>
-                        <x-shop::dropdown.menu.item
-                            v-for="(sort, key) in filters.available.sort"
-                            ::class="{'bg-gray-100': sort.value == filters.applied.sort}"
-                            @click="apply('sort', sort.value)"
-                        >
-                            @{{ sort.title }}
-                        </x-shop::dropdown.menu.item>
-                    </x-slot>
-                </x-shop::dropdown>
-
-                {!! view_render_event('bagisto.shop.categories.toolbar.filter.after') !!}
-
-                {!! view_render_event('bagisto.shop.categories.toolbar.pagination.before') !!}
-
-                <!-- Product Pagination Limit -->
-                <div class="flex items-center gap-10">
-                    <!-- Product Pagination Limit -->
-                    <x-shop::dropdown position="bottom-right">
+                <!-- Product Sorting Dropdown -->
+                <div class="flex items-center gap-3">
+                    <span class="text-xs font-bold uppercase tracking-wider text-white/80">Sort By:</span>
+                    <x-shop::dropdown
+                        class="z-[1]"
+                        position="bottom-left"
+                    >
                         <x-slot:toggle>
                             <!-- Dropdown Toggler -->
-                            <button class="flex w-full max-w-[200px] cursor-pointer items-center justify-between gap-4 rounded-lg border border-zinc-200 bg-white p-3.5 text-base transition-all hover:border-gray-400 focus:border-gray-400 max-md:w-[110px] max-md:border-0 max-md:pl-2.5 max-md:pr-2.5">
-                                @{{ filters.applied.limit ?? "@lang('shop::app.categories.toolbar.show')" }}
+                            <button class="flex min-w-[190px] cursor-pointer items-center justify-between gap-3 rounded-full border border-white/20 bg-[#041a0e]/80 px-4 py-2 text-xs font-bold text-white shadow-md backdrop-blur-md transition-all hover:border-emerald-400 hover:shadow-emerald-900/30 focus:outline-none focus:ring-1 focus:ring-emerald-400">
+                                <span>@{{ sortLabel ?? "@lang('shop::app.products.sort-by.title')" }}</span>
 
                                 <span
-                                    class="icon-arrow-down text-2xl"
+                                    class="icon-arrow-down text-lg text-emerald-400"
                                     role="presentation"
                                 ></span>
                             </button>
                         </x-slot>
 
                         <!-- Dropdown Content -->
-                        <x-slot:menu>
+                        <x-slot:menu class="!p-1.5 !rounded-2xl !border-white/20 !shadow-2xl !bg-[#041a0e]/95 !backdrop-blur-xl">
                             <x-shop::dropdown.menu.item
-                                v-for="(limit, key) in filters.available.limit"
-                                ::class="{'bg-gray-100': limit == filters.applied.limit}"
-                                @click="apply('limit', limit)"
+                                v-for="(sort, key) in filters.available.sort"
+                                ::class="{'!bg-emerald-600 !text-white font-bold': sort.value == filters.applied.sort, '!text-white/90 hover:!bg-white/10 !rounded-xl !text-xs !py-2.5': true}"
+                                @click="apply('sort', sort.value)"
                             >
-                                @{{ limit }}
+                                @{{ sort.title }}
                             </x-shop::dropdown.menu.item>
                         </x-slot>
                     </x-shop::dropdown>
+                </div>
+
+                {!! view_render_event('bagisto.shop.categories.toolbar.filter.after') !!}
+
+                {!! view_render_event('bagisto.shop.categories.toolbar.pagination.before') !!}
+
+                <!-- Product Pagination Limit & Layout Switcher -->
+                <div class="flex items-center gap-5">
+                    <!-- Product Pagination Limit -->
+                    <div class="flex items-center gap-2.5">
+                        <span class="text-xs font-bold uppercase tracking-wider text-white/80">Show:</span>
+                        <x-shop::dropdown position="bottom-right">
+                            <x-slot:toggle>
+                                <button class="flex min-w-[84px] cursor-pointer items-center justify-between gap-2 rounded-full border border-white/20 bg-[#041a0e]/80 px-3.5 py-2 text-xs font-bold text-white shadow-md backdrop-blur-md transition-all hover:border-emerald-400 focus:outline-none">
+                                    <span>@{{ filters.applied.limit ?? "@lang('shop::app.categories.toolbar.show')" }}</span>
+
+                                    <span
+                                        class="icon-arrow-down text-base text-emerald-400"
+                                        role="presentation"
+                                    ></span>
+                                </button>
+                            </x-slot>
+
+                            <x-slot:menu class="!p-1.5 !rounded-2xl !border-white/20 !shadow-2xl !bg-[#041a0e]/95 !backdrop-blur-xl">
+                                <x-shop::dropdown.menu.item
+                                    v-for="(limit, key) in filters.available.limit"
+                                    ::class="{'!bg-emerald-600 !text-white font-bold': limit == filters.applied.limit, '!text-white/90 hover:!bg-white/10 !rounded-xl !text-xs': true}"
+                                    @click="apply('limit', limit)"
+                                >
+                                    @{{ limit }}
+                                </x-shop::dropdown.menu.item>
+                            </x-slot>
+                        </x-shop::dropdown>
+                    </div>
 
                     <!-- Listing Mode Switcher -->
-                    <div class="flex items-center gap-5">
-                        <span
-                            class="cursor-pointer text-2xl"
-                            role="button"
-                            aria-label="@lang('shop::app.categories.toolbar.list')"
-                            tabindex="0"
-                            :class="(filters.applied.mode === 'list') ? 'icon-listing-fill' : 'icon-listing'"
-                            @click="changeMode('list')"
-                        >
-                        </span>
-
-                        <span
-                            class="cursor-pointer text-2xl"
-                            role="button"
+                    <div class="flex items-center gap-1 border border-white/20 pl-4 bg-[#041a0e]/80 p-1 rounded-xl shadow-xs backdrop-blur-md">
+                        <button
+                            type="button"
+                            class="p-1.5 rounded-lg transition-all cursor-pointer"
+                            :class="(filters.applied.mode === 'grid') ? 'bg-emerald-600 text-white shadow-xs' : 'text-white/60 hover:text-white hover:bg-white/10'"
                             aria-label="@lang('shop::app.categories.toolbar.grid')"
-                            tabindex="0"
-                            :class="(filters.applied.mode === 'grid') ? 'icon-grid-view-fill' : 'icon-grid-view'"
                             @click="changeMode('grid')"
                         >
-                        </span>
+                            <span class="icon-grid-view text-xl"></span>
+                        </button>
+
+                        <button
+                            type="button"
+                            class="p-1.5 rounded-lg transition-all cursor-pointer"
+                            :class="(filters.applied.mode === 'list') ? 'bg-emerald-600 text-white shadow-xs' : 'text-white/60 hover:text-white hover:bg-white/10'"
+                            aria-label="@lang('shop::app.categories.toolbar.list')"
+                            @click="changeMode('list')"
+                        >
+                            <span class="icon-listing text-xl"></span>
+                        </button>
                     </div>
                 </div>
 
                 {!! view_render_event('bagisto.shop.categories.toolbar.pagination.after') !!}
             </div>
 
-            <!-- Mobile Toolbar -->
-            <div class="md:hidden">
-                <ul>
+            <!-- Mobile Toolbar Drawer Content -->
+            <div class="md:hidden p-4">
+                <p class="text-xs font-bold uppercase tracking-widest text-emerald-400 mb-3">Sort Formulations By</p>
+                <ul class="space-y-1">
                     <li
-                        class="px-4 py-2.5"
-                        :class="{'bg-gray-100': sort.value == filters.applied.sort}"
+                        class="px-4 py-3 rounded-xl text-sm font-semibold transition-colors cursor-pointer"
+                        :class="sort.value == filters.applied.sort ? 'bg-emerald-600 text-white font-bold' : 'text-white/80 hover:bg-white/10'"
                         v-for="(sort, key) in filters.available.sort"
                         @click="apply('sort', sort.value)"
                     >
@@ -170,7 +175,7 @@
 
             computed: {
                 sortLabel() {
-                    return this.filters.available.sort.find(sort => sort.value === this.filters.applied.sort).title;
+                    return this.filters.available.sort.find(sort => sort.value === this.filters.applied.sort)?.title ?? 'Sort By';
                 }
             },
 

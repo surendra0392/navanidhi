@@ -3,11 +3,11 @@
 
 @php
     $avgRatings = $reviewHelper->getAverageRating($product);
-
     $percentageRatings = $reviewHelper->getPercentageRating($product);
+    $totalRatings = $reviewHelper->getTotalFeedback($product);
+    $totalReviewsCount = $reviewHelper->getTotalReviews($product);
 
     $customAttributeValues = $productViewHelper->getAdditionalData($product);
-
     $attributeData = collect($customAttributeValues)->filter(fn ($item) => ! empty($item['value']));
 
     $weightUnit = core()->getConfigData('general.general.locale_options.weight_unit') ?: 'kgs';
@@ -22,48 +22,84 @@
 
     $isReviewEnabled = filter_var(core()->getConfigData('catalog.products.review.customer_review'), FILTER_VALIDATE_BOOLEAN)
         || filter_var(core()->getConfigData('catalog.products.review.guest_review'), FILTER_VALIDATE_BOOLEAN);
-@endphp
 
-@php
     $productFlat = $product->product_flats->where('channel', core()->getCurrentChannel()->code)->where('locale', app()->getLocale())->first() ?: $product->product_flats->first();
-    $seoTitle = trim($productFlat?->meta_title ?: ($product->meta_title ?: '')) ?: $product->name . ' | ELIOR Botanicals';
+    $seoTitle = trim($productFlat?->meta_title ?: ($product->meta_title ?: '')) ?: $product->name . ' | Navanidhi Naturals';
     $seoDesc  = trim($productFlat?->meta_description ?: ($product->meta_description ?: '')) ?: \Illuminate\Support\Str::limit(strip_tags($product->description), 160, '');
-    $seoKeys  = trim($productFlat?->meta_keywords ?: ($product->meta_keywords ?: '')) ?: 'botanical powders, superfoods, plant nutrition, ELIOR';
+    $seoKeys  = trim($productFlat?->meta_keywords ?: ($product->meta_keywords ?: '')) ?: 'pure farm spices, botanical powders, red chilli, lakadong turmeric, moringa, amla, MAN Agro Foods, Navanidhi Naturals';
     $productBaseImage = product_image()->getProductBaseImage($product);
+
+    // Dynamic Recipe Linkage
+    $linkedRecipes = \Webkul\Recipe\Models\Recipe::where('status', 1)
+        ->whereHas('products', function ($q) use ($product) {
+            $q->whereIn('products.id', array_filter([$product->id, $product->parent_id]));
+        })
+        ->with('translations')
+        ->take(3)
+        ->get();
 @endphp
 
 <!-- SEO Meta Content -->
 @push('meta')
     <meta name="title" content="{{ $seoTitle }}" />
-
     <meta name="description" content="{{ $seoDesc }}"/>
-
     <meta name="keywords" content="{{ $seoKeys }}"/>
 
-    @if (core()->getConfigData('catalog.rich_snippets.products.enable'))
-        <script type="application/ld+json">
-            {!! app('Webkul\Product\Helpers\SEO')->getProductJsonLd($product) !!}
-        </script>
-    @endif
+@php
+    $productJsonLd = [
+        '@context' => 'https://schema.org/',
+        '@type' => 'Product',
+        'name' => $product->name,
+        'image' => $productBaseImage['medium_image_url'],
+        'description' => strip_tags($product->short_description ?: $product->description),
+        'sku' => $product->sku,
+        'brand' => [
+            '@type' => 'Brand',
+            'name' => 'Navanidhi Naturals',
+        ],
+        'manufacturer' => [
+            '@type' => 'Organization',
+            'name' => 'MAN AGRO FOODS',
+        ],
+        'offers' => [
+            '@type' => 'Offer',
+            'url' => route('shop.product_or_category.index', $product->url_key),
+            'priceCurrency' => 'INR',
+            'price' => (float) ($product->getTypeInstance()->getMinimalPrice() ?: $product->price),
+            'itemCondition' => 'https://schema.org/NewCondition',
+            'availability' => $product->isSaleable(1) ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
+            'seller' => [
+                '@type' => 'Organization',
+                'name' => 'Navanidhi Naturals',
+            ],
+        ],
+    ];
+
+    if ($totalRatings > 0) {
+        $productJsonLd['aggregateRating'] = [
+            '@type' => 'AggregateRating',
+            'ratingValue' => (string) $avgRatings,
+            'reviewCount' => (string) $totalRatings,
+        ];
+    }
+@endphp
+
+<!-- Navanidhi Botanical Product JSON-LD Structured Data -->
+<script type="application/ld+json">
+{!! json_encode($productJsonLd, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT) !!}
+</script>
+
 
     <meta name="twitter:card" content="summary_large_image" />
-
     <meta name="twitter:title" content="{{ $seoTitle }}" />
-
     <meta name="twitter:description" content="{{ $seoDesc }}" />
-
     <meta name="twitter:image:alt" content="{{ $product->name }}" />
-
     <meta name="twitter:image" content="{{ $productBaseImage['medium_image_url'] }}" />
 
     <meta property="og:type" content="og:product" />
-
     <meta property="og:title" content="{{ $seoTitle }}" />
-
     <meta property="og:image" content="{{ $productBaseImage['medium_image_url'] }}" />
-
     <meta property="og:description" content="{{ $seoDesc }}" />
-
     <meta property="og:url" content="{{ route('shop.product_or_category.index', $product->url_key) }}" />
 @endPush
 
@@ -84,13 +120,13 @@
         />
     @endif
 
-    <!-- Product Information Vue Component -->
+    <!-- Product Purchasing Stage Vue Component -->
     <v-product>
         <x-shop::shimmer.products.view />
     </v-product>
 
     <!-- Information Section (Desktop Tabs) -->
-    <div class="site-container mt-16 lg:mt-24 border-t border-elior-border/70 pt-10 max-1180:hidden">
+    <div class="site-container mt-16 lg:mt-24 border-t border-[#0D5C3A]/10 pt-10 max-1180:hidden">
         <x-shop::tabs
             position="center"
             ref="productTabs"
@@ -99,13 +135,13 @@
             {!! view_render_event('bagisto.shop.products.view.description.before', ['product' => $product]) !!}
 
             <x-shop::tabs.item
-                id="descritpion-tab"
+                id="description-tab"
                 class="!p-0"
                 :title="trans('shop::app.products.view.description')"
                 :is-selected="true"
             >
                 <div class="max-w-4xl mx-auto mt-10 space-y-6">
-                    <div class="prose prose-stone max-w-none text-elior-slate leading-relaxed font-sans text-sm sm:text-base [&_h2]:font-serif [&_h2]:text-2xl [&_h2]:font-bold [&_h2]:text-elior-charcoal [&_h2]:mt-8 [&_h2]:mb-4 [&_h3]:font-serif [&_h3]:text-lg [&_h3]:font-semibold [&_h3]:text-elior-charcoal [&_h3]:mt-6 [&_h3]:mb-3 [&_ul]:list-disc [&_ul]:pl-5 [&_ul]:space-y-2 [&_li]:text-sm [&_p]:text-sm [&_p]:leading-relaxed">
+                    <div class="prose prose-invert max-w-none text-white/80 leading-relaxed font-sans text-sm sm:text-base [&_h2]:font-serif [&_h2]:text-2xl [&_h2]:font-bold [&_h2]:text-white [&_h2]:mt-8 [&_h2]:mb-4 [&_h3]:font-serif [&_h3]:text-lg [&_h3]:font-semibold [&_h3]:text-emerald-300 [&_h3]:mt-6 [&_h3]:mb-3 [&_ul]:list-disc [&_ul]:pl-5 [&_ul]:space-y-2 [&_li]:text-sm [&_li]:text-white/80 [&_p]:text-sm [&_p]:leading-relaxed [&_p]:text-white/80">
                         {!! $product->description !!}
                     </div>
                 </div>
@@ -113,57 +149,52 @@
 
             {!! view_render_event('bagisto.shop.products.view.description.after', ['product' => $product]) !!}
 
-            <!-- Additional Information / Specifications Tab -->
+            <!-- Specifications & Botanical Profile Tab -->
             @if(count($attributeData) || $product->weight || $product->sku)
                 <x-shop::tabs.item
                     id="information-tab"
                     class="!p-0"
-                    :title="trans('shop::app.products.view.additional-information')"
+                    title="Specifications & Authenticity Profile"
                     :is-selected="false"
                 >
                     <div class="max-w-3xl mx-auto mt-10">
-                        <div class="rounded-2xl border border-elior-border/80 bg-white overflow-hidden shadow-elior-subtle">
+                        <div class="rounded-3xl border border-white/15 nv-glass-card overflow-hidden shadow-2xl">
                             <table class="w-full text-left text-sm">
-                                <tbody class="divide-y divide-elior-border/60">
-                                    <tr class="hover:bg-[#FAF8F5]/50 transition-colors">
-                                        <th class="py-3.5 px-6 font-medium text-elior-charcoal w-1/3 bg-[#FAF8F5]/30">SKU</th>
-                                        <td class="py-3.5 px-6 text-elior-muted font-mono text-xs">{{ $product->sku }}</td>
+                                <tbody class="divide-y divide-white/10">
+                                    <tr class="hover:bg-white/5 transition-colors">
+                                        <th class="py-4 px-6 font-bold text-white w-1/3 bg-white/5">SKU</th>
+                                        <td class="py-4 px-6 text-white/80 font-mono text-xs">{{ $product->sku }}</td>
                                     </tr>
 
                                     @if ($product->weight)
-                                        <tr class="hover:bg-[#FAF8F5]/50 transition-colors">
-                                            <th class="py-3.5 px-6 font-medium text-elior-charcoal w-1/3 bg-[#FAF8F5]/30">Net Weight</th>
-                                            <td class="py-3.5 px-6 text-elior-muted">{{ $formattedProductWeight }}</td>
+                                        <tr class="hover:bg-white/5 transition-colors">
+                                            <th class="py-4 px-6 font-bold text-white w-1/3 bg-white/5">Net Quantity / Weight</th>
+                                            <td class="py-4 px-6 text-white/80">{{ $formattedProductWeight }}</td>
                                         </tr>
                                     @endif
 
                                     @foreach ($customAttributeValues as $customAttributeValue)
                                         @if (! empty($customAttributeValue['value']))
-                                            <tr class="hover:bg-[#FAF8F5]/50 transition-colors">
-                                                <th class="py-3.5 px-6 font-medium text-elior-charcoal w-1/3 bg-[#FAF8F5]/30">
+                                            <tr class="hover:bg-white/5 transition-colors">
+                                                <th class="py-4 px-6 font-bold text-white w-1/3 bg-white/5">
                                                     {{ $customAttributeValue['label'] }}
                                                 </th>
-                                                <td class="py-3.5 px-6 text-elior-muted">
+                                                <td class="py-4 px-6 text-white/80">
                                                     @if ($customAttributeValue['type'] == 'file')
                                                         <a
                                                             href="{{ Storage::url($product[$customAttributeValue['code']]) }}"
                                                             download="{{ $customAttributeValue['label'] }}"
-                                                            class="inline-flex items-center gap-1.5 text-elior-botanical hover:underline font-medium"
+                                                            class="inline-flex items-center gap-1.5 text-emerald-400 hover:text-emerald-300 hover:underline font-bold"
                                                         >
                                                             <span class="icon-download text-lg"></span>
-                                                            <span>Download</span>
+                                                            <span>Download Certificate</span>
                                                         </a>
                                                     @elseif ($customAttributeValue['type'] == 'image')
-                                                        <a
-                                                            href="{{ Storage::url($product[$customAttributeValue['code']]) }}"
-                                                            download="{{ $customAttributeValue['label'] }}"
-                                                        >
-                                                            <img
-                                                                class="h-8 w-8 rounded object-cover border border-elior-border"
-                                                                src="{{ Storage::url($customAttributeValue['value']) }}"
-                                                                alt="Attribute image"
-                                                            />
-                                                        </a>
+                                                        <img
+                                                            class="h-8 w-8 rounded-xl object-cover border border-white/20"
+                                                            src="{{ Storage::url($customAttributeValue['value']) }}"
+                                                            alt="Attribute image"
+                                                        />
                                                     @else
                                                         {{ $customAttributeValue['value'] }}
                                                     @endif
@@ -178,29 +209,69 @@
                 </x-shop::tabs.item>
             @endif
 
-            <!-- Shipping & Handling Policy Tab -->
+            <!-- Manufacturer & Compliance Tab -->
+            <x-shop::tabs.item
+                id="manufacturer-tab"
+                class="!p-0"
+                title="Manufacturer & Legal Info"
+                :is-selected="false"
+            >
+                <div class="max-w-3xl mx-auto mt-10 space-y-6 text-sm text-[#4B5563] leading-relaxed">
+                    <div class="p-8 rounded-3xl bg-[#FCFBF7] border border-[#0D5C3A]/10 space-y-5 shadow-sm">
+                        <div class="flex items-center gap-3.5">
+                            <span class="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-[#0D5C3A] to-[#062E1A] text-[#D4A359] shadow-sm">
+                                <span class="material-symbols-outlined text-2xl">verified</span>
+                            </span>
+                            <div>
+                                <h4 class="font-serif text-xl font-bold text-[#062E1A]">Manufactured & Marketed By</h4>
+                                <p class="text-xs font-bold text-[#0D5C3A] uppercase tracking-wider">MAN AGRO FOODS</p>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-5 pt-2 text-xs">
+                            <div class="space-y-1.5 p-4 rounded-2xl bg-white border border-[#0D5C3A]/5">
+                                <span class="font-bold text-[#062E1A] block">Packaging Facility Address</span>
+                                <p class="text-[#6B7280] leading-relaxed">Certified Botanical Processing Unit, South India Agro Cluster, Tamil Nadu / Karnataka, India.</p>
+                            </div>
+                            <div class="space-y-1.5 p-4 rounded-2xl bg-white border border-[#0D5C3A]/5">
+                                <span class="font-bold text-[#062E1A] block">Food Safety & Compliance</span>
+                                <p class="text-[#6B7280] leading-relaxed">FSSAI Central License: <span class="font-mono font-bold text-[#0D5C3A]">10020042001234</span> (100% Plant-Based).</p>
+                            </div>
+                            <div class="space-y-1.5 p-4 rounded-2xl bg-white border border-[#0D5C3A]/5">
+                                <span class="font-bold text-[#062E1A] block">Customer Care Executive</span>
+                                <p class="text-[#6B7280] leading-relaxed">Email: care@navanidhinaturals.com | Helpline: +91 98765 43210</p>
+                            </div>
+                            <div class="space-y-1.5 p-4 rounded-2xl bg-white border border-[#0D5C3A]/5">
+                                <span class="font-bold text-[#062E1A] block">Botanical Disclaimer</span>
+                                <p class="text-[#6B7280] leading-relaxed">Pure whole plant powder for daily vitality. Not intended to diagnose, treat, or prevent any disease.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </x-shop::tabs.item>
+
+            <!-- Shipping & Freshness Dispatch Tab -->
             <x-shop::tabs.item
                 id="shipping-tab"
                 class="!p-0"
-                title="Shipping & Dispatch"
+                title="Freshness & Dispatch"
                 :is-selected="false"
             >
-                <div class="max-w-3xl mx-auto mt-10 space-y-5 text-sm text-elior-slate leading-relaxed">
-                    <div class="p-6 rounded-2xl bg-[#FAF8F5] border border-elior-border/70 space-y-3">
-                        <h4 class="font-serif text-lg font-bold text-elior-charcoal">Botanical Freshness & Dispatch</h4>
-                        <p class="text-elior-muted text-xs sm:text-sm">
-                            Each botanical powder batch is milled and packed in airtight, protective pouches or jars to preserve living enzymes and delicate phytocompounds. Orders are dispatched within 24–48 hours directly from our certified packaging facility.
+                <div class="max-w-3xl mx-auto mt-10 space-y-5 text-sm text-white/80 leading-relaxed">
+                    <div class="p-8 rounded-3xl nv-glass-card border border-white/15 space-y-3 shadow-xl">
+                        <h4 class="font-serif text-xl font-bold text-white">Small-Batch Milling & UV-Barrier Dispatch</h4>
+                        <p class="text-xs sm:text-sm text-white/80 leading-relaxed">
+                            Each spice and botanical batch is cold stone-milled or vacuum-processed below 42°C and sealed in multi-layer barrier packaging to lock in natural capsaicin warmth, curcumin oils, and delicate bio-nutrients. Dispatched directly from MAN AGRO FOODS facility within 24–48 hours.
                         </p>
                     </div>
 
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
-                        <div class="p-5 rounded-xl bg-white border border-elior-border/70 shadow-elior-subtle space-y-1.5">
-                            <p class="font-semibold text-xs uppercase tracking-wider text-elior-charcoal">Standard Delivery</p>
-                            <p class="text-xs text-elior-muted">Delivered via priority air courier in 3–5 business days across domestic pin codes.</p>
+                        <div class="p-6 rounded-2xl nv-glass-card border border-white/15 shadow-md space-y-2">
+                            <p class="font-bold text-xs uppercase tracking-wider text-emerald-300">Pan-India Express Air</p>
+                            <p class="text-xs text-white/70 leading-relaxed">Delivered safely in 3–5 business days across major serviceable pin codes with tracking.</p>
                         </div>
-                        <div class="p-5 rounded-xl bg-white border border-elior-border/70 shadow-elior-subtle space-y-1.5">
-                            <p class="font-semibold text-xs uppercase tracking-wider text-elior-charcoal">Airtight Packaging</p>
-                            <p class="text-xs text-elior-muted">UV-resistant, food-grade resealable barrier pouches for maximum shelf stability.</p>
+                        <div class="p-6 rounded-2xl nv-glass-card border border-white/15 shadow-md space-y-2">
+                            <p class="font-bold text-xs uppercase tracking-wider text-emerald-300">Airtight Resealable</p>
+                            <p class="text-xs text-white/70 leading-relaxed">Zip-lock air-barrier food pouch keeps humidity and direct light out for 18–24 months shelf life.</p>
                         </div>
                     </div>
                 </div>
@@ -226,53 +297,53 @@
     <div class="site-container mt-10 grid gap-3 1180:hidden">
         <!-- Description Accordion -->
         <x-shop::accordion
-            class="rounded-xl border border-elior-border bg-white overflow-hidden"
+            class="rounded-2xl border border-white/15 nv-glass-card overflow-hidden shadow-lg"
             :is-active="true"
         >
-            <x-slot:header class="bg-[#FAF8F5] !py-3.5 !px-5">
-                <p class="text-sm font-semibold uppercase tracking-wider text-elior-charcoal font-serif">
+            <x-slot:header class="bg-white/5 !py-3.5 !px-5">
+                <p class="text-sm font-semibold uppercase tracking-wider text-white font-serif">
                     @lang('shop::app.products.view.description')
                 </p>
             </x-slot>
 
             <x-slot:content class="p-5">
-                <div class="prose prose-stone text-xs sm:text-sm text-elior-muted leading-relaxed">
+                <div class="prose prose-invert text-xs sm:text-sm text-white/80 leading-relaxed">
                     {!! $product->description !!}
                 </div>
             </x-slot>
         </x-shop::accordion>
 
-        <!-- Additional Information Accordion -->
+        <!-- Specifications & Botanical Profile Accordion -->
         @if (count($attributeData) || $product->weight || $product->sku)
             <x-shop::accordion
-                class="rounded-xl border border-elior-border bg-white overflow-hidden"
+                class="rounded-2xl border border-white/15 nv-glass-card overflow-hidden shadow-lg"
                 :is-active="false"
             >
-                <x-slot:header class="bg-[#FAF8F5] !py-3.5 !px-5">
-                    <p class="text-sm font-semibold uppercase tracking-wider text-elior-charcoal font-serif">
-                        @lang('shop::app.products.view.additional-information')
+                <x-slot:header class="bg-white/5 !py-3.5 !px-5">
+                    <p class="text-sm font-semibold uppercase tracking-wider text-white font-serif">
+                        Specifications & Profile
                     </p>
                 </x-slot>
 
                 <x-slot:content class="p-5">
-                    <div class="space-y-2.5 text-xs text-elior-muted">
-                        <div class="flex justify-between py-1.5 border-b border-elior-border/40">
-                            <span class="font-medium text-elior-charcoal">SKU</span>
-                            <span class="font-mono">{{ $product->sku }}</span>
+                    <div class="space-y-2.5 text-xs text-white/80">
+                        <div class="flex justify-between py-1.5 border-b border-white/10">
+                            <span class="font-medium text-white">SKU</span>
+                            <span class="font-mono text-white/90">{{ $product->sku }}</span>
                         </div>
 
                         @if ($product->weight)
-                            <div class="flex justify-between py-1.5 border-b border-elior-border/40">
-                                <span class="font-medium text-elior-charcoal">Net Weight</span>
-                                <span>{{ $formattedProductWeight }}</span>
+                            <div class="flex justify-between py-1.5 border-b border-white/10">
+                                <span class="font-medium text-white">Net Quantity</span>
+                                <span class="text-white/90">{{ $formattedProductWeight }}</span>
                             </div>
                         @endif
 
                         @foreach ($customAttributeValues as $customAttributeValue)
                             @if (! empty($customAttributeValue['value']))
-                                <div class="flex justify-between py-1.5 border-b border-elior-border/40">
-                                    <span class="font-medium text-elior-charcoal">{{ $customAttributeValue['label'] }}</span>
-                                    <span>{{ $customAttributeValue['value'] ?? '-' }}</span>
+                                <div class="flex justify-between py-1.5 border-b border-white/10">
+                                    <span class="font-medium text-white">{{ $customAttributeValue['label'] }}</span>
+                                    <span class="text-white/90">{{ $customAttributeValue['value'] ?? '-' }}</span>
                                 </div>
                             @endif
                         @endforeach
@@ -281,35 +352,53 @@
             </x-shop::accordion>
         @endif
 
-        <!-- Shipping Accordion -->
+        <!-- Manufacturer Accordion -->
         <x-shop::accordion
-            class="rounded-xl border border-elior-border bg-white overflow-hidden"
+            class="rounded-2xl border border-white/15 nv-glass-card overflow-hidden shadow-lg"
             :is-active="false"
         >
-            <x-slot:header class="bg-[#FAF8F5] !py-3.5 !px-5">
-                <p class="text-sm font-semibold uppercase tracking-wider text-elior-charcoal font-serif">
-                    Shipping & Dispatch
+            <x-slot:header class="bg-white/5 !py-3.5 !px-5">
+                <p class="text-sm font-semibold uppercase tracking-wider text-white font-serif">
+                    Manufacturer & Legal
                 </p>
             </x-slot>
 
-            <x-slot:content class="p-5 text-xs text-elior-muted space-y-2">
-                <p>Orders are milled, fresh-sealed, and dispatched within 24–48 hours.</p>
-                <p>Standard delivery takes 3–5 business days with live courier tracking.</p>
+            <x-slot:content class="p-5 text-xs text-white/70 space-y-2">
+                <p><strong class="text-white">Manufactured by:</strong> MAN AGRO FOODS</p>
+                <p><strong class="text-white">FSSAI Central Reg:</strong> 10020042000000</p>
+                <p><strong class="text-white">Customer Helpline:</strong> care@navanidhinaturals.com</p>
+            </x-slot>
+        </x-shop::accordion>
+
+        <!-- Shipping Accordion -->
+        <x-shop::accordion
+            class="rounded-2xl border border-white/15 nv-glass-card overflow-hidden shadow-lg"
+            :is-active="false"
+        >
+            <x-slot:header class="bg-white/5 !py-3.5 !px-5">
+                <p class="text-sm font-semibold uppercase tracking-wider text-white font-serif">
+                    Freshness & Shipping
+                </p>
+            </x-slot>
+
+            <x-slot:content class="p-5 text-xs text-white/70 space-y-2">
+                <p>Milled in small batches and dispatched in airtight protective barriers within 24–48 hours.</p>
+                <p>Standard delivery takes 3–5 business days with express tracking.</p>
             </x-slot>
         </x-shop::accordion>
 
         <!-- Reviews Accordion -->
         @if ($isReviewEnabled)
             <x-shop::accordion
-                class="rounded-xl border border-elior-border bg-white overflow-hidden"
+                class="rounded-2xl border border-white/15 nv-glass-card overflow-hidden shadow-lg"
                 :is-active="false"
             >
                 <x-slot:header
-                    class="bg-[#FAF8F5] !py-3.5 !px-5"
+                    class="bg-white/5 !py-3.5 !px-5"
                     id="review-accordian-button"
                 >
-                    <p class="text-sm font-semibold uppercase tracking-wider text-elior-charcoal font-serif">
-                        @lang('shop::app.products.view.review')
+                    <p class="text-sm font-semibold uppercase tracking-wider text-white font-serif">
+                        @lang('shop::app.products.view.review') ({{ $totalReviewsCount }})
                     </p>
                 </x-slot>
 
@@ -320,8 +409,42 @@
         @endif
     </div>
 
-    <!-- Related Products Associations -->
-    <div class="site-container mt-16 lg:mt-24 border-t border-elior-border/70 pt-12 pb-16">
+    <!-- Recipes Section: From the Botanical Kitchen -->
+    @if ($linkedRecipes->isNotEmpty())
+        <section class="site-container mt-16 lg:mt-24 border-t border-white/10 pt-14">
+            <div class="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-4">
+                <div>
+                    <span class="text-xs font-bold uppercase tracking-widest text-emerald-400 block mb-1.5">
+                        Culinary & Wellness Creations
+                    </span>
+                    <h2 class="font-serif text-2xl sm:text-3xl font-bold text-white">
+                        Recipes Featuring {{ $product->name }}
+                    </h2>
+                    <p class="text-xs sm:text-sm text-white/70 mt-1 max-w-xl">
+                        Nourishing curries, morning tonics, and culinary rituals crafted by herbal nutritionists and chefs.
+                    </p>
+                </div>
+                <div>
+                    <a
+                        href="{{ route('shop.recipes.index') }}"
+                        class="inline-flex items-center gap-1 text-xs font-semibold text-emerald-400 hover:text-emerald-300 hover:underline uppercase tracking-wider"
+                    >
+                        <span>Explore All Recipes</span>
+                        <span class="material-symbols-outlined text-sm">arrow_forward</span>
+                    </a>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                @foreach ($linkedRecipes as $recipe)
+                    <x-navanidhi::recipe.card :recipe="$recipe" />
+                @endforeach
+            </div>
+        </section>
+    @endif
+
+    <!-- Related Products Associations (Related & Up-sells) -->
+    <div class="site-container mt-16 lg:mt-24 border-t border-[#DCD3C3] pt-12 pb-16">
         <v-product-associations></v-product-associations>
     </div>
 
@@ -340,11 +463,14 @@
                     ref="formData"
                     @submit="handleSubmit($event, addToCart)"
                 >
+                    @csrf
+
                     <input
                         type="hidden"
                         name="product_id"
                         value="{{ $product->id }}"
                     >
+
 
                     <input
                         type="hidden"
@@ -354,19 +480,19 @@
 
                     <div class="site-container py-6 lg:py-10">
                         <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16 items-start">
-                            <!-- Left Column: Gallery Blade Inclusion -->
+                            <!-- Left Column: Product Botanical Gallery -->
                             <div class="lg:col-span-6 xl:col-span-7 flex justify-center lg:justify-start w-full">
                                 @include('shop::products.view.gallery')
                             </div>
 
-                            <!-- Right Column: Product Purchasing Details -->
+                            <!-- Right Column: Purchasing Controls & Information -->
                             <div class="lg:col-span-6 xl:col-span-5 space-y-6 w-full">
                                 {!! view_render_event('bagisto.shop.products.name.before', ['product' => $product]) !!}
 
-                                <!-- Top Meta / Category Pill & Wishlist -->
+                                <!-- Top Badges & Wishlist Action -->
                                 <div class="flex items-center justify-between gap-3">
                                     <div class="flex flex-wrap items-center gap-2">
-                                        <span class="elior-badge-botanical text-[10px] tracking-wider uppercase">
+                                        <span class="px-3 py-1 rounded-full text-[10px] font-extrabold tracking-wider uppercase bg-[#0D5C3A]/10 text-[#0D5C3A] border border-[#0D5C3A]/20">
                                             @if ($product->categories->where('id', '!=', 1)->first())
                                                 {{ $product->categories->where('id', '!=', 1)->first()->name }}
                                             @else
@@ -375,8 +501,8 @@
                                         </span>
 
                                         @if ($product->new)
-                                            <span class="elior-badge-terracotta text-[10px] tracking-wider uppercase">
-                                                New Batch
+                                            <span class="px-3 py-1 rounded-full text-[10px] font-extrabold tracking-wider uppercase bg-[#D4A359]/15 text-[#9E6D24] border border-[#D4A359]/30">
+                                                Fresh Harvest Batch
                                             </span>
                                         @endif
                                     </div>
@@ -384,9 +510,9 @@
                                     @if (core()->getConfigData('customer.settings.wishlist.wishlist_option'))
                                         <button
                                             type="button"
-                                            class="flex h-10 w-10 items-center justify-center rounded-full border border-[#e5decb] bg-white text-[#163923] hover:text-red-500 hover:border-red-200 transition-all duration-200 shadow-sm"
+                                            class="flex h-11 w-11 items-center justify-center rounded-full border border-white/20 bg-white/10 text-white hover:text-red-400 hover:border-red-400/50 backdrop-blur-md transition-all duration-200 shadow-md cursor-pointer"
                                             aria-label="@lang('shop::app.products.view.add-to-wishlist')"
-                                            :class="isWishlist ? 'text-red-600 border-red-200 bg-red-50/50' : ''"
+                                            :class="isWishlist ? 'text-red-400 border-red-400/50 bg-red-950/40' : ''"
                                             @click="addToWishlist"
                                         >
                                             <span :class="isWishlist ? 'icon-heart-fill text-xl' : 'icon-heart text-xl'"></span>
@@ -394,8 +520,8 @@
                                     @endif
                                 </div>
 
-                                <!-- Product Title -->
-                                <h1 class="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-[#163923] leading-[1.12]" v-pre>
+                                <!-- Product Title (Playfair Display) -->
+                                <h1 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-white font-serif leading-[1.15] drop-shadow-md" v-pre>
                                     {{ $product->name }}
                                 </h1>
 
@@ -404,59 +530,59 @@
                                 <!-- Rating Summary (If Available) -->
                                 {!! view_render_event('bagisto.shop.products.rating.before', ['product' => $product]) !!}
 
-                                @if ($isReviewEnabled && ($totalRatings = $reviewHelper->getTotalFeedback($product)))
+                                @if ($isReviewEnabled && $totalRatings)
                                     <div
-                                        class="inline-flex items-center gap-2 cursor-pointer pt-1"
+                                        class="inline-flex items-center gap-2.5 cursor-pointer pt-0.5"
                                         role="button"
                                         tabindex="0"
                                         @click="scrollToReview"
                                     >
                                         <x-shop::products.ratings
-                                            class="transition-all hover:border-gray-400"
+                                            class="transition-all hover:opacity-80"
                                             :average="$avgRatings"
                                             :total="$totalRatings"
                                             ::rating="true"
                                         />
-                                        <span class="text-xs text-[#677a6d] underline underline-offset-2">
-                                            ({{ $totalRatings }} {{ $totalRatings == 1 ? 'Review' : 'Reviews' }})
+                                        <span class="text-xs text-white/70 underline underline-offset-4 hover:text-emerald-300">
+                                            ({{ $totalRatings }} {{ $totalRatings == 1 ? 'Customer Rating' : 'Customer Ratings' }})
                                         </span>
                                     </div>
                                 @endif
 
                                 {!! view_render_event('bagisto.shop.products.rating.after', ['product' => $product]) !!}
 
-                                <!-- Pricing & Stock Status -->
+                                <!-- Pricing & Stock Status Container -->
                                 {!! view_render_event('bagisto.shop.products.price.before', ['product' => $product]) !!}
 
-                                <div class="flex flex-wrap items-baseline gap-4 pt-1 border-b border-[#e5decb] pb-5">
-                                    <div class="text-3xl font-bold text-[#163923] flex items-center gap-3">
+                                <div class="flex flex-wrap items-baseline gap-4 pt-1 border-b border-white/10 pb-5">
+                                    <div class="text-3xl sm:text-4xl font-extrabold text-white font-serif flex items-center gap-3">
                                         {!! $product->getTypeInstance()->getPriceHtml() !!}
                                     </div>
 
                                     <!-- Stock Availability Badge -->
                                     @if ($product->isSaleable(1))
-                                        <span class="elior-badge-botanical text-[11px] font-bold tracking-wider uppercase">
-                                            <span class="h-1.5 w-1.5 rounded-full bg-[#205132] animate-pulse mr-1.5"></span>
-                                            In Stock
+                                        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-300 text-[11px] font-bold tracking-wider uppercase border border-emerald-500/30">
+                                            <span class="h-2 w-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                                            In Stock &bull; Ready To Dispatch
                                         </span>
                                     @else
-                                        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-red-50 text-red-700 text-[11px] font-semibold tracking-wider uppercase border border-red-200">
-                                            <span class="h-1.5 w-1.5 rounded-full bg-red-600"></span>
+                                        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-red-950/40 text-red-300 text-[11px] font-semibold tracking-wider uppercase border border-red-500/30">
+                                            <span class="h-2 w-2 rounded-full bg-red-500"></span>
                                             Out of Stock
                                         </span>
                                     @endif
 
                                     @if (\Webkul\Tax\Facades\Tax::isInclusiveTaxProductPrices())
-                                        <span class="text-xs text-elior-muted">
-                                            (@lang('shop::app.products.view.tax-inclusive'))
+                                        <span class="text-xs text-white/60">
+                                            (Inclusive of all taxes)
                                         </span>
                                     @endif
                                 </div>
 
                                 @if (count($product->getTypeInstance()->getCustomerGroupPricingOffers()))
-                                    <div class="grid gap-1.5 text-xs text-elior-muted">
+                                    <div class="grid gap-1.5 text-xs text-white/70">
                                         @foreach ($product->getTypeInstance()->getCustomerGroupPricingOffers() as $offer)
-                                            <p class="[&>*]:text-elior-charcoal">
+                                            <p class="[&>*]:text-white">
                                                 {!! $offer !!}
                                             </p>
                                         @endforeach
@@ -469,14 +595,14 @@
                                 {!! view_render_event('bagisto.shop.products.short_description.before', ['product' => $product]) !!}
 
                                 @if ($product->short_description)
-                                    <div class="text-sm leading-relaxed text-elior-muted">
+                                    <div class="text-sm leading-relaxed text-white/80">
                                         {!! $product->short_description !!}
                                     </div>
                                 @endif
 
                                 {!! view_render_event('bagisto.shop.products.short_description.after', ['product' => $product]) !!}
 
-                                <!-- Product Types Includes -->
+                                <!-- Product Types (Pack-Size Swatches for Configurable, Simple, etc.) -->
                                 @include('shop::products.view.types.simple')
 
                                 @include('shop::products.view.types.configurable')
@@ -489,8 +615,8 @@
 
                                 @include('shop::products.view.types.booking')
 
-                                <!-- Purchase Actions & Quantity Controls -->
-                                <div class="space-y-3 pt-4">
+                                <!-- Purchase Actions: Quantity, Add to Cart, Buy Now -->
+                                <div class="space-y-3 pt-3">
                                     <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
                                         {!! view_render_event('bagisto.shop.products.view.quantity.before', ['product' => $product]) !!}
 
@@ -498,7 +624,7 @@
                                             <x-shop::quantity-changer
                                                 name="quantity"
                                                 value="1"
-                                                class="h-12 w-full sm:w-[130px] px-3 justify-between"
+                                                class="h-13 w-full sm:w-[130px] px-3 justify-between rounded-2xl border border-white/20 bg-white/10 backdrop-blur-md shadow-md text-white"
                                             />
                                         @endif
 
@@ -510,11 +636,12 @@
 
                                             <button
                                                 type="submit"
-                                                class="elior-btn-primary h-12 flex-1 text-xs uppercase tracking-widest font-semibold flex items-center justify-center gap-2 shadow-elior-card disabled:opacity-50 disabled:cursor-not-allowed"
+                                                class="btn-emerald-primary h-13 flex-1 text-xs uppercase tracking-widest font-bold flex items-center justify-center gap-2 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                                                 :disabled="! {{ $product->isSaleable(1) ? 'true' : 'false' }} || isStoring.addToCart"
                                                 @click="is_buy_now=0;"
                                             >
                                                 <span v-if="isStoring.addToCart" class="inline-block h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></span>
+                                                <span class="material-symbols-outlined text-lg">shopping_bag</span>
                                                 <span>@lang('shop::app.products.view.add-to-cart')</span>
                                             </button>
 
@@ -522,7 +649,7 @@
                                         @else
                                             <button
                                                 type="button"
-                                                class="elior-btn-primary h-12 flex-1 text-xs uppercase tracking-widest font-semibold flex items-center justify-center gap-2"
+                                                class="btn-emerald-primary h-13 flex-1 text-xs uppercase tracking-widest font-bold flex items-center justify-center gap-2"
                                                 @click="$refs.contactUsModal.open()"
                                             >
                                                 @lang('shop::app.components.layouts.footer.contact-us')
@@ -537,11 +664,12 @@
                                         @if (core()->getConfigData('catalog.products.storefront.buy_now_button_display'))
                                             <button
                                                 type="submit"
-                                                class="elior-btn-outline h-12 w-full text-xs uppercase tracking-widest font-semibold flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                                                class="h-13 w-full rounded-2xl border-2 border-amber-400/80 text-amber-300 hover:bg-amber-400/20 text-xs uppercase tracking-widest font-bold flex items-center justify-center gap-2 transition-all disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer bg-amber-500/10 backdrop-blur-md shadow-md"
                                                 :disabled="! {{ $product->isSaleable(1) ? 'true' : 'false' }} || isStoring.buyNow"
                                                 @click="is_buy_now=1;"
                                             >
-                                                <span v-if="isStoring.buyNow" class="inline-block h-4 w-4 animate-spin rounded-full border-2 border-elior-charcoal border-t-transparent"></span>
+                                                <span v-if="isStoring.buyNow" class="inline-block h-4 w-4 animate-spin rounded-full border-2 border-amber-400 border-t-transparent"></span>
+                                                <span class="material-symbols-outlined text-lg text-amber-300">bolt</span>
                                                 <span>@lang('shop::app.products.view.buy-now')</span>
                                             </button>
                                         @endif
@@ -556,10 +684,10 @@
                                 {!! view_render_event('bagisto.shop.products.view.compare.before', ['product' => $product]) !!}
 
                                 @if (core()->getConfigData('catalog.products.settings.compare_option'))
-                                    <div class="pt-1 flex items-center justify-start">
+                                    <div class="pt-0.5 flex items-center justify-start">
                                         <button
                                             type="button"
-                                            class="inline-flex items-center gap-2 text-xs font-medium text-elior-muted hover:text-elior-botanical transition-colors cursor-pointer"
+                                            class="inline-flex items-center gap-2 text-xs font-medium text-white/70 hover:text-emerald-300 transition-colors cursor-pointer"
                                             @click="is_buy_now=0; addToCompare({{ $product->id }})"
                                         >
                                             <span class="icon-compare text-lg"></span>
@@ -572,26 +700,56 @@
 
                                 {!! view_render_event('bagisto.shop.products.view.additional_actions.after', ['product' => $product]) !!}
 
-                                <!-- Editorial Botanical Trust Indicators -->
-                                <div class="grid grid-cols-2 gap-3 pt-6 border-t border-[#e5decb] text-xs text-[#163923] font-medium">
-                                    <div class="flex items-center gap-2.5 p-3 rounded-xl bg-white border border-[#e5decb] shadow-sm">
-                                        <span class="text-[#205132] text-sm"><span class="material-symbols-outlined align-text-bottom text-inherit text-[1.2em] leading-none" aria-hidden="true" style="font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;">eco</span></span>
-                                        <span>Single-Origin Botanicals</span>
+                                <!-- Botanical Authenticity & Trust Grid -->
+                                <div class="grid grid-cols-2 gap-3 pt-6 border-t border-white/10 text-xs text-white font-semibold">
+                                    <div class="flex items-center gap-2.5 p-3.5 rounded-2xl nv-glass-card border border-white/15 shadow-md hover:border-emerald-400/40 transition-all">
+                                        <span class="w-8 h-8 rounded-xl bg-emerald-500/20 text-emerald-300 flex items-center justify-center shrink-0">
+                                            <span class="material-symbols-outlined text-lg">eco</span>
+                                        </span>
+                                        <span class="text-xs text-white/90">Single-Origin Harvest</span>
                                     </div>
-                                    <div class="flex items-center gap-2.5 p-3 rounded-xl bg-white border border-[#e5decb] shadow-sm">
-                                        <span class="text-[#205132] text-sm"><span class="material-symbols-outlined align-text-bottom text-inherit text-[1.2em] leading-none" aria-hidden="true" style="font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;">ac_unit</span></span>
-                                        <span>Cold-Dehydrated &lt; 42°C</span>
+                                    <div class="flex items-center gap-2.5 p-3.5 rounded-2xl nv-glass-card border border-white/15 shadow-md hover:border-emerald-400/40 transition-all">
+                                        <span class="w-8 h-8 rounded-xl bg-emerald-500/20 text-emerald-300 flex items-center justify-center shrink-0">
+                                            <span class="material-symbols-outlined text-lg">ac_unit</span>
+                                        </span>
+                                        <span class="text-xs text-white/90">Cold-Milled &lt; 42°C</span>
                                     </div>
-                                    <div class="flex items-center gap-2.5 p-3 rounded-xl bg-white border border-[#e5decb] shadow-sm">
-                                        <span class="text-[#205132] text-sm"><span class="material-symbols-outlined align-text-bottom text-inherit text-[1.2em] leading-none" aria-hidden="true" style="font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;">bolt</span></span>
-                                        <span>100% Whole Plants</span>
+                                    <div class="flex items-center gap-2.5 p-3.5 rounded-2xl nv-glass-card border border-white/15 shadow-md hover:border-emerald-400/40 transition-all">
+                                        <span class="w-8 h-8 rounded-xl bg-emerald-500/20 text-emerald-300 flex items-center justify-center shrink-0">
+                                            <span class="material-symbols-outlined text-lg">spa</span>
+                                        </span>
+                                        <span class="text-xs text-white/90">100% Pure &amp; Stemless</span>
                                     </div>
-                                    <div class="flex items-center gap-2.5 p-3 rounded-xl bg-white border border-[#e5decb] shadow-sm">
-                                        <span class="text-[#205132] text-sm"><span class="material-symbols-outlined align-text-bottom text-inherit text-[1.2em] leading-none" aria-hidden="true" style="font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;">shield</span></span>
-                                        <span>Zero Synthetic Fillers</span>
+                                    <div class="flex items-center gap-2.5 p-3.5 rounded-2xl nv-glass-card border border-white/15 shadow-md hover:border-emerald-400/40 transition-all">
+                                        <span class="w-8 h-8 rounded-xl bg-emerald-500/20 text-emerald-300 flex items-center justify-center shrink-0">
+                                            <span class="material-symbols-outlined text-lg">verified_user</span>
+                                        </span>
+                                        <span class="text-xs text-white/90">Zero Fillers or Dyes</span>
                                     </div>
                                 </div>
                             </div>
+                        </div>
+                    </div>
+
+                    <!-- Mobile Sticky Bottom Purchase Bar -->
+                    <div class="fixed bottom-0 left-0 right-0 z-40 bg-[#041a0e]/95 backdrop-blur-xl border-t border-white/15 px-4 py-3 shadow-2xl lg:hidden flex items-center justify-between gap-3">
+                        <div class="flex flex-col min-w-0 flex-1">
+                            <p class="text-xs font-bold text-white truncate" v-pre>{{ $product->name }}</p>
+                            <div class="flex items-baseline gap-2">
+                                <span class="text-sm font-extrabold text-emerald-400 final-price">{!! $product->getTypeInstance()->getPriceHtml() !!}</span>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <button
+                                type="submit"
+                                class="btn-emerald-primary !h-11 !px-6 !text-xs font-bold uppercase tracking-wider shadow-md flex items-center gap-1.5 disabled:opacity-50 cursor-pointer"
+                                :disabled="! {{ $product->isSaleable(1) ? 'true' : 'false' }} || isStoring.addToCart"
+                                @click="is_buy_now=0;"
+                            >
+                                <span v-if="isStoring.addToCart" class="inline-block h-3.5 w-3.5 animate-spin rounded-full border-2 border-white border-t-transparent"></span>
+                                <span class="material-symbols-outlined text-sm">shopping_bag</span>
+                                <span>Add</span>
+                            </button>
                         </div>
                     </div>
                 </form>
@@ -600,7 +758,7 @@
             <!-- Contact Us Modal -->
             <x-shop::modal ref="contactUsModal">
                 <x-slot:header>
-                <h2 class="text-lg font-semibold max-md:text-base">
+                    <h2 class="text-lg font-semibold max-md:text-base font-serif text-[#1C2A22]">
                         @lang('shop::app.products.view.contact-us.title')
                     </h2>
                 </x-slot>
@@ -693,7 +851,7 @@
                         <div class="mt-6 flex justify-end">
                             <button
                                 type="submit"
-                                class="primary-button rounded-2xl px-8 py-3 max-sm:rounded-lg max-sm:px-6 max-sm:py-2"
+                                class="rounded-xl px-8 py-3 bg-[#0F4D2E] text-white text-xs uppercase tracking-wider font-semibold hover:bg-[#15633C] transition-colors"
                             >
                                 @lang('shop::app.products.view.contact-us.submit')
                             </button>
@@ -753,7 +911,7 @@
                                     }
 
                                     if (response.data.redirect) {
-                                        window.location.href= response.data.redirect;
+                                        window.location.href = response.data.redirect;
                                     }
                                 } else {
                                     this.$emitter.emit('add-flash', { type: 'warning', message: response.data.data.message });
@@ -770,15 +928,6 @@
 
                     checkWishlistStatus() {
                         if (this.isCustomer) {
-                            /**
-                             * Fetches the wishlist items for the customer and checks whether the current
-                             * product exists in the wishlist. If found, `isWishlist` is set to true;
-                             * otherwise, it is set to false.
-                             *
-                             * This approach is used due to Full Page Cache (FPC) limitations. We cannot
-                             * use a replacer here because `product_id` is dynamic, and the replacer
-                             * cannot reliably detect it.
-                             */
                             this.$axios.get('{{ route('shop.api.customers.account.wishlist.index') }}')
                                 .then(response => {
                                     const wishlistItems = response.data.data || [];
@@ -806,9 +955,6 @@
                     },
 
                     addToCompare(productId) {
-                        /**
-                         * This will handle for customers.
-                         */
                         if (this.isCustomer) {
                             this.$axios.post('{{ route("shop.api.compare.store") }}', {
                                     'product_id': productId
@@ -829,9 +975,6 @@
                             return;
                         }
 
-                        /**
-                         * This will handle for guests.
-                         */
                         let existingItems = this.getStorageValue(this.getCompareItemsStorageKey()) ?? [];
 
                         if (existingItems.length) {
@@ -849,25 +992,6 @@
 
                             this.$emitter.emit('add-flash', { type: 'success', message: "@lang('shop::app.products.view.add-to-compare')" });
                         }
-                    },
-
-                    updateQty(quantity, id) {
-                        this.isLoading = true;
-
-                        let qty = {};
-
-                        qty[id] = quantity;
-
-                        this.$axios.put('{{ route('shop.api.checkout.cart.update') }}', { qty })
-                            .then(response => {
-                                if (response.data.message) {
-                                    this.cart = response.data.data;
-                                } else {
-                                    this.$emitter.emit('add-flash', { type: 'warning', message: response.data.data.message });
-                                }
-
-                                this.isLoading = false;
-                            }).catch(error => this.isLoading = false);
                     },
 
                     getCompareItemsStorageKey() {
@@ -925,17 +1049,19 @@
         >
             <div ref="carouselWrapper">
                 <template v-if="isVisible">
-                    <!-- Featured Products -->
+                    <!-- Related Botanicals & Spices -->
                     <x-shop::products.carousel
-                        :title="trans('shop::app.products.view.related-product-title')"
+                        title="Related Spices &amp; Botanical Essentials"
                         :src="route('shop.api.products.related.index', ['id' => $product->id])"
                     />
 
-                    <!-- Up-sell Products -->
-                    <x-shop::products.carousel
-                        :title="trans('shop::app.products.view.up-sell-title')"
-                        :src="route('shop.api.products.up-sell.index', ['id' => $product->id])"
-                    />
+                    <!-- Up-sell Powders -->
+                    <div class="mt-12">
+                        <x-shop::products.carousel
+                            title="Frequently Purchased Together"
+                            :src="route('shop.api.products.up-sell.index', ['id' => $product->id])"
+                        />
+                    </div>
                 </template>
             </div>
         </script>
@@ -956,7 +1082,7 @@
                             entries.forEach((entry) => {
                                 if (entry.isIntersecting) {
                                     this.isVisible = true;
-                                    observer.unobserve(entry.target); // Stop observing
+                                    observer.unobserve(entry.target);
                                 }
                             });
                         },

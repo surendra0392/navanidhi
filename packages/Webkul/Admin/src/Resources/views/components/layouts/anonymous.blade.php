@@ -29,7 +29,7 @@
     >
     <meta 
         name="generator" 
-        content="ELIOR"
+        content="Navanidhi Naturals"
     >
 
     @stack('meta')

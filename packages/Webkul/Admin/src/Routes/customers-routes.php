@@ -8,6 +8,7 @@ use Webkul\Admin\Http\Controllers\Customers\Customer\OrderController;
 use Webkul\Admin\Http\Controllers\Customers\Customer\WishlistController;
 use Webkul\Admin\Http\Controllers\Customers\CustomerController;
 use Webkul\Admin\Http\Controllers\Customers\CustomerGroupController;
+use Webkul\Admin\Http\Controllers\Customers\EnquiryController;
 use Webkul\Admin\Http\Controllers\Customers\GDPRController;
 use Webkul\Admin\Http\Controllers\Customers\ReviewController;
 
@@ -125,5 +126,15 @@ Route::prefix('customers')->group(function () {
         Route::put('edit/{id}', 'update')->name('admin.customers.gdpr.update');
 
         Route::delete('delete/{id}', 'delete')->name('admin.customers.gdpr.delete');
+    });
+
+    /**
+     * Customer enquiries routes.
+     */
+    Route::controller(EnquiryController::class)->prefix('enquiries')->group(function () {
+        Route::get('', 'index')->name('admin.customers.enquiries.index');
+        Route::get('view/{id}', 'view')->name('admin.customers.enquiries.view');
+        Route::put('edit/{id}', 'update')->name('admin.customers.enquiries.update');
+        Route::delete('delete/{id}', 'destroy')->name('admin.customers.enquiries.delete');
     });
 });

@@ -31,8 +31,8 @@
                     @if ($logo = core()->getCurrentChannel()->logo_url)
                         <img src="{{ $logo }}" alt="{{ config('app.name') }}" style="max-height: 50px; max-width: 200px;" />
                     @else
-                        <!-- ELIOR Text Logo Fallback -->
-                        <span style="font-family: 'DM Serif Display', serif; font-size: 32px; color: #FAF8F5; letter-spacing: 2px;">ELIOR</span>
+                        <!-- Navanidhi Naturals Text Logo Fallback -->
+                        <span style="font-family: 'DM Serif Display', serif; font-size: 28px; color: #FAF8F5; letter-spacing: 2px;">NAVANIDHI NATURALS</span>
                     @endif
                 </a>
             </div>
@@ -52,7 +52,7 @@
                     ])
                 </p>
                 <p style="margin-bottom: 0; font-size: 12px; color: #666;">
-                    &copy; {{ date('Y') }} ELIOR Natural Powders. All rights reserved.
+                    &copy; {{ date('Y') }} Navanidhi Naturals (A brand of MAN Agro Foods). All rights reserved.
                 </p>
             </div>
         </div>

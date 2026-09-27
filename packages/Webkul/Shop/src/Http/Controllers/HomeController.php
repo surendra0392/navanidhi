@@ -6,6 +6,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\View\View;
 use Webkul\Category\Repositories\CategoryRepository;
+use Webkul\Customer\Models\ContactEnquiryProxy;
 use Webkul\Shop\Http\Requests\ContactRequest;
 use Webkul\Shop\Http\Resources\CategoryTreeResource;
 use Webkul\Shop\Mail\ContactUs;
@@ -73,10 +74,21 @@ class HomeController extends Controller
     public function sendContactUsMail(ContactRequest $contactRequest)
     {
         try {
+            ContactEnquiryProxy::modelClass()::create([
+                'name' => $contactRequest->input('name'),
+                'email' => $contactRequest->input('email'),
+                'contact' => $contactRequest->input('contact'),
+                'subject' => $contactRequest->input('subject'),
+                'message' => $contactRequest->input('message'),
+                'status' => 'new',
+                'ip_address' => request()->ip(),
+            ]);
+
             Mail::queue(new ContactUs($contactRequest->only([
                 'name',
                 'email',
                 'contact',
+                'subject',
                 'message',
             ])));
 

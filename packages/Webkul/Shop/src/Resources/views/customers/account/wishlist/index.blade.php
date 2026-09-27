@@ -1,7 +1,7 @@
 <x-shop::layouts.account>
     <!-- Page Title -->
     <x-slot:title>
-        @lang('shop::app.customers.account.wishlist.page-title')
+        @lang('shop::app.customers.account.wishlist.page-title') | Navanidhi Naturals
     </x-slot>
 
     <!-- Breadcrumbs -->
@@ -11,14 +11,12 @@
         @endSection
     @endif
 
-    <div class="max-md:hidden">
-        <x-shop::layouts.account.navigation />
-    </div>
+    <x-shop::layouts.account.navigation />
 
-    <div class="mx-4 flex-auto">
+    <!-- Main Content Area -->
+    <div class="flex-1 w-full rounded-2xl border border-[#DCD3C3] bg-white p-6 sm:p-8 shadow-sm space-y-6">
         <!-- Wishlist Vue Component -->
         <v-wishlist-products>
-            <!-- Wishlist Shimmer Effect -->
             <x-shop::shimmer.customers.account.wishlist :count="4" />
         </v-wishlist-products>
     </div>
@@ -38,61 +36,81 @@
 
                 <!-- Wishlist Information -->
                 <template v-else>
-                    <div class="flex items-center justify-between">
-                        <div class="flex items-center">
-                            <!-- Back Button -->
+                    <div class="flex items-center justify-between border-b border-[#DCD3C3]/60 pb-4">
+                        <div class="flex items-center gap-3">
                             <a
-                                class="grid md:hidden"
+                                class="lg:hidden flex h-8 w-8 items-center justify-center rounded-lg border border-[#DCD3C3] text-[#111111]"
                                 href="{{ route('shop.customers.account.index') }}"
                             >
-                                <span class="icon-arrow-left rtl:icon-arrow-right text-2xl"></span>
+                                <span class="material-symbols-outlined text-base">arrow_back</span>
                             </a>
 
-                            <h2 class="text-2xl font-medium max-md:text-xl max-sm:text-base ltr:ml-2.5 md:ltr:ml-0 rtl:mr-2.5 md:rtl:mr-0">
-                                @lang('shop::app.customers.account.wishlist.page-title')
-                            </h2>
+                            <div>
+                                <div class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-[#EBF3EE] text-[#0F4D2E] text-[10px] font-bold tracking-wider uppercase">
+                                    <span class="material-symbols-outlined text-xs">favorite</span>
+                                    <span>Saved Rituals</span>
+                                </div>
+                                <h1 class="font-serif text-xl sm:text-2xl font-bold text-[#111111] mt-0.5">
+                                    @lang('shop::app.customers.account.wishlist.page-title')
+                                </h1>
+                            </div>
                         </div>
 
                         {!! view_render_event('bagisto.shop.customers.account.wishlist.delete_all.before') !!}
 
-                        <div
-                            class="secondary-button border-zinc-200 px-5 py-3 font-normal max-md:rounded-lg max-md:py-2 max-sm:py-1.5 max-sm:text-sm"
+                        <button
+                            type="button"
+                            class="px-3.5 py-1.5 rounded-xl border border-red-200 text-xs font-semibold text-red-700 hover:bg-red-50 transition-all inline-flex items-center gap-1"
                             @click="removeAll"
                             v-if="wishlistItems.length"
                         >
-                            @lang('shop::app.customers.account.wishlist.delete-all')
-                        </div>
+                            <span class="material-symbols-outlined text-sm">delete_sweep</span>
+                            <span>@lang('shop::app.customers.account.wishlist.delete-all')</span>
+                        </button>
 
                         {!! view_render_event('bagisto.shop.customers.account.wishlist.delete_all.after') !!}
                     </div>
 
-                    <!-- Wishlist Items -->
+                    <!-- Wishlist Items Grid -->
                     <template v-if="wishlistItems.length">
-                        <v-wishlist-products-item
-                            v-for="(wishlist, index) in wishlistItems"
-                            :wishlist="wishlist"
-                            :key="wishlist.id"
-                            @wishlist-items="(items) => wishlistItems = items"
-                        >
-                            <x-shop::shimmer.customers.account.wishlist />
-                        </v-wishlist-products-item>
+                        <div class="divide-y divide-[#DCD3C3]/60">
+                            <v-wishlist-products-item
+                                v-for="(wishlist, index) in wishlistItems"
+                                :wishlist="wishlist"
+                                :key="wishlist.id"
+                                @wishlist-items="(items) => wishlistItems = items"
+                            >
+                                <x-shop::shimmer.customers.account.wishlist />
+                            </v-wishlist-products-item>
+                        </div>
                     </template>
 
-                    <!-- Empty Wishlist -->
+                    <!-- Empty Wishlist State -->
                     <template v-else>
-                        <div class="m-auto grid w-full place-content-center items-center justify-items-center py-32 text-center">
-                            <img
-                                class="max-md:h-[100px] max-md:w-[100px]"
-                                src="{{ bagisto_asset('images/wishlist.png') }}"
-                                alt="Empty wishlist"
-                            >
+                        <div class="py-16 text-center space-y-4">
+                            <div class="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-[#EBF3EE] text-[#0F4D2E] text-2xl">
+                                <span class="material-symbols-outlined text-3xl">favorite_border</span>
+                            </div>
 
-                            <p
-                                class="text-xl max-md:text-sm"
-                                role="heading"
-                            >
-                                @lang('shop::app.customers.account.wishlist.empty')
-                            </p>
+                            <div class="space-y-1">
+                                <h3 class="font-serif text-lg font-bold text-[#111111]">
+                                    @lang('shop::app.customers.account.wishlist.empty')
+                                </h3>
+                                <p class="text-xs text-[#666666] leading-relaxed max-w-sm mx-auto">
+                                    Curate your favorite botanical powders and functional wellness blends for future replenishment.
+                                </p>
+                            </div>
+
+                            <div class="pt-2">
+                                <a
+                                    href="{{ url('/botanical-herbal-powders') }}"
+                                    class="inline-flex items-center gap-2 text-xs uppercase tracking-widest font-semibold px-6 py-3 rounded-xl shadow-sm transition-all"
+                                    style="background-color: #0F4D2E !important; color: #FFFFFF !important;"
+                                >
+                                    <span>Explore Botanical Catalog</span>
+                                    <span class="material-symbols-outlined text-sm">arrow_forward</span>
+                                </a>
+                            </div>
                         </div>
                     </template>
                 </template>
@@ -105,169 +123,82 @@
             type="text/x-template"
             id="v-wishlist-products-item-template"
         >
-            <div class="mt-8 flex flex-wrap gap-20 max-1060:flex-col max-md:my-5 max-md:last:mb-0">
-                <div class="grid flex-1 gap-8 max-md:flex-none">
-                    <div class="grid gap-y-6 max-md:gap-y-0">
-                        <!-- Wishlist item -->
-                        <div class="flex justify-between gap-x-2.5 border-b border-zinc-200 pb-5">
-                            <div class="flex gap-x-5 max-md:w-full max-md:gap-x-5">
-                                <div>
-                                    {!! view_render_event('bagisto.shop.customers.account.wishlist.image.before') !!}
+            <div class="py-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                <div class="flex items-center gap-4 min-w-0">
+                    {!! view_render_event('bagisto.shop.customers.account.wishlist.image.before') !!}
 
-                                    <a :href="'{{ route('shop.product_or_category.index', ':slug') }}'.replace(':slug', wishlist.product.url_key)">
-                                        <!-- Wishlist Item Image -->
-                                        <img
-                                            class="h-28 max-h-28 w-28 max-w-28 rounded-xl max-md:h-20 max-md:max-h-20 max-md:w-20 max-md:max-w-20"
-                                            :src="wishlist.product.base_image.small_image_url"
-                                            alt="Product Image"
-                                        />
-                                    </a>
+                    <a :href="'{{ route('shop.product_or_category.index', ':slug') }}'.replace(':slug', wishlist.product.url_key)" class="shrink-0">
+                        <div class="w-16 h-16 rounded-xl border border-[#DCD3C3] bg-[#F7F5EE] overflow-hidden flex items-center justify-center p-1">
+                            <img
+                                class="w-full h-full object-contain"
+                                :src="wishlist.product.base_image.small_image_url"
+                                :alt="wishlist.product.name"
+                            />
+                        </div>
+                    </a>
 
-                                    {!! view_render_event('bagisto.shop.customers.account.wishlist.image.after') !!}
-                                </div>
+                    {!! view_render_event('bagisto.shop.customers.account.wishlist.image.after') !!}
 
-                                <div class="grid gap-y-2.5 max-md:w-full max-md:gap-y-0">
-                                    <div class="flex justify-between">
-                                        <p class="text-base font-medium max-md:text-sm">
-                                            @{{ wishlist.product.name }}
-                                        </p>
+                    <div class="space-y-1 min-w-0">
+                        <a :href="'{{ route('shop.product_or_category.index', ':slug') }}'.replace(':slug', wishlist.product.url_key)">
+                            <p class="font-serif text-sm font-bold text-[#111111] hover:text-[#0F4D2E] transition-colors truncate">
+                                @{{ wishlist.product.name }}
+                            </p>
+                        </a>
 
-                                        <span
-                                            @click="remove"
-                                            class="icon-bin hidden text-2xl max-md:block"
-                                        ></span>
-                                    </div>
+                        <div class="text-xs font-semibold text-[#0F4D2E]" v-html="wishlist.product.price_html"></div>
 
-                                    <!--Wishlist Item attributes -->
-                                    <div
-                                        class="flex flex-wrap gap-x-2.5 gap-y-1.5"
-                                        v-if="wishlist.options?.attributes"
-                                    >
-                                        <div class="grid gap-2">
-                                            <div>
-                                                <p
-                                                    class="flex cursor-pointer items-center gap-x-4 text-base"
-                                                    @click="wishlist.option_show = ! wishlist.option_show"
-                                                >
-                                                    @lang('shop::app.customers.account.wishlist.see-details')
-
-                                                    <span
-                                                        class="text-2xl"
-                                                        :class="{
-                                                            'icon-arrow-up': wishlist.option_show,
-                                                            'icon-arrow-down': ! wishlist.option_show
-                                                        }"
-                                                    ></span>
-                                                </p>
-                                            </div>
-
-                                            <div
-                                                class="grid gap-2"
-                                                v-show="wishlist.option_show"
-                                            >
-                                                <div v-for="option in wishlist.options?.attributes">
-                                                    <p class="text-sm font-medium">
-                                                        @{{ option.attribute_name + ':' }}
-                                                    </p>
-
-                                                    <p class="text-sm">
-                                                        <template v-if="option?.attribute_type === 'file'">
-                                                            <a
-                                                                :href="option.file_url"
-                                                                class="text-blue-700"
-                                                                target="_blank"
-                                                                :download="option.file_name"
-                                                            >
-                                                                @{{ option.file_name }}
-                                                            </a>
-                                                        </template>
-
-                                                        <template v-else>
-                                                            @{{ option.option_label }}
-                                                        </template>
-                                                    </p>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div class="max-md:block md:hidden">
-                                        <p
-                                            class="text-lg font-semibold max-md:text-sm"
-                                            v-html="wishlist.product.price_html"
-                                        ></p>
-
-                                        {!! view_render_event('bagisto.shop.customers.account.wishlist.remove_button.before') !!}
-
-                                        <!--Wishlist Item removed button-->
-                                        <a
-                                            class="flex cursor-pointer justify-end text-base text-blue-700 max-md:hidden"
-                                            @click="remove"
-                                        >
-                                            @lang('shop::app.customers.account.wishlist.remove')
-                                        </a>
-
-                                        {!! view_render_event('bagisto.shop.customers.account.wishlist.remove_button.after') !!}
-                                    </div>
-
-                                    {!! view_render_event('bagisto.shop.customers.account.wishlist.perform_actions.before') !!}
-
-                                    <div class="flex gap-5 max-md:mt-2.5">
-                                        <x-shop::quantity-changer
-                                            name="quantity"
-                                            ::value="wishlist.options.quantity ?? 1"
-                                            class="flex max-h-10 items-center gap-x-2.5 rounded-[54px] border border-navyBlue px-3.5 py-1.5 max-md:gap-x-1 max-md:px-1.5 max-md:py-1"
-                                            :removable="true"
-                                            @change="(qty) => wishlist.quantity = qty"
-                                            @remove="remove"
-                                        />
-
-                                        @if (core()->getConfigData('sales.checkout.shopping_cart.cart_page'))
-                                            <!--Wishlist Item Move-to-cart-->
-                                            <x-shop::button
-                                                class="primary-button max-h-10 w-max rounded-2xl px-6 py-1.5 text-center text-base max-md:px-4 max-md:py-1.5 max-md:text-sm"
-                                                :title="trans('shop::app.customers.account.wishlist.move-to-cart')"
-                                                ::loading="movingToCart"
-                                                ::disabled="movingToCart"
-                                                @click="moveToCart"
-                                            />
-                                        @endif
-                                    </div>
-
-                                    {!! view_render_event('bagisto.shop.customers.account.wishlist.perform_actions.after') !!}
-                                </div>
-                            </div>
-
-                            <div class="max-md:hidden">
-                                <p
-                                    class="text-lg font-semibold"
-                                    v-html="wishlist.product.price_html"
-                                >
-                                </p>
-
-                                <a
-                                    class="flex cursor-pointer justify-end text-base text-blue-700"
-                                    @click="remove"
-                                >
-                                    @lang('shop::app.customers.account.wishlist.remove')
-                                </a>
-                            </div>
+                        <!-- Pack attributes if configurable -->
+                        <div
+                            class="flex flex-wrap gap-1.5"
+                            v-if="wishlist.options?.attributes"
+                        >
+                            <span
+                                v-for="option in wishlist.options.attributes"
+                                class="px-2 py-0.5 rounded bg-[#EBF3EE] text-[#0F4D2E] text-[10px] font-semibold uppercase tracking-wider"
+                            >
+                                @{{ option.option_label }}
+                            </span>
                         </div>
                     </div>
+                </div>
+
+                <!-- Actions: Move to Cart & Delete -->
+                <div class="flex items-center justify-between sm:justify-end gap-3 w-full sm:w-auto">
+                    @if (core()->getConfigData('sales.checkout.shopping_cart.cart_page'))
+                        <button
+                            type="button"
+                            class="h-9 px-4 rounded-xl text-xs uppercase tracking-wider font-semibold inline-flex items-center gap-1.5 shadow-sm transition-all"
+                            style="background-color: #0F4D2E !important; color: #FFFFFF !important;"
+                            :disabled="movingToCart"
+                            @click="moveToCart"
+                        >
+                            <span class="material-symbols-outlined text-sm">shopping_bag</span>
+                            <span>@lang('shop::app.customers.account.wishlist.move-to-cart')</span>
+                        </button>
+                    @endif
+
+                    <button
+                        type="button"
+                        class="p-2 rounded-xl text-[#666666] hover:text-red-700 hover:bg-red-50 transition-colors"
+                        @click="remove"
+                        aria-label="Remove item"
+                    >
+                        <span class="material-symbols-outlined text-lg">delete</span>
+                    </button>
                 </div>
             </div>
         </script>
 
         <script type="module">
-            app.component("v-wishlist-products", {
+            app.component('v-wishlist-products', {
                 template: '#v-wishlist-products-template',
 
                 data() {
                     return {
                         isLoading: true,
-
                         wishlistItems: [],
-                    };
+                    }
                 },
 
                 mounted() {
@@ -279,28 +210,26 @@
                         this.$axios.get("{{ route('shop.api.customers.account.wishlist.index') }}")
                             .then(response => {
                                 this.isLoading = false;
-
                                 this.wishlistItems = response.data.data;
                             })
-                            .catch(error => {});
+                            .catch(error => {
+                                this.isLoading = false;
+                            });
                     },
 
                     removeAll() {
                         this.$emitter.emit('open-confirm-modal', {
                             agree: () => {
-                                this.$axios.post("{{ route('shop.api.customers.account.wishlist.destroy_all') }}", {
-                                        '_method': 'DELETE',
-                                    })
+                                this.$axios.delete("{{ route('shop.api.customers.account.wishlist.destroy_all') }}")
                                     .then(response => {
                                         this.wishlistItems = [];
-
-                                        this.$emitter.emit('add-flash', { type: 'success', message: response.data.data.message });
+                                        this.$emitter.emit('add-flash', { type: 'success', message: response.data.message });
                                     })
                                     .catch(error => {});
-                            },
+                            }
                         });
-                    },
-                },
+                    }
+                }
             });
 
             app.component('v-wishlist-products-item', {
@@ -308,64 +237,43 @@
 
                 props: ['wishlist'],
 
-                emits: ['wishlist-items'],
-
                 data() {
                     return {
                         movingToCart: false,
-                    };
+                    }
                 },
 
                 methods: {
-                    remove() {
-                        this.$emitter.emit('open-confirm-modal', {
-                            agree: () => {
-                                this.$axios
-                                    .delete('{{ route('shop.api.customers.account.wishlist.destroy', ':id') }}'.replace(':id', this.wishlist.id))
-                                    .then(response => {
-                                        this.$emit('wishlist-items', response.data.data);
-
-                                        this.$emitter.emit('add-flash', { type: 'success', message: response.data.message });
-                                    })
-                                    .catch(error => {});
-                            },
-                        });
-                    },
-
                     moveToCart() {
                         this.movingToCart = true;
+                        let url = "{{ route('shop.api.customers.account.wishlist.move_to_cart', ':id') }}".replace(':id', this.wishlist.id);
 
-                        const endpoint = `{{ route('shop.api.customers.account.wishlist.move_to_cart', ':wishlistId:') }}`.replace(':wishlistId:', this.wishlist.id);
+                        let qty = this.wishlist.options?.quantity ?? 1;
 
-                        this.$axios.post(endpoint, {
-                                quantity: (this.wishlist.quantity ?? this.wishlist.options.quantity) ?? 1,
-                                product_id: this.wishlist.product.id,
-                            })
+                        this.$axios.post(url, { quantity: qty })
                             .then(response => {
-                                if (response.data?.redirect) {
-                                    this.$emitter.emit('add-flash', { type: 'warning', message: response.data.message });
-
-                                    window.location.href = response.data.data;
-
-                                    return;
-                                }
-
-                                this.$emit('wishlist-items', response.data.data?.wishlist);
-
-                                this.$emitter.emit('update-mini-cart', response.data.data.cart);
-
-                                this.$emitter.emit('add-flash', { type: 'success', message: response.data.message });
-
                                 this.movingToCart = false;
+                                this.$emit('wishlist-items', response.data.data);
+                                this.$emitter.emit('add-flash', { type: 'success', message: response.data.message });
                             })
                             .catch(error => {
                                 this.movingToCart = false;
-
                                 this.$emitter.emit('add-flash', { type: 'warning', message: error.response.data.message });
                             });
                     },
-                },
+
+                    remove() {
+                        let url = "{{ route('shop.api.customers.account.wishlist.destroy', ':id') }}".replace(':id', this.wishlist.id);
+
+                        this.$axios.delete(url)
+                            .then(response => {
+                                this.$emit('wishlist-items', response.data.data);
+                                this.$emitter.emit('add-flash', { type: 'success', message: response.data.message });
+                            })
+                            .catch(error => {});
+                    }
+                }
             });
         </script>
-    @endpushOnce
+    @endPushOnce
 </x-shop::layouts.account>

@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 64" fill="none" class="navanidhi-logo">
+    <!-- Geometric 'N' Symbol with Natural Leaf Accent -->
+    <g id="symbol" transform="translate(4, 6)">
+        <!-- Left Vertical Pillar -->
+        <path d="M4 4H14V48H4V4Z" fill="#0F4D2E"/>
+        <!-- Dynamic Diagonal -->
+        <path d="M14 4L34 40V48L14 12V4Z" fill="#0F4D2E"/>
+        <!-- Right Vertical Pillar -->
+        <path d="M34 4H44V48H34V4Z" fill="#0F4D2E"/>
+        <!-- Botanical Leaf Accent Nestled in Apex -->
+        <path d="M28 8C28 8 36 6 38 14C40 22 34 26 34 26C34 26 36 18 31 16C26 14 28 8 28 8Z" fill="#D4B381"/>
+        <!-- Subtle Natural Leaf Vein -->
+        <path d="M31 16C33 18 35 22 35 22" stroke="#0F4D2E" stroke-width="1.2" stroke-linecap="round"/>
+    </g>
+
+    <!-- Brand Logotype: NAVANIDHI NATURALS -->
+    <g id="wordmark" transform="translate(64, 12)">
+        <text x="0" y="24" font-family="'Playfair Display', Georgia, serif" font-size="22" font-weight="700" letter-spacing="0.08em" fill="#0F4D2E">
+            NAVANIDHI
+        </text>
+        <text x="2" y="38" font-family="'Montserrat', sans-serif" font-size="8.5" font-weight="600" letter-spacing="0.32em" fill="#8B6F45">
+            NATURALS
+        </text>
+        <!-- Gold Seal Dot -->
+        <circle cx="168" cy="19" r="2.5" fill="#D4B381"/>
+    </g>
+</svg>

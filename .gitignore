@@ -48,6 +48,7 @@ skills-lock.json
 !/storage/logs/.gitignore
 /test-results
 /vendor
-yarn.lock
 yarn-error.log
+/scratch/
+
 

@@ -1,8 +1,7 @@
 <x-shop::layouts.account>
     <!-- Page Title -->
     <x-slot:title>
-        @lang('shop::app.customers.account.addresses.edit.edit')
-        @lang('shop::app.customers.account.addresses.edit.title') 
+        @lang('shop::app.customers.account.addresses.edit.title') | Navanidhi Naturals
     </x-slot>
 
     <!-- Breadcrumbs -->
@@ -15,43 +14,36 @@
         @endSection
     @endif
 
-    <div class="max-md:hidden">
-        <x-shop::layouts.account.navigation />
-    </div>
+    <x-shop::layouts.account.navigation />
 
     <!-- Main Card Container -->
-    <div class="flex-1 w-full rounded-3xl border border-elior-border/80 bg-white p-6 sm:p-8 shadow-elior-subtle space-y-6">
-        <div class="flex items-center justify-between border-b border-elior-border/60 pb-4">
+    <div class="flex-1 w-full rounded-2xl border border-[#DCD3C3] bg-white p-6 sm:p-8 shadow-sm space-y-6">
+        <div class="flex items-center justify-between border-b border-[#DCD3C3]/60 pb-4">
             <div class="flex items-center gap-3">
                 <!-- Back Button -->
                 <a
-                    class="flex h-8 w-8 items-center justify-center rounded-lg border border-elior-border text-elior-charcoal hover:bg-black/5 transition-colors"
+                    class="flex h-8 w-8 items-center justify-center rounded-lg border border-[#DCD3C3] text-[#111111] hover:bg-[#F7F5EE] transition-colors"
                     href="{{ route('shop.customers.account.addresses.index') }}"
                 >
-                    <span class="icon-arrow-left text-sm"></span>
+                    <span class="material-symbols-outlined text-base">arrow_back</span>
                 </a>
 
                 <div>
-                    <div class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-[#EBF3EE] text-elior-botanical text-[9px] font-semibold tracking-wider uppercase">
-                        <span><span class="material-symbols-outlined align-text-bottom text-inherit text-[1.2em] leading-none" aria-hidden="true" style="font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;">eco</span></span>
+                    <div class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-[#EBF3EE] text-[#0F4D2E] text-[10px] font-bold tracking-wider uppercase">
+                        <span class="material-symbols-outlined text-xs">edit_location</span>
                         <span>Address Book</span>
                     </div>
-                    <h1 class="font-serif text-xl sm:text-2xl font-bold text-elior-charcoal">
-                        @lang('shop::app.customers.account.addresses.edit.edit') @lang('shop::app.customers.account.addresses.edit.title')
+                    <h1 class="font-serif text-xl sm:text-2xl font-bold text-[#111111] mt-0.5">
+                        @lang('shop::app.customers.account.addresses.edit.title')
                     </h1>
                 </div>
             </div>
         </div>
 
-        {!! view_render_event('bagisto.shop.customers.account.address.edit.before', ['address' => $address]) !!}
-
-        <!-- Customer Address edit Component-->
         <v-edit-customer-address>
             <!-- Address Shimmer -->
             <x-shop::shimmer.form.control-group :count="6" />
         </v-edit-customer-address>
-
-        {!! view_render_event('bagisto.shop.customers.account.address.edit.after', ['address' => $address]) !!}
     </div>
 
     @push('scripts')
@@ -59,273 +51,281 @@
             type="text/x-template"
             id="v-edit-customer-address-template"
         >
-            <!-- Edit Address Form -->
-            <x-shop::form
-                method="PUT"
-                :action="route('shop.customers.account.addresses.update',  $address->id)"
-            >
-                {!! view_render_event('bagisto.shop.customers.account.address.edit_form_controls.before', ['address' => $address]) !!}
+            <div>
+                <x-shop::form
+                    method="PUT"
+                    :action="route('shop.customers.account.addresses.update', $address->id)"
+                >
+                    {!! view_render_event('bagisto.shop.customers.account.addresses.edit_form_controls.before', ['address' => $address]) !!}
 
-                <div class="space-y-4">
-                    <!-- Company Name -->
-                    <x-shop::form.control-group>
-                        <x-shop::form.control-group.label class="text-xs font-semibold uppercase tracking-wider text-elior-charcoal">
-                            @lang('shop::app.customers.account.addresses.edit.company-name')
-                        </x-shop::form.control-group.label>
-
-                        <x-shop::form.control-group.control
-                            type="text"
-                            name="company_name"
-                            :value="old('company_name') ?? $address->company_name"
-                            class="rounded-xl border border-elior-border bg-white px-4 py-3 text-sm text-elior-charcoal focus:border-elior-botanical focus:ring-elior-botanical"
-                            :label="trans('shop::app.customers.account.addresses.edit.company-name')"
-                            :placeholder="trans('shop::app.customers.account.addresses.edit.company-name')"
-                        />
-
-                        <x-shop::form.control-group.error control-name="company_name" />
-                    </x-shop::form.control-group>
-
-                    {!! view_render_event('bagisto.shop.customers.account.addresses.edit_form_controls.company_name.after', ['address' => $address]) !!}
-
-                    <!-- First & Last Name Grid -->
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <!-- First Name -->
+                    <div class="space-y-4">
+                        <!-- Company Name -->
                         <x-shop::form.control-group>
-                            <x-shop::form.control-group.label class="required text-xs font-semibold uppercase tracking-wider text-elior-charcoal">
-                                @lang('shop::app.customers.account.addresses.edit.first-name')
+                            <x-shop::form.control-group.label class="text-xs font-semibold uppercase tracking-wider text-[#111111]">
+                                @lang('shop::app.customers.account.addresses.create.company-name') (Optional)
                             </x-shop::form.control-group.label>
 
                             <x-shop::form.control-group.control
                                 type="text"
-                                name="first_name"
-                                rules="required"
-                                :value="old('first_name') ?? $address->first_name"
-                                class="rounded-xl border border-elior-border bg-white px-4 py-3 text-sm text-elior-charcoal focus:border-elior-botanical focus:ring-elior-botanical"
-                                :label="trans('shop::app.customers.account.addresses.edit.first-name')"
-                                :placeholder="trans('shop::app.customers.account.addresses.edit.first-name')"
+                                name="company_name"
+                                :value="old('company_name') ?? $address->company_name"
+                                class="rounded-xl border border-[#DCD3C3] bg-white px-4 py-3 text-sm text-[#111111] focus:border-[#0F4D2E] focus:ring-1 focus:ring-[#0F4D2E] w-full"
+                                :placeholder="trans('shop::app.customers.account.addresses.create.company-name')"
                             />
 
-                            <x-shop::form.control-group.error control-name="first_name" />
+                            <x-shop::form.control-group.error control-name="company_name" />
                         </x-shop::form.control-group>
 
-                        <!-- Last Name -->
-                        <x-shop::form.control-group>
-                            <x-shop::form.control-group.label class="required text-xs font-semibold uppercase tracking-wider text-elior-charcoal">
-                                @lang('shop::app.customers.account.addresses.edit.last-name')
-                            </x-shop::form.control-group.label>
+                        <!-- First & Last Name Grid -->
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <!-- First Name -->
+                            <x-shop::form.control-group>
+                                <x-shop::form.control-group.label class="required text-xs font-semibold uppercase tracking-wider text-[#111111]">
+                                    @lang('shop::app.customers.account.addresses.create.first-name')
+                                </x-shop::form.control-group.label>
 
-                            <x-shop::form.control-group.control
-                                type="text"
-                                name="last_name"
-                                rules="required"
-                                :value="old('last_name') ?? $address->last_name"
-                                class="rounded-xl border border-elior-border bg-white px-4 py-3 text-sm text-elior-charcoal focus:border-elior-botanical focus:ring-elior-botanical"
-                                :label="trans('shop::app.customers.account.addresses.edit.last-name')"
-                                :placeholder="trans('shop::app.customers.account.addresses.edit.last-name')"
-                            />
-
-                            <x-shop::form.control-group.error control-name="last_name" />
-                        </x-shop::form.control-group>
-                    </div>
-
-                    <!-- Street Address -->
-                    <x-shop::form.control-group>
-                        <x-shop::form.control-group.label class="required text-xs font-semibold uppercase tracking-wider text-elior-charcoal">
-                            @lang('shop::app.customers.account.addresses.edit.street-address')
-                        </x-shop::form.control-group.label>
-
-                        <x-shop::form.control-group.control
-                            type="text"
-                            name="address[]"
-                            rules="required|address"
-                            :value="old('address[0]') ?? $address->address"
-                            class="rounded-xl border border-elior-border bg-white px-4 py-3 text-sm text-elior-charcoal focus:border-elior-botanical focus:ring-elior-botanical"
-                            :label="trans('shop::app.customers.account.addresses.edit.street-address')"
-                            :placeholder="trans('shop::app.customers.account.addresses.edit.street-address')"
-                        />
-
-                        <x-shop::form.control-group.error control-name="address[]" />
-                    </x-shop::form.control-group>
-
-                    @if (
-                        core()->getConfigData('customer.address.information.street_lines')
-                        && core()->getConfigData('customer.address.information.street_lines') > 1
-                    )
-                        @for ($i = 2; $i <= core()->getConfigData('customer.address.information.street_lines'); $i++)
-                            <x-shop::form.control-group.control
-                                type="text"
-                                name="address[{{ $i }}]"
-                                class="rounded-xl border border-elior-border bg-white px-4 py-3 text-sm text-elior-charcoal focus:border-elior-botanical focus:ring-elior-botanical"
-                                :value="old('address[' . $i . ']') ?? ($address->address[$i - 1] ?? '')"
-                                :label="trans('shop::app.customers.account.addresses.edit.street-address')"
-                                :placeholder="trans('shop::app.customers.account.addresses.edit.street-address')"
-                            />
-                        @endfor
-                    @endif
-
-                    <!-- Country & State Grid -->
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <!-- Country -->
-                        <x-shop::form.control-group>
-                            <x-shop::form.control-group.label class="required text-xs font-semibold uppercase tracking-wider text-elior-charcoal">
-                                @lang('shop::app.customers.account.addresses.edit.country')
-                            </x-shop::form.control-group.label>
-
-                            <x-shop::form.control-group.control
-                                type="select"
-                                name="country"
-                                rules="required"
-                                class="rounded-xl border border-elior-border bg-white px-4 py-3 text-sm text-elior-charcoal focus:border-elior-botanical focus:ring-elior-botanical"
-                                v-model="addressData.country"
-                                :label="trans('shop::app.customers.account.addresses.edit.country')"
-                                :placeholder="trans('shop::app.customers.account.addresses.edit.country')"
-                            >
-                                <option value="">@lang('shop::app.customers.account.addresses.edit.select-country')</option>
-                                @foreach (core()->countries() as $country)
-                                    <option 
-                                        {{ $country->code === $address->country ? 'selected' : '' }}  
-                                        value="{{ $country->code }}"
-                                    >
-                                        {{ $country->name }}
-                                    </option>
-                                @endforeach
-                            </x-shop::form.control-group.control>
-
-                            <x-shop::form.control-group.error control-name="country" />
-                        </x-shop::form.control-group>
-
-                        <!-- State -->
-                        <x-shop::form.control-group>
-                            <x-shop::form.control-group.label class="required text-xs font-semibold uppercase tracking-wider text-elior-charcoal">
-                                @lang('shop::app.customers.account.addresses.edit.state')
-                            </x-shop::form.control-group.label>
-
-                            <template v-if="haveStates()">
-                                <x-shop::form.control-group.control
-                                    type="select"
-                                    name="state"
-                                    rules="required"
-                                    class="rounded-xl border border-elior-border bg-white px-4 py-3 text-sm text-elior-charcoal focus:border-elior-botanical focus:ring-elior-botanical"
-                                    v-model="addressData.state"
-                                    :label="trans('shop::app.customers.account.addresses.edit.state')"
-                                    :placeholder="trans('shop::app.customers.account.addresses.edit.state')"
-                                >
-                                    <option value="">@lang('shop::app.customers.account.addresses.edit.select-state')</option>
-                                    <option 
-                                        v-for='(state, index) in countryStates[addressData.country]'
-                                        :value="state.code"
-                                        v-text="state.default_name"
-                                    >
-                                    </option>
-                                </x-shop::form.control-group.control>
-                            </template>
-
-                            <template v-else>
                                 <x-shop::form.control-group.control
                                     type="text"
-                                    name="state"
+                                    name="first_name"
                                     rules="required"
-                                    class="rounded-xl border border-elior-border bg-white px-4 py-3 text-sm text-elior-charcoal focus:border-elior-botanical focus:ring-elior-botanical"
-                                    :value="old('state') ?? $address->state"
-                                    :label="trans('shop::app.customers.account.addresses.edit.state')"
-                                    :placeholder="trans('shop::app.customers.account.addresses.edit.state')"
+                                    :value="old('first_name') ?? $address->first_name"
+                                    class="rounded-xl border border-[#DCD3C3] bg-white px-4 py-3 text-sm text-[#111111] focus:border-[#0F4D2E] focus:ring-1 focus:ring-[#0F4D2E] w-full"
+                                    :placeholder="trans('shop::app.customers.account.addresses.create.first-name')"
                                 />
-                            </template>
 
-                            <x-shop::form.control-group.error control-name="state" />
-                        </x-shop::form.control-group>
-                    </div>
+                                <x-shop::form.control-group.error control-name="first_name" />
+                            </x-shop::form.control-group>
 
-                    <!-- City & Postcode Grid -->
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <!-- City -->
+                            <!-- Last Name -->
+                            <x-shop::form.control-group>
+                                <x-shop::form.control-group.label class="required text-xs font-semibold uppercase tracking-wider text-[#111111]">
+                                    @lang('shop::app.customers.account.addresses.create.last-name')
+                                </x-shop::form.control-group.label>
+
+                                <x-shop::form.control-group.control
+                                    type="text"
+                                    name="last_name"
+                                    rules="required"
+                                    :value="old('last_name') ?? $address->last_name"
+                                    class="rounded-xl border border-[#DCD3C3] bg-white px-4 py-3 text-sm text-[#111111] focus:border-[#0F4D2E] focus:ring-1 focus:ring-[#0F4D2E] w-full"
+                                    :placeholder="trans('shop::app.customers.account.addresses.create.last-name')"
+                                />
+
+                                <x-shop::form.control-group.error control-name="last_name" />
+                            </x-shop::form.control-group>
+                        </div>
+
+                        <!-- Email & Phone Grid -->
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <!-- Email -->
+                            <x-shop::form.control-group>
+                                <x-shop::form.control-group.label class="required text-xs font-semibold uppercase tracking-wider text-[#111111]">
+                                    Email Address
+                                </x-shop::form.control-group.label>
+
+                                <x-shop::form.control-group.control
+                                    type="email"
+                                    name="email"
+                                    rules="required|email"
+                                    :value="old('email') ?? $address->email"
+                                    class="rounded-xl border border-[#DCD3C3] bg-white px-4 py-3 text-sm text-[#111111] focus:border-[#0F4D2E] focus:ring-1 focus:ring-[#0F4D2E] w-full"
+                                    placeholder="email@example.com"
+                                />
+
+                                <x-shop::form.control-group.error control-name="email" />
+                            </x-shop::form.control-group>
+
+                            <!-- Phone -->
+                            <x-shop::form.control-group>
+                                <x-shop::form.control-group.label class="required text-xs font-semibold uppercase tracking-wider text-[#111111]">
+                                    Phone Number
+                                </x-shop::form.control-group.label>
+
+                                <x-shop::form.control-group.control
+                                    type="text"
+                                    name="phone"
+                                    rules="required|phone"
+                                    :value="old('phone') ?? $address->phone"
+                                    class="rounded-xl border border-[#DCD3C3] bg-white px-4 py-3 text-sm text-[#111111] focus:border-[#0F4D2E] focus:ring-1 focus:ring-[#0F4D2E] w-full"
+                                    placeholder="10-digit mobile number"
+                                />
+
+                                <x-shop::form.control-group.error control-name="phone" />
+                            </x-shop::form.control-group>
+                        </div>
+
+                        @php
+                            $addressLines = explode(PHP_EOL, $address->address);
+                        @endphp
+
+                        <!-- Street Address Line 1 & 2 -->
                         <x-shop::form.control-group>
-                            <x-shop::form.control-group.label class="required text-xs font-semibold uppercase tracking-wider text-elior-charcoal">
-                                @lang('shop::app.customers.account.addresses.edit.city')
+                            <x-shop::form.control-group.label class="required text-xs font-semibold uppercase tracking-wider text-[#111111]">
+                                @lang('shop::app.customers.account.addresses.create.street-address')
                             </x-shop::form.control-group.label>
 
                             <x-shop::form.control-group.control
                                 type="text"
-                                name="city"
+                                name="address[0]"
                                 rules="required"
-                                class="rounded-xl border border-elior-border bg-white px-4 py-3 text-sm text-elior-charcoal focus:border-elior-botanical focus:ring-elior-botanical"
-                                :value="old('city') ?? $address->city"
-                                :label="trans('shop::app.customers.account.addresses.edit.city')"
-                                :placeholder="trans('shop::app.customers.account.addresses.edit.city')"
+                                :value="old('address[0]') ?? ($addressLines[0] ?? '')"
+                                class="rounded-xl border border-[#DCD3C3] bg-white px-4 py-3 text-sm text-[#111111] focus:border-[#0F4D2E] focus:ring-1 focus:ring-[#0F4D2E] w-full mb-2"
+                                placeholder="House / Flat No., Building, Street Name"
                             />
 
-                            <x-shop::form.control-group.error control-name="city" />
-                        </x-shop::form.control-group>
-
-                        <!-- Postcode -->
-                        <x-shop::form.control-group>
-                            <x-shop::form.control-group.label class="{{ core()->isPostCodeRequired() ? 'required' : '' }} text-xs font-semibold uppercase tracking-wider text-elior-charcoal">
-                                @lang('shop::app.customers.account.addresses.edit.post-code')
-                            </x-shop::form.control-group.label>
+                            <x-shop::form.control-group.error control-name="address[0]" />
 
                             <x-shop::form.control-group.control
                                 type="text"
-                                name="postcode"
-                                rules="{{ core()->isPostCodeRequired() ? 'required' : '' }}|postcode"
-                                class="rounded-xl border border-elior-border bg-white px-4 py-3 text-sm text-elior-charcoal focus:border-elior-botanical focus:ring-elior-botanical"
-                                :value="old('postal-code') ?? $address->postcode"
-                                :label="trans('shop::app.customers.account.addresses.edit.post-code')"
-                                :placeholder="trans('shop::app.customers.account.addresses.edit.post-code')"
+                                name="address[1]"
+                                :value="old('address[1]') ?? ($addressLines[1] ?? '')"
+                                class="rounded-xl border border-[#DCD3C3] bg-white px-4 py-3 text-sm text-[#111111] focus:border-[#0F4D2E] focus:ring-1 focus:ring-[#0F4D2E] w-full"
+                                placeholder="Apartment, Suite, Landmark (Optional)"
                             />
-
-                            <x-shop::form.control-group.error control-name="postcode" />
                         </x-shop::form.control-group>
+
+                        <!-- Country & State Grid -->
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <!-- Country -->
+                            <x-shop::form.control-group>
+                                <x-shop::form.control-group.label class="required text-xs font-semibold uppercase tracking-wider text-[#111111]">
+                                    @lang('shop::app.customers.account.addresses.create.country')
+                                </x-shop::form.control-group.label>
+
+                                <x-shop::form.control-group.control
+                                    type="select"
+                                    name="country"
+                                    rules="required"
+                                    v-model="country"
+                                    class="rounded-xl border border-[#DCD3C3] bg-white px-4 py-3 text-sm text-[#111111] focus:border-[#0F4D2E] focus:ring-1 focus:ring-[#0F4D2E] w-full"
+                                >
+                                    <option value="">Select Country</option>
+                                    @foreach (core()->countries() as $country)
+                                        <option value="{{ $country->code }}">
+                                            {{ $country->name }}
+                                        </option>
+                                    @endforeach
+                                </x-shop::form.control-group.control>
+
+                                <x-shop::form.control-group.error control-name="country" />
+                            </x-shop::form.control-group>
+
+                            <!-- State -->
+                            <x-shop::form.control-group>
+                                <x-shop::form.control-group.label class="required text-xs font-semibold uppercase tracking-wider text-[#111111]">
+                                    @lang('shop::app.customers.account.addresses.create.state')
+                                </x-shop::form.control-group.label>
+
+                                <template v-if="haveStates()">
+                                    <x-shop::form.control-group.control
+                                        type="select"
+                                        name="state"
+                                        rules="required"
+                                        v-model="state"
+                                        class="rounded-xl border border-[#DCD3C3] bg-white px-4 py-3 text-sm text-[#111111] focus:border-[#0F4D2E] focus:ring-1 focus:ring-[#0F4D2E] w-full"
+                                    >
+                                        <option value="">Select State</option>
+                                        <option 
+                                            v-for='(stateOption, index) in countryStates[country]'
+                                            :value='stateOption.code'
+                                        >
+                                            @{{ stateOption.default_name }}
+                                        </option>
+                                    </x-shop::form.control-group.control>
+                                </template>
+
+                                <template v-else>
+                                    <x-shop::form.control-group.control
+                                        type="text"
+                                        name="state"
+                                        rules="required"
+                                        v-model="state"
+                                        class="rounded-xl border border-[#DCD3C3] bg-white px-4 py-3 text-sm text-[#111111] focus:border-[#0F4D2E] focus:ring-1 focus:ring-[#0F4D2E] w-full"
+                                        placeholder="Enter State"
+                                    />
+                                </template>
+
+                                <x-shop::form.control-group.error control-name="state" />
+                            </x-shop::form.control-group>
+                        </div>
+
+                        <!-- City & Postcode Grid -->
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <!-- City -->
+                            <x-shop::form.control-group>
+                                <x-shop::form.control-group.label class="required text-xs font-semibold uppercase tracking-wider text-[#111111]">
+                                    @lang('shop::app.customers.account.addresses.create.city')
+                                </x-shop::form.control-group.label>
+
+                                <x-shop::form.control-group.control
+                                    type="text"
+                                    name="city"
+                                    rules="required"
+                                    :value="old('city') ?? $address->city"
+                                    class="rounded-xl border border-[#DCD3C3] bg-white px-4 py-3 text-sm text-[#111111] focus:border-[#0F4D2E] focus:ring-1 focus:ring-[#0F4D2E] w-full"
+                                    :placeholder="trans('shop::app.customers.account.addresses.create.city')"
+                                />
+
+                                <x-shop::form.control-group.error control-name="city" />
+                            </x-shop::form.control-group>
+
+                            <!-- Postcode -->
+                            <x-shop::form.control-group>
+                                <x-shop::form.control-group.label class="required text-xs font-semibold uppercase tracking-wider text-[#111111]">
+                                    @lang('shop::app.customers.account.addresses.create.postcode')
+                                </x-shop::form.control-group.label>
+
+                                <x-shop::form.control-group.control
+                                    type="text"
+                                    name="postcode"
+                                    rules="required|numeric"
+                                    :value="old('postcode') ?? $address->postcode"
+                                    class="rounded-xl border border-[#DCD3C3] bg-white px-4 py-3 text-sm text-[#111111] focus:border-[#0F4D2E] focus:ring-1 focus:ring-[#0F4D2E] w-full"
+                                    placeholder="6-digit PIN code"
+                                />
+
+                                <x-shop::form.control-group.error control-name="postcode" />
+                            </x-shop::form.control-group>
+                        </div>
+
+                        <!-- Set As Default -->
+                        <div class="flex items-center gap-2 pt-1 text-xs text-[#666666]">
+                            <input
+                                type="checkbox"
+                                name="default_address"
+                                value="1"
+                                id="default_address"
+                                {{ (old('default_address') ?? $address->default_address) ? 'checked' : '' }}
+                                class="h-4 w-4 rounded border-[#DCD3C3] text-[#0F4D2E] focus:ring-[#0F4D2E] cursor-pointer"
+                            >
+                            <label for="default_address" class="cursor-pointer select-none font-semibold text-[#111111]">
+                                @lang('shop::app.customers.account.addresses.create.set-as-default')
+                            </label>
+                        </div>
+
+                        <!-- Submit Button -->
+                        <div class="pt-4 border-t border-[#DCD3C3]/60 flex items-center justify-end gap-3">
+                            <a
+                                href="{{ route('shop.customers.account.addresses.index') }}"
+                                class="px-5 py-2.5 rounded-xl border border-[#DCD3C3] text-xs uppercase tracking-wider font-semibold text-[#111111] hover:bg-[#F7F5EE] transition-colors"
+                            >
+                                Cancel
+                            </a>
+
+                            <button
+                                type="submit"
+                                class="px-7 py-2.5 rounded-xl text-xs uppercase tracking-widest font-semibold inline-flex items-center gap-2 shadow-sm transition-all"
+                                style="background-color: #0F4D2E !important; color: #FFFFFF !important;"
+                            >
+                                <span>@lang('shop::app.customers.account.addresses.create.save')</span>
+                                <span class="material-symbols-outlined text-sm">check</span>
+                            </button>
+                        </div>
                     </div>
 
-                    <!-- Phone -->
-                    <x-shop::form.control-group>
-                        <x-shop::form.control-group.label class="required text-xs font-semibold uppercase tracking-wider text-elior-charcoal">
-                            @lang('shop::app.customers.account.addresses.edit.phone')
-                        </x-shop::form.control-group.label>
-
-                        <x-shop::form.control-group.control
-                            type="text"
-                            name="phone"
-                            rules="required|phone"
-                            class="rounded-xl border border-elior-border bg-white px-4 py-3 text-sm text-elior-charcoal focus:border-elior-botanical focus:ring-elior-botanical"
-                            :value="old('phone') ?? $address->phone"
-                            :label="trans('shop::app.customers.account.addresses.edit.phone')"
-                            :placeholder="trans('shop::app.customers.account.addresses.edit.phone')"
-                        />
-
-                        <x-shop::form.control-group.error control-name="phone" />
-                    </x-shop::form.control-group>
-
-                    <!-- Set As Default -->
-                    <div class="flex items-center gap-2 pt-1 text-xs text-elior-slate">
-                        <input
-                            type="checkbox"
-                            name="default_address"
-                            value="1"
-                            id="default_address"
-                            class="h-4 w-4 rounded border-elior-border text-elior-botanical focus:ring-elior-botanical cursor-pointer"
-                            @checked($address->default_address)
-                        >
-                        <label for="default_address" class="cursor-pointer select-none">
-                            @lang('shop::app.customers.account.addresses.edit.set-as-default')
-                        </label>
-                    </div>
-
-                    <!-- Update Button -->
-                    <div class="pt-4">
-                        <button
-                            type="submit"
-                            class="elior-btn-primary h-11 px-8 text-xs uppercase tracking-widest font-semibold inline-flex items-center gap-2 shadow-elior-card"
-                        >
-                            <span>@lang('shop::app.customers.account.addresses.edit.update-btn')</span>
-                            <span class="icon-arrow-right text-xs"></span>
-                        </button>
-                    </div>
-                </div>
-
-                {!! view_render_event('bagisto.shop.customers.account.address.edit_form_controls.after', ['address' => $address]) !!}
-
-            </x-shop::form>
+                    {!! view_render_event('bagisto.shop.customers.account.addresses.edit_form_controls.after', ['address' => $address]) !!}
+                </x-shop::form>
+            </div>
         </script>
 
         <script type="module">
@@ -334,23 +334,18 @@
 
                 data() {
                     return {
-                        addressData: {
-                            country: "{{ old('country') ?? $address->country }}",
-
-                            state: "{{ old('state') ?? $address->state }}",
-                        },
-
+                        country: "{{ old('country') ?? $address->country }}",
+                        state: "{{ old('state') ?? $address->state }}",
                         countryStates: @json(core()->groupedStatesByCountries()),
-                    };
+                    }
                 },
-    
+
                 methods: {
                     haveStates() {
-                        return !!this.countryStates[this.addressData.country]?.length;
+                        return !!this.countryStates[this.country]?.length;
                     },
-                },
+                }
             });
         </script>
     @endpush
-
 </x-shop::layouts.account>

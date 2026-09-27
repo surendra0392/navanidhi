@@ -1,34 +1,34 @@
 <!-- SEO Meta Content -->
 @push('meta')
-    <meta name="title" content="@lang('shop::app.checkout.cart.index.cart') | ELIOR" />
-    <meta name="description" content="Review and manage items in your ELIOR botanical nutrition cart." />
+    <meta name="title" content="@lang('shop::app.checkout.cart.index.cart') | Navanidhi Naturals" />
+    <meta name="description" content="Review and manage items in your Navanidhi Naturals cart." />
 @endPush
 
 <x-shop::layouts>
     <!-- Page Title -->
     <x-slot:title>
-        @lang('shop::app.checkout.cart.index.cart') | ELIOR
+        @lang('shop::app.checkout.cart.index.cart') | Navanidhi Naturals
     </x-slot>
 
-    <div class="bg-elior-cream min-h-screen">
+    <div class="min-h-screen text-white bg-transparent" style="padding-bottom: 5rem !important;">
         <!-- Breadcrumbs -->
-        <div class="site-container pt-4 pb-2 sm:pt-6 sm:pb-3">
-            <nav aria-label="Breadcrumb" class="flex items-center space-x-2 text-[11px] sm:text-xs uppercase tracking-[0.14em] text-elior-muted">
-                <a href="{{ route('shop.home.index') }}" class="hover:text-elior-botanical transition-colors">Home</a>
-                <span class="text-elior-border">/</span>
-                <span class="text-elior-charcoal font-semibold">Shopping Cart</span>
+        <div class="site-container pt-5 pb-2 sm:pt-7 sm:pb-3">
+            <nav aria-label="Breadcrumb" class="flex items-center space-x-2 text-[11px] sm:text-xs uppercase tracking-[0.14em] text-white/60">
+                <a href="{{ route('shop.home.index') }}" class="hover:text-emerald-300 transition-colors">Home</a>
+                <span class="text-white/30">/</span>
+                <span class="text-emerald-300 font-semibold">Shopping Bag</span>
             </nav>
         </div>
 
         <!-- Page Header -->
-        <div class="site-container pt-4 pb-8 sm:pt-6 sm:pb-10">
-            <div class="space-y-1">
-                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#EBF3EE] text-elior-botanical text-[10px] sm:text-xs font-semibold tracking-widest uppercase">
-                    <span><span class="material-symbols-outlined align-text-bottom text-inherit text-[1.2em] leading-none" aria-hidden="true" style="font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;">shopping_cart</span></span>
-                    <span>Your Selection</span>
+        <div class="site-container pt-2 pb-6 sm:pt-4 sm:pb-8">
+            <div class="space-y-1.5">
+                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/15 border border-emerald-400/30 text-emerald-300 text-[10px] sm:text-xs font-bold tracking-widest uppercase nv-pulse-glow">
+                    <span class="material-symbols-outlined text-[15px] leading-none" aria-hidden="true">shopping_bag</span>
+                    <span>Your Harvest Selection</span>
                 </div>
-                <h1 class="font-serif text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-elior-charcoal">
-                    Shopping Cart
+                <h1 class="font-serif text-3xl sm:text-4xl font-bold tracking-tight text-white">
+                    Shopping Bag
                 </h1>
             </div>
         </div>
@@ -68,58 +68,58 @@
                 <!-- Cart Information -->
                 <template v-else>
                     <div
-                        class="flex flex-col lg:flex-row gap-8 lg:gap-12 items-start"
+                        class="flex flex-col lg:flex-row gap-8 lg:gap-10 items-start"
                         v-if="cart?.items?.length"
                     >
                         <!-- Left Column: Cart Items List -->
                         <div class="flex-1 w-full space-y-6">
-                            <!-- Complimentary Free Shipping Progress Banner -->
-                            <div class="rounded-2xl bg-[#EBF3EE] border border-[#d2e4d8] p-4 flex items-center gap-3.5 shadow-sm text-xs sm:text-sm font-semibold text-[#205132]" v-if="parseFloat(cart.sub_total || 0) >= 499">
-                                <div class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#205132] text-white">
-                                    <span class="material-symbols-outlined text-[18px]">local_shipping</span>
+                            <!-- Free Shipping Progress Banner (Threshold: ₹499) -->
+                            <div class="rounded-2xl nv-glass-card border border-emerald-400/40 bg-emerald-950/20 backdrop-blur-xl p-4 flex items-center gap-3.5 shadow-lg text-xs sm:text-sm font-bold text-white" v-if="parseFloat(cart.sub_total || 0) >= 499">
+                                <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-emerald-500 text-[#041a0e]">
+                                    <span class="material-symbols-outlined text-[20px]">local_shipping</span>
                                 </div>
                                 <div class="flex-1 min-w-0 space-y-1">
                                     <div class="flex items-center justify-between">
-                                        <p class="font-bold">🎉 You unlocked Complimentary Express Shipping!</p>
-                                        <span class="text-xs font-bold uppercase tracking-wider text-[#205132]">FREE</span>
+                                        <p class="font-bold text-white">🎉 You unlocked Complimentary Express Shipping!</p>
+                                        <span class="text-xs font-bold uppercase tracking-wider text-emerald-300 bg-emerald-500/20 px-2.5 py-0.5 rounded-full border border-emerald-400/30">FREE</span>
                                     </div>
-                                    <div class="w-full mt-1.5" style="background-color: #d2e4d8; height: 8px; border-radius: 9999px; overflow: hidden;">
-                                        <div style="background-color: #1b4329; height: 100%; width: 100%; border-radius: 9999px; transition: width 0.5s ease-out;"></div>
+                                    <div class="w-full mt-1.5 bg-white/10 h-2 rounded-full overflow-hidden">
+                                        <div class="bg-emerald-400 h-full w-full rounded-full transition-all duration-500 ease-out"></div>
                                     </div>
                                 </div>
                             </div>
 
-                            <div class="rounded-2xl bg-white border border-[#d2dfd6] p-4 space-y-2.5 shadow-sm text-xs sm:text-sm" v-else>
-                                <div class="flex items-center justify-between gap-3 text-[#163923] font-medium">
+                            <div class="rounded-2xl nv-glass-card border border-white/15 bg-white/[0.06] backdrop-blur-xl p-4 space-y-2.5 shadow-lg text-xs sm:text-sm text-white" v-else>
+                                <div class="flex items-center justify-between gap-3 text-white/90 font-medium">
                                     <div class="flex items-center gap-2">
-                                        <span class="material-symbols-outlined text-[#205132] text-[18px]">local_shipping</span>
-                                        <span>Add <strong class="text-[#205132] font-bold">₹@{{ (499 - parseFloat(cart.sub_total || 0)).toFixed(2) }}</strong> more for <strong class="text-[#163923]">Complimentary Express Shipping</strong></span>
+                                        <span class="material-symbols-outlined text-emerald-400 text-[18px]">local_shipping</span>
+                                        <span>Add <strong class="text-emerald-300 font-bold">₹@{{ (499 - parseFloat(cart.sub_total || 0)).toFixed(2) }}</strong> more for <strong class="text-white">Free Standard Delivery</strong></span>
                                     </div>
-                                    <span class="text-xs font-bold text-[#205132] shrink-0 px-2.5 py-0.5 rounded-full" style="background-color: #EBF3EE;">@{{ Math.round((parseFloat(cart.sub_total || 0) / 499) * 100) }}%</span>
+                                    <span class="text-xs font-bold text-emerald-300 shrink-0 px-2.5 py-0.5 rounded-full bg-emerald-500/20 border border-emerald-400/30">@{{ Math.min(100, Math.round((parseFloat(cart.sub_total || 0) / 499) * 100)) }}%</span>
                                 </div>
-                                <div class="w-full" style="background-color: #E0EAE2; height: 8px; border-radius: 9999px; overflow: hidden;">
-                                    <div style="background: linear-gradient(90deg, #1b4329 0%, #36754a 100%); height: 100%; border-radius: 9999px; transition: width 0.5s ease-out;" :style="'width: ' + Math.min(100, Math.round((parseFloat(cart.sub_total || 0) / 499) * 100)) + '%'"></div>
+                                <div class="w-full bg-white/10 h-2 rounded-full overflow-hidden p-0.5">
+                                    <div class="h-full rounded-full transition-all duration-500 ease-out" style="background: linear-gradient(90deg, #10B981 0%, #059669 50%, #D4A359 100%) !important;" :style="'width: ' + Math.min(100, Math.round((parseFloat(cart.sub_total || 0) / 499) * 100)) + '%'"></div>
                                 </div>
                             </div>
 
                             {!! view_render_event('bagisto.shop.checkout.cart.cart_mass_actions.before') !!}
 
                             <!-- Cart Items Card -->
-                            <div class="rounded-3xl border border-elior-border/80 bg-white p-6 sm:p-8 shadow-elior-subtle space-y-6">
+                            <div class="rounded-3xl nv-glass-card border border-white/15 bg-white/[0.06] backdrop-blur-xl p-5 sm:p-7 shadow-2xl space-y-6 text-white">
                                 <!-- Mass Action / Select All Header -->
-                                <div class="flex items-center justify-between border-b border-elior-border/60 pb-4">
+                                <div class="flex items-center justify-between border-b border-white/10 pb-4">
                                     <div class="flex select-none items-center gap-2.5">
                                         <input
                                             type="checkbox"
                                             id="select-all"
-                                            class="h-4 w-4 rounded border-elior-border text-elior-botanical focus:ring-elior-botanical cursor-pointer"
+                                            class="h-4 w-4 rounded border-white/30 text-emerald-500 focus:ring-emerald-400 bg-white/10 cursor-pointer"
                                             v-model="allSelected"
                                             @change="selectAll"
                                         >
 
                                         <label
                                             for="select-all"
-                                            class="text-xs sm:text-sm font-semibold uppercase tracking-wider text-elior-charcoal cursor-pointer"
+                                            class="text-xs sm:text-sm font-bold uppercase tracking-wider text-white cursor-pointer"
                                         >
                                             @{{ "@lang('shop::app.checkout.cart.index.items-selected')".replace(':count', selectedItemsCount) }}
                                         </label>
@@ -128,18 +128,18 @@
                                     <div v-if="selectedItemsCount" class="flex items-center gap-3">
                                         <button
                                             type="button"
-                                            class="text-xs font-semibold uppercase tracking-wider text-red-600 hover:text-red-700 transition-colors"
+                                            class="text-xs font-bold uppercase tracking-wider text-rose-400 hover:text-rose-300 transition-colors cursor-pointer"
                                             @click="removeSelectedItems"
                                         >
                                             @lang('shop::app.checkout.cart.index.remove')
                                         </button>
 
                                         @if (auth()->guard()->check())
-                                            <span class="text-elior-border">|</span>
+                                            <span class="text-white/20">|</span>
 
                                             <button
                                                 type="button"
-                                                class="text-xs font-semibold uppercase tracking-wider text-elior-botanical hover:text-elior-botanicalDark transition-colors"
+                                                class="text-xs font-bold uppercase tracking-wider text-emerald-300 hover:text-emerald-200 transition-colors cursor-pointer"
                                                 @click="moveToWishlistSelectedItems"
                                             >
                                                 @lang('shop::app.checkout.cart.index.move-to-wishlist')
@@ -153,9 +153,9 @@
                                 {!! view_render_event('bagisto.shop.checkout.cart.item.listing.before') !!}
 
                                 <!-- Cart Items List -->
-                                <div class="divide-y divide-elior-border/60">
+                                <div class="divide-y divide-white/10">
                                     <div
-                                        class="py-6 first:pt-2 last:pb-2 flex flex-col sm:flex-row gap-5 items-start justify-between"
+                                        class="py-5 first:pt-1 last:pb-1 flex flex-col sm:flex-row gap-5 items-start justify-between"
                                         v-for="item in cart?.items"
                                     >
                                         <div class="flex gap-4 sm:gap-5 items-start flex-1 min-w-0">
@@ -164,7 +164,7 @@
                                                 <input
                                                     type="checkbox"
                                                     :id="'item_' + item.id"
-                                                    class="h-4 w-4 rounded border-elior-border text-elior-botanical focus:ring-elior-botanical cursor-pointer"
+                                                    class="h-4 w-4 rounded border-white/30 text-emerald-500 focus:ring-emerald-400 bg-white/10 cursor-pointer"
                                                     v-model="item.selected"
                                                     @change="updateAllSelected"
                                                 >
@@ -175,11 +175,11 @@
                                             <!-- Item Image -->
                                             <a
                                                 :href="'{{ route('shop.product_or_category.index', ':slug') }}'.replace(':slug', item.product_url_key)"
-                                                class="shrink-0 w-20 h-20 sm:w-24 sm:h-24 rounded-2xl bg-[#FAF8F5] border border-elior-border/70 overflow-hidden flex items-center justify-center"
+                                                class="shrink-0 w-20 h-20 sm:w-24 sm:h-24 rounded-2xl bg-black/40 border border-white/15 overflow-hidden flex items-center justify-center group"
                                             >
                                                 <img
                                                     :src="item.base_image.small_image_url"
-                                                    class="w-full h-full object-cover"
+                                                    class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                                                     :alt="item.name"
                                                 />
                                             </a>
@@ -187,13 +187,13 @@
                                             {!! view_render_event('bagisto.shop.checkout.cart.item_image.after') !!}
 
                                             <!-- Item Details -->
-                                            <div class="flex-1 min-w-0 space-y-2">
+                                            <div class="flex-1 min-w-0 space-y-1.5">
                                                 {!! view_render_event('bagisto.shop.checkout.cart.item_name.before') !!}
 
-                                                <h3 class="font-serif text-base sm:text-lg font-bold text-elior-charcoal leading-snug">
+                                                <h3 class="font-serif text-base sm:text-lg font-bold text-white leading-snug">
                                                     <a
                                                         :href="'{{ route('shop.product_or_category.index', ':slug') }}'.replace(':slug', item.product_url_key)"
-                                                        class="hover:text-elior-botanical transition-colors"
+                                                        class="hover:text-emerald-300 transition-colors"
                                                     >
                                                         @{{ item.name }}
                                                     </a>
@@ -201,9 +201,9 @@
 
                                                 {!! view_render_event('bagisto.shop.checkout.cart.item_name.after') !!}
 
-                                                <!-- Price Display (Sale vs Regular Price) -->
+                                                <!-- Price Display -->
                                                 <div class="flex flex-wrap items-center gap-2 pt-0.5">
-                                                    <span class="font-bold text-sm sm:text-base text-[#163923]">
+                                                    <span class="font-bold text-sm sm:text-base text-emerald-300">
                                                         <template v-if="displayTax.prices == 'including_tax'">
                                                             @{{ item.formatted_price_incl_tax }}
                                                         </template>
@@ -212,41 +212,41 @@
                                                         </template>
                                                     </span>
 
-                                                    <span class="text-xs text-[#8c9e92] line-through font-normal" v-if="item.has_discount">
+                                                    <span class="text-xs text-white/40 line-through font-normal" v-if="item.has_discount">
                                                         @{{ item.formatted_regular_price }}
                                                     </span>
 
-                                                    <span class="px-1.5 py-0.5 rounded text-[10px] font-semibold bg-[#EBF3EE] text-[#205132]" v-if="item.has_discount">
+                                                    <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-400/30" v-if="item.has_discount">
                                                         Save @{{ item.formatted_unit_discount }}
                                                     </span>
                                                 </div>
 
-                                                <!-- Weight & Options Variations -->
-                                                <div class="flex flex-wrap items-center gap-1.5 pt-1 text-[11px] text-[#55695b]">
+                                                <!-- Weight & Pack Attributes -->
+                                                <div class="flex flex-wrap items-center gap-1.5 pt-1 text-[11px] text-white/70">
                                                     <span
-                                                        class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-[#FAF8F5] border border-[#e5decb] font-medium"
+                                                        class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-white/10 border border-white/15 font-medium"
                                                         v-if="item.formatted_weight"
                                                     >
-                                                        <span class="text-[#8c9e92]">Weight:</span>
-                                                        <span class="font-semibold text-[#163923]">@{{ item.formatted_weight }}</span>
+                                                        <span class="text-white/60">Weight:</span>
+                                                        <span class="font-semibold text-white">@{{ item.formatted_weight }}</span>
                                                     </span>
 
                                                     <template v-if="item.options.length">
                                                         <template v-for="attribute in item.options">
-                                                            <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-[#FAF8F5] border border-[#e5decb] font-medium">
-                                                                <span class="text-[#8c9e92]">@{{ attribute.attribute_name }}:</span>
-                                                                <span class="font-semibold text-[#163923]">@{{ attribute.option_label }}</span>
+                                                            <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-white/10 border border-white/15 font-medium">
+                                                                <span class="text-white/60">@{{ attribute.attribute_name }}:</span>
+                                                                <span class="font-semibold text-white">@{{ attribute.option_label }}</span>
                                                             </span>
                                                         </template>
                                                     </template>
                                                 </div>
 
-                                                <!-- Quantity Changer & Actions (Mobile) -->
-                                                <div class="pt-2 flex sm:hidden items-center justify-between">
+                                                <!-- Quantity Changer & Remove (Mobile) -->
+                                                <div class="pt-3 flex sm:hidden items-center justify-between">
                                                     <x-shop::quantity-changer
                                                         v-if="item.can_change_qty"
                                                         ::key="'qty-' + item.id + '-' + refreshKey"
-                                                        class="h-8 max-w-[130px] px-2 py-0.5 rounded-lg text-xs"
+                                                        class="h-8 max-w-[125px] px-2 py-0.5 rounded-lg text-xs bg-white border border-emerald-200/50 text-[#041a0e] shadow-sm"
                                                         name="quantity"
                                                         ::value="item?.quantity"
                                                         :removable="true"
@@ -256,7 +256,7 @@
 
                                                     <button
                                                         type="button"
-                                                        class="text-elior-muted hover:text-red-600 transition-colors p-1"
+                                                        class="text-white/50 hover:text-rose-400 transition-colors p-1"
                                                         title="@lang('shop::app.checkout.cart.index.remove')"
                                                         @click="removeItem(item.id)"
                                                     >
@@ -269,7 +269,7 @@
                                         <!-- Quantity & Total (Desktop) -->
                                         <div class="hidden sm:flex flex-col items-end justify-between gap-4 self-stretch">
                                             <div class="text-right">
-                                                <span class="font-serif text-lg font-bold text-elior-charcoal">
+                                                <span class="font-serif text-lg font-bold text-white">
                                                     <template v-if="displayTax.subtotal == 'including_tax'">
                                                         @{{ item.formatted_total_incl_tax }}
                                                     </template>
@@ -283,7 +283,7 @@
                                                 <x-shop::quantity-changer
                                                     v-if="item.can_change_qty"
                                                     ::key="'qty-' + item.id + '-' + refreshKey"
-                                                    class="h-9 max-w-[140px] px-3 py-1 rounded-xl text-xs"
+                                                    class="h-9 max-w-[135px] px-3 py-1 rounded-xl text-xs bg-white border border-emerald-200/50 text-[#041a0e] shadow-sm"
                                                     name="quantity"
                                                     ::value="item?.quantity"
                                                     :removable="true"
@@ -293,7 +293,7 @@
 
                                                 <button
                                                     type="button"
-                                                    class="flex h-9 w-9 items-center justify-center rounded-xl text-elior-muted hover:text-red-600 hover:bg-red-50 transition-colors"
+                                                    class="flex h-9 w-9 items-center justify-center rounded-xl text-white/50 hover:text-rose-400 hover:bg-rose-500/20 transition-colors cursor-pointer"
                                                     title="@lang('shop::app.checkout.cart.index.remove')"
                                                     @click="removeItem(item.id)"
                                                 >
@@ -312,26 +312,26 @@
 
                     <!-- Clean Empty Cart State -->
                     <div
-                        class="rounded-3xl border border-elior-border/80 bg-white p-10 sm:p-16 lg:p-20 text-center max-w-2xl mx-auto shadow-elior-subtle space-y-6 my-10"
+                        class="rounded-3xl nv-glass-card border border-white/15 bg-white/[0.06] backdrop-blur-xl p-10 sm:p-16 lg:p-20 text-center max-w-2xl mx-auto shadow-2xl space-y-6 my-10 text-white"
                         v-else
                     >
-                        <div class="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-[#FAF8F5] border border-elior-border text-3xl">
-                            <span class="material-symbols-outlined align-text-bottom text-inherit text-[1.2em] leading-none" aria-hidden="true" style="font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;">eco</span>
+                        <div class="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-emerald-500/20 border border-emerald-400/30 text-3xl text-emerald-400 shadow-xs">
+                            <span class="material-symbols-outlined text-[36px]" aria-hidden="true">spa</span>
                         </div>
 
                         <div class="space-y-2">
-                            <h2 class="font-serif text-2xl sm:text-3xl font-bold text-elior-charcoal">
+                            <h2 class="font-serif text-2xl sm:text-3xl font-bold text-white">
                                 @lang('shop::app.checkout.cart.index.empty-product')
                             </h2>
-                            <p class="text-xs sm:text-sm text-elior-muted leading-relaxed max-w-md mx-auto">
-                                Explore the ELIOR collection and discover whole food botanical nutrition crafted for daily rituals.
+                            <p class="text-xs sm:text-sm text-white/70 leading-relaxed max-w-md mx-auto font-sans">
+                                Explore the Navanidhi Naturals collection and discover authentic stone-ground farm spices and botanical nutrition crafted for daily vitality.
                             </p>
                         </div>
 
                         <div class="pt-2">
                             <a
                                 href="{{ route('shop.search.index') }}"
-                                class="elior-btn-primary inline-flex items-center gap-2 text-xs uppercase tracking-widest font-semibold px-8 py-3.5 shadow-elior-card"
+                                class="btn-emerald-primary inline-flex items-center gap-2 text-[#041a0e] bg-gradient-to-r from-[#c9a25a] to-[#b08a43] hover:from-[#d6b677] hover:to-[#c9a25a] text-xs uppercase tracking-widest font-bold px-8 py-3.5 rounded-full shadow-lg shadow-[#c9a25a]/25 transition-all duration-300"
                             >
                                 <span>@lang('shop::app.checkout.cart.index.continue-shopping')</span>
                                 <span class="icon-arrow-right text-xs"></span>
@@ -489,6 +489,7 @@
                                         this.$emitter.emit('update-mini-cart', response.data.data);
                                     })
                                     .catch(error => {
+                                        this.isLoading = false;
                                         this.$emitter.emit('add-flash', { type: 'warning', message: error.response.data.message });
                                     });
                             },

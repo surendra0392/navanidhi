@@ -1,7 +1,7 @@
 <x-admin::layouts.anonymous>
     <!-- Page Title -->
     <x-slot:title>
-        @lang('admin::app.users.sessions.title') — {{ config('app.name', 'ELIOR') }}
+        @lang('admin::app.users.sessions.title') — {{ config('app.name', 'Navanidhi Naturals') }}
     </x-slot>
 
     @push('styles')
@@ -355,7 +355,7 @@
                 <div class="relative z-20 flex items-center justify-start">
                     <div class="elior-botanical-badge">
                         <span class="elior-botanical-badge-dot"></span>
-                        <span>ELIOR Botanical Console</span>
+                        <span>Navanidhi Naturals Console</span>
                     </div>
                 </div>
             </div>
@@ -363,11 +363,11 @@
             <!-- Right Side: Deep Botanical Forest Authentication Form -->
             <div class="form-right-panel">
                 
-                <!-- Greetings & Elior Admin Context Header -->
+                <!-- Greetings & Navanidhi Admin Context Header -->
                 <div class="space-y-1.5 pt-1">
                     <div class="flex items-center justify-between">
                         <span class="text-[11px] font-bold tracking-widest uppercase text-[#c9a25a] bg-[#163923] px-3 py-0.5 rounded-full border border-[#c9a25a]/30">
-                            Administrative Access
+                            MAN Agro Foods &bull; Admin
                         </span>
                         <a href="{{ route('shop.home.index') }}" class="text-xs text-[#f4f0e6] hover:text-[#c9a25a] hover:underline font-medium inline-flex items-center gap-1 transition-colors">
                             <span>Storefront</span>
@@ -379,7 +379,7 @@
                         </a>
                     </div>
                     <h1 class="text-2xl sm:text-3xl font-bold text-white tracking-tight font-sans">
-                        Elior Admin Portal
+                        Navanidhi Naturals Admin Portal
                     </h1>
                     <p class="text-xs sm:text-sm text-[#f4f0e6]/80 font-normal leading-relaxed">
                         Sign in to manage catalog, orders, and customer operations.

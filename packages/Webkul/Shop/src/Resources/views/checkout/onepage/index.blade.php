@@ -1,7 +1,7 @@
 <!-- SEO Meta Content -->
 @push('meta')
-    <meta name="title" content="@lang('shop::app.checkout.onepage.index.checkout') | ELIOR" />
-    <meta name="description" content="Complete your ELIOR botanical nutrition order with secure 256-bit encrypted checkout." />
+    <meta name="title" content="@lang('shop::app.checkout.onepage.index.checkout') | Navanidhi Naturals" />
+    <meta name="description" content="Complete your Navanidhi Naturals botanical nutrition order with secure 256-bit encrypted checkout." />
 @endPush
 
 <x-shop::layouts
@@ -11,7 +11,7 @@
 >
     <!-- Page Title -->
     <x-slot:title>
-        @lang('shop::app.checkout.onepage.index.checkout') | ELIOR
+        @lang('shop::app.checkout.onepage.index.checkout') | Navanidhi Naturals
     </x-slot>
 
     @php
@@ -27,21 +27,21 @@
             <a
                 href="{{ route('shop.home.index') }}"
                 class="flex items-center py-2 group"
-                aria-label="ELIOR - Botanical Nutrition"
+                aria-label="Navanidhi Naturals - Botanical Nutrition"
             >
                 @if ($logoUrl)
                     <img
                         src="{{ $logoUrl }}"
-                        alt="{{ config('app.name', 'ELIOR') }}"
+                        alt="{{ config('app.name', 'Navanidhi Naturals') }}"
                         class="h-9 sm:h-11 w-auto object-contain max-w-[180px] transition-transform duration-300 group-hover:scale-[1.02]"
                     />
                 @else
                     <div class="flex flex-col">
                         <span class="font-serif text-2xl sm:text-3xl font-bold tracking-tight text-[#163923] group-hover:text-[#205132] transition-colors">
-                            ELIOR
+                            NAVANIDHI
                         </span>
                         <span class="text-[8px] sm:text-[9px] tracking-[0.32em] uppercase text-[#677a6d] -mt-0.5 font-sans font-semibold">
-                            Botanical Nutrition
+                            NATURALS
                         </span>
                     </div>
                 @endif

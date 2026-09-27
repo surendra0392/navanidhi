@@ -1,53 +1,54 @@
 {!! view_render_event('bagisto.shop.layout.header.before') !!}
 
-<div class="max-lg:hidden">
+<!-- Desktop Topbar Ribbon -->
+<div class="max-lg:hidden relative z-50" style="position: relative; z-index: 50 !important;">
     <x-shop::layouts.header.desktop.top />
 </div>
 
-<header class="sticky top-0 z-40 border-b border-[#e5decb] shadow-sm" style="background-color: #f4f0e6 !important; background: #f4f0e6 !important;">
+<!-- Main Sticky Header -->
+<header 
+    class="sticky top-0 z-40 glass-header shadow-[0_4px_25px_rgba(13,92,58,0.06)] transition-all duration-300"
+>
     <v-header-switcher>
         <!-- Desktop Header Shimmer -->
         <div class="flex flex-wrap max-lg:hidden">
-            <div class="mx-auto flex min-h-[90px] w-full max-w-7xl items-center justify-between px-6 lg:px-12">
-                <!-- Left: Logo -->
-                <div class="flex flex-col">
-                    <span class="font-serif text-3xl font-bold tracking-tight text-[#163923]">
-                        ELIOR
-                    </span>
-                    <span class="text-[9px] tracking-[0.32em] uppercase text-[#677a6d] -mt-0.5 font-sans font-semibold">
-                        Botanical Nutrition
-                    </span>
+            <div class="site-container flex w-full items-center justify-between min-h-[92px] py-4">
+                <!-- Left: Logo Shimmer -->
+                <div class="flex items-center gap-3.5">
+                    <span class="w-12 h-12 rounded-xl bg-emerald-900/10 shimmer"></span>
+                    <div class="flex flex-col gap-1.5">
+                        <span class="w-36 h-6 rounded bg-emerald-900/10 shimmer"></span>
+                        <span class="w-20 h-3 rounded bg-emerald-900/5 shimmer"></span>
+                    </div>
                 </div>
 
-                <!-- Center Navigation -->
+                <!-- Center Navigation Shimmer -->
                 <div class="flex items-center gap-7">
-                    <span class="w-12 h-4 rounded shimmer" role="presentation"></span>
-                    <span class="w-16 h-4 rounded shimmer" role="presentation"></span>
-                    <span class="w-12 h-4 rounded shimmer" role="presentation"></span>
-                    <span class="w-16 h-4 rounded shimmer" role="presentation"></span>
-                    <span class="w-28 h-4 rounded shimmer" role="presentation"></span>
+                    <span class="w-16 h-4 rounded bg-emerald-900/5 shimmer"></span>
+                    <span class="w-20 h-4 rounded bg-emerald-900/5 shimmer"></span>
+                    <span class="w-16 h-4 rounded bg-emerald-900/5 shimmer"></span>
+                    <span class="w-24 h-4 rounded bg-emerald-900/5 shimmer"></span>
                 </div>
 
-                <!-- Right Utility Icons -->
-                <div class="flex items-center gap-5">
-                    <span class="w-48 h-8 rounded-full shimmer" role="presentation"></span>
-                    <span class="w-5 h-5 rounded shimmer" role="presentation"></span>
-                    <span class="w-5 h-5 rounded shimmer" role="presentation"></span>
-                    <span class="w-5 h-5 rounded shimmer" role="presentation"></span>
+                <!-- Right Utility Icons Shimmer -->
+                <div class="flex items-center gap-4">
+                    <span class="w-9 h-9 rounded-full bg-emerald-900/5 shimmer"></span>
+                    <span class="w-9 h-9 rounded-full bg-emerald-900/5 shimmer"></span>
+                    <span class="w-9 h-9 rounded-full bg-emerald-900/5 shimmer"></span>
                 </div>
             </div>
         </div>
 
         <!-- Mobile Header Shimmer -->
-        <div class="flex flex-wrap gap-4 px-4 pb-4 pt-4 shadow-sm lg:hidden bg-[#f4f0e6]">
+        <div class="flex flex-wrap gap-4 px-4 shadow-sm lg:hidden bg-white/95" style="min-height: 74px; padding-top: 14px; padding-bottom: 14px;">
             <div class="flex w-full items-center justify-between">
                 <div class="flex items-center gap-3">
-                    <span class="shimmer block h-6 w-6 rounded" role="presentation"></span>
-                    <span class="font-serif text-2xl font-bold text-elior-charcoal">ELIOR</span>
+                    <span class="w-9 h-9 rounded-lg bg-emerald-900/10 shimmer"></span>
+                    <span class="w-28 h-5 rounded bg-emerald-900/10 shimmer"></span>
                 </div>
-                <div class="flex items-center gap-4">
-                    <span class="shimmer block h-6 w-6 rounded" role="presentation"></span>
-                    <span class="shimmer block h-6 w-6 rounded" role="presentation"></span>
+                <div class="flex items-center gap-3">
+                    <span class="w-6 h-6 rounded bg-emerald-900/10 shimmer"></span>
+                    <span class="w-6 h-6 rounded bg-emerald-900/10 shimmer"></span>
                 </div>
             </div>
         </div>
@@ -62,7 +63,6 @@
         id="v-header-switcher-template"
     >
         <v-desktop-header v-if="isDesktop"></v-desktop-header>
-        
         <v-mobile-header v-else></v-mobile-header>
     </script>
 
@@ -73,12 +73,11 @@
             data() {
                 return {
                     isDesktop: window.innerWidth >= 1024
-                }
+                };
             },
 
             mounted() {
                 this.media = window.matchMedia('(min-width: 1024px)');
-
                 this.media.addEventListener('change', this.handleMedia);
             },
 
@@ -98,7 +97,46 @@
         });
 
         app.component('v-mobile-header', {
-            template: '#v-mobile-header-template'
+            template: '#v-mobile-header-template',
+
+            data() {
+                return {
+                    isSearchOpen: false,
+                };
+            },
+
+            mounted() {
+                this.escapeHandler = (e) => {
+                    if (e.key === 'Escape' && this.isSearchOpen) {
+                        this.closeSearch();
+                    }
+                };
+
+                window.addEventListener('keydown', this.escapeHandler);
+            },
+
+            beforeUnmount() {
+                window.removeEventListener('keydown', this.escapeHandler);
+            },
+
+            methods: {
+                toggleSearch() {
+                    this.isSearchOpen = !this.isSearchOpen;
+
+                    if (this.isSearchOpen) {
+                        this.$nextTick(() => {
+                            const input = document.getElementById('mobile-search-navanidhi');
+                            if (input) {
+                                input.focus();
+                            }
+                        });
+                    }
+                },
+
+                closeSearch() {
+                    this.isSearchOpen = false;
+                }
+            }
         });
     </script>
 

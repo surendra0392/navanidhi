@@ -89,9 +89,9 @@
             <x-slot:content class="!p-0 !bg-white !border !border-slate-200 !rounded-[14px] shadow-xl overflow-hidden">
                 <div class="flex items-center gap-3 border-b border-slate-200 bg-slate-50 px-4 py-3">
                     <img
-                        src="{{ asset('images/brand/elior_botanical_icon.png') }}"
+                        src="{{ asset('images/brand/navanidhi_botanical_icon.png') }}"
                         class="h-8 w-auto object-contain"
-                        alt="ELIOR"
+                        alt="Navanidhi Naturals"
                     />
 
                     <div>

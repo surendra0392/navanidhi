@@ -14,15 +14,15 @@
     >
         <div>
             <div
-                class="flex flex-row justify-center gap-8 bg-zinc-100 max-sm:gap-1.5"
+                class="flex flex-row justify-center gap-4 sm:gap-8 bg-[rgba(4,26,14,0.7)] backdrop-blur-xl border border-white/10 max-sm:gap-1.5 rounded-2xl p-1.5 shadow-xl"
                 :style="positionStyles"
             >
                 <div
                     role="button"
                     tabindex="0"
                     v-for="tab in tabs"
-                    class="cursor-pointer px-8 py-5 text-xl font-medium text-zinc-600 max-md:px-4 max-md:py-3 max-md:text-sm max-sm:px-2.5 max-sm:py-2.5"
-                    :class="{'border-b-2 border-navyBlue !text-black transition': tab.isActive }"
+                    class="cursor-pointer px-6 py-3.5 text-sm sm:text-base font-serif font-semibold text-white/70 hover:text-white transition-all max-md:px-4 max-md:py-2.5 max-md:text-xs max-sm:px-2.5 max-sm:py-2 rounded-xl"
+                    :class="{'!text-emerald-300 bg-emerald-500/20 border border-emerald-500/30 shadow-md': tab.isActive }"
                     :id="tab.$attrs.id + '-button'"
                     @click="change(tab)"
                 >

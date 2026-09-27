@@ -20,6 +20,10 @@ class ContactUs extends Mailable
      */
     public function envelope(): Envelope
     {
+        $subjectPrefix = ! empty($this->contactUs['subject'])
+            ? '['.$this->contactUs['subject'].'] '
+            : '';
+
         return new Envelope(
             to: [
                 new Address(
@@ -27,7 +31,7 @@ class ContactUs extends Mailable
                     core()->getAdminEmailDetails()['name']
                 ),
             ],
-            subject: trans('shop::app.emails.contact-us.inquiry-from').' '.$this->contactUs['name'].' '.trans('shop::app.emails.contact-us.contact-from'),
+            subject: $subjectPrefix.trans('shop::app.emails.contact-us.inquiry-from').' '.$this->contactUs['name'].' '.trans('shop::app.emails.contact-us.contact-from'),
         );
     }
 

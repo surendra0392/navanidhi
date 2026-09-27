@@ -126,6 +126,17 @@ class ThemeViewFinder extends FileViewFinder
 
         foreach (array_reverse($searchPaths) as $path) {
             $paths = Arr::prepend($paths, base_path($path));
+
+            if (
+                $namespace === hash('xxh128', self::SHOP_PACKAGE_VIEWS_NAMESPACE)
+                || $namespace === hash('xxh128', self::ADMIN_PACKAGE_VIEWS_NAMESPACE)
+            ) {
+                $componentPath = base_path("$path/components");
+
+                if (is_dir($componentPath)) {
+                    $paths = Arr::prepend($paths, $componentPath);
+                }
+            }
         }
 
         return $paths;

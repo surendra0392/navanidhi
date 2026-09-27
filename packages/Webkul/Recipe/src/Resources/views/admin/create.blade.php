@@ -121,7 +121,7 @@
                             type="textarea"
                             name="ingredients"
                             :rows="6"
-                            :placeholder="'1 tsp ELIOR Organic Moringa Leaf Powder&#10;1 ripe banana, frozen&#10;1 cup oat milk'"
+                            :placeholder="'1 tsp Navanidhi Naturals Organic Moringa Leaf Powder&#10;1 ripe banana, frozen&#10;1 cup oat milk'"
                         />
 
                         <x-admin::form.control-group.error control-name="ingredients" />
@@ -217,7 +217,7 @@
                         <x-admin::form.control-group.control type="file" name="featured_image" accept="image/*" />
                     </x-admin::form.control-group>
 
-                    <!-- Linked ELIOR Products -->
+                    <!-- Linked Navanidhi Naturals Products -->
                     <x-admin::form.control-group class="!mb-0">
                         <x-admin::form.control-group.label>Associated Products</x-admin::form.control-group.label>
                         <x-admin::form.control-group.control type="select" name="product_ids[]" multiple class="h-32">

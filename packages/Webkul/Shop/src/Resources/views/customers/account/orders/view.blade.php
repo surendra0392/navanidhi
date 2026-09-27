@@ -1,2346 +1,463 @@
+@php
+    $operationalStatus = strtoupper($order->operational_status ?? '');
+    $isCanceled = in_array($order->status, ['canceled', 'closed']);
+    $hasShipments = $order->shipments->isNotEmpty();
+
+    // Timeline step statuses
+    $step1Placed = true;
+    $step2Paid = in_array($operationalStatus, ['PAYMENT CONFIRMED', 'PACKING', 'READY TO SHIP', 'SHIPPED', 'DELIVERED']) || in_array($order->status, ['processing', 'completed']) || $order->invoices->isNotEmpty();
+    $step3Packing = in_array($operationalStatus, ['PACKING', 'READY TO SHIP', 'SHIPPED', 'DELIVERED']) || ($order->status == 'completed');
+    $step4Ready = in_array($operationalStatus, ['READY TO SHIP', 'SHIPPED', 'DELIVERED']) || ($order->status == 'completed');
+    $step5Shipped = in_array($operationalStatus, ['SHIPPED', 'DELIVERED']) || $hasShipments || ($order->status == 'completed');
+    $step6Delivered = ($operationalStatus === 'DELIVERED') || ($order->status == 'completed');
+@endphp
+
 <x-shop::layouts.account>
     <!-- Page Title -->
     <x-slot:title>
-        @lang('shop::app.customers.account.orders.view.page-title', ['order_id' => $order->increment_id])
+        Order #{{ $order->increment_id }} | Navanidhi Naturals
     </x-slot>
 
     <!-- Breadcrumbs -->
     @section('breadcrumbs')
-        <x-shop::breadcrumbs
-            name="orders.view"
-            :entity="$order"
-        />
+        <div class="flex items-center gap-2">
+            <a href="{{ route('shop.home.index') }}" class="text-[#8B6F45] hover:underline">Home</a>
+            <span>/</span>
+            <a href="{{ route('shop.customers.account.orders.index') }}" class="text-[#8B6F45] hover:underline">Orders</a>
+            <span>/</span>
+            <span class="text-[#111111] font-semibold">#{{ $order->increment_id }}</span>
+        </div>
     @endSection
 
-    <div class="max-md:hidden">
-        <x-shop::layouts.account.navigation />
-    </div>
+    <x-shop::layouts.account.navigation />
 
-    <div class="mx-4 flex-auto max-md:mx-6 max-sm:mx-4">
+    <!-- Main Content Area -->
+    <div class="flex-1 w-full space-y-6">
+        <!-- Order Header Card -->
+        <div class="rounded-2xl border border-[#DCD3C3] bg-white p-6 shadow-sm space-y-4">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#DCD3C3]/60 pb-4">
+                <div class="flex items-center gap-3">
+                    <a
+                        class="lg:hidden flex h-8 w-8 items-center justify-center rounded-lg border border-[#DCD3C3] text-[#111111]"
+                        href="{{ route('shop.customers.account.orders.index') }}"
+                    >
+                        <span class="material-symbols-outlined text-base">arrow_back</span>
+                    </a>
 
-        <!-- Cancel and Reorder buttons -->
-        <div class="flex items-center justify-between">
-            <div class="max-md:flex max-md:items-center">
-                <!-- Back Button For mobile view -->
-                <a
-                    class="grid md:hidden"
-                    href="{{ route('shop.customers.account.orders.index') }}"
-                >
-                    <span class="icon-arrow-left rtl:icon-arrow-right text-2xl"></span>
-                </a>
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <h1 class="font-serif text-xl sm:text-2xl font-bold text-[#111111]">
+                                Order #{{ $order->increment_id }}
+                            </h1>
 
-                <h2 class="text-2xl font-medium ltr:ml-2.5 rtl:mr-2.5 max-md:text-xl max-sm:text-base md:ltr:ml-0 md:rtl:mr-0">
-                    @lang('shop::app.customers.account.orders.view.page-title', ['order_id' => $order->increment_id])
-                </h2>
+                            @php
+                                $badgeClass = 'bg-amber-100 text-amber-900 border-amber-200';
+                                $label = $order->status_label ?? ucfirst($order->status);
+
+                                if ($operationalStatus) {
+                                    $label = ucwords(strtolower($operationalStatus));
+                                    if (in_array($operationalStatus, ['SHIPPED', 'DELIVERED'])) {
+                                        $badgeClass = 'bg-emerald-100 text-emerald-900 border-emerald-200';
+                                    } elseif (in_array($operationalStatus, ['PACKING', 'READY TO SHIP', 'PAYMENT CONFIRMED'])) {
+                                        $badgeClass = 'bg-blue-100 text-blue-900 border-blue-200';
+                                    }
+                                } elseif ($order->status == 'completed') {
+                                    $badgeClass = 'bg-emerald-100 text-emerald-900 border-emerald-200';
+                                } elseif ($isCanceled) {
+                                    $badgeClass = 'bg-red-100 text-red-900 border-red-200';
+                                }
+                            @endphp
+
+                            <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold border uppercase tracking-wider {{ $badgeClass }}">
+                                {{ $label }}
+                            </span>
+                        </div>
+
+                        <p class="text-xs text-[#666666] mt-0.5">
+                            Placed on {{ $order->created_at->format('d F Y \a\t h:i A') }}
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Action CTAs -->
+                <div class="flex flex-wrap items-center gap-2">
+                    {!! view_render_event('bagisto.shop.customers.account.orders.reorder_button.before', ['order' => $order]) !!}
+
+                    @if ($order->canReorder() && core()->getConfigData('sales.order_settings.reorder.shop'))
+                        <a
+                            href="{{ route('shop.customers.account.orders.reorder', $order->id) }}"
+                            class="px-4 py-2 rounded-xl text-xs uppercase tracking-wider font-semibold shadow-sm transition-all inline-flex items-center gap-1.5"
+                            style="background-color: #0F4D2E !important; color: #FFFFFF !important;"
+                        >
+                            <span class="material-symbols-outlined text-sm">refresh</span>
+                            <span>Reorder</span>
+                        </a>
+                    @endif
+
+                    {!! view_render_event('bagisto.shop.customers.account.orders.reorder_button.after', ['order' => $order]) !!}
+
+                    @if ($order->invoices->isNotEmpty())
+                        <a
+                            href="{{ route('shop.customers.account.orders.print-invoice', $order->invoices->first()->id) }}"
+                            class="px-3.5 py-2 rounded-xl border border-[#DCD3C3] text-xs font-semibold text-[#111111] hover:bg-[#F7F5EE] transition-all inline-flex items-center gap-1.5"
+                            target="_blank"
+                        >
+                            <span class="material-symbols-outlined text-sm">download</span>
+                            <span>Invoice</span>
+                        </a>
+                    @endif
+
+                    {!! view_render_event('bagisto.shop.customers.account.orders.cancel_button.before', ['order' => $order]) !!}
+
+                    @if ($order->canCancel())
+                        <form
+                            method="POST"
+                            id="cancelOrderForm_{{ $order->id }}"
+                            action="{{ route('shop.customers.account.orders.cancel', $order->id) }}"
+                        >
+                            @csrf
+                            <button
+                                type="submit"
+                                onclick="return confirm('@lang('shop::app.customers.account.orders.view.cancel-confirm-msg')');"
+                                class="px-3.5 py-2 rounded-xl border border-red-200 text-xs font-semibold text-red-700 hover:bg-red-50 transition-all inline-flex items-center gap-1"
+                            >
+                                <span class="material-symbols-outlined text-sm">cancel</span>
+                                <span>Cancel</span>
+                            </button>
+                        </form>
+                    @endif
+
+                    {!! view_render_event('bagisto.shop.customers.account.orders.cancel_button.after', ['order' => $order]) !!}
+                </div>
             </div>
 
-            <div class="flex gap-1.5">
-                {!! view_render_event('bagisto.shop.customers.account.orders.reorder_button.before', ['order' => $order]) !!}
+            <!-- Fulfillment Progress Timeline -->
+            @if (! $isCanceled)
+                <div class="py-3">
+                    <div class="flex items-center justify-between mb-4">
+                        <span class="text-xs font-bold uppercase tracking-wider text-[#8B6F45] flex items-center gap-1.5">
+                            <span class="material-symbols-outlined text-base">local_shipping</span>
+                            <span>Botanical Fulfillment Journey</span>
+                        </span>
+                        @if($operationalStatus)
+                            <span class="text-xs font-semibold text-[#0F4D2E]">Current Stage: {{ ucwords(strtolower($operationalStatus)) }}</span>
+                        @endif
+                    </div>
 
-                @if (
-                    $order->canReorder()
-                    && core()->getConfigData('sales.order_settings.reorder.shop')
-                )
-                    <a
-                        href="{{ route('shop.customers.account.orders.reorder', $order->id) }}"
-                        class="secondary-button border-zinc-200 px-5 py-3 font-normal max-md:hidden"
-                    >
-                        @lang('shop::app.customers.account.orders.view.reorder-btn-title')
-                    </a>
-                @endif
+                    <!-- Timeline Steps Grid -->
+                    <div class="relative">
+                        <!-- Connecting Bar (Desktop) -->
+                        <div class="hidden sm:block absolute top-4 left-6 right-6 h-0.5 bg-[#DCD3C3] -z-0"></div>
 
-                {!! view_render_event('bagisto.shop.customers.account.orders.reorder_button.after', ['order' => $order]) !!}
+                        <div class="grid grid-cols-2 sm:grid-cols-6 gap-4 relative z-10">
+                            <!-- Step 1: Order Placed -->
+                            <div class="flex sm:flex-col items-center sm:text-center gap-3 sm:gap-2">
+                                <div class="w-8 h-8 rounded-full flex items-center justify-center font-bold text-xs shrink-0 shadow-sm ring-4 ring-white" style="background-color: #0F4D2E !important; color: #FFFFFF !important;">
+                                    <span class="material-symbols-outlined text-base" style="color: #FFFFFF !important;">check</span>
+                                </div>
+                                <div>
+                                    <p class="text-xs font-bold text-[#111111]">Placed</p>
+                                    <p class="text-[10px] text-[#666666]">{{ $order->created_at->format('d M') }}</p>
+                                </div>
+                            </div>
 
-                {!! view_render_event('bagisto.shop.customers.account.orders.cancel_button.before', ['order' => $order]) !!}
+                            <!-- Step 2: Payment Confirmed -->
+                            <div class="flex sm:flex-col items-center sm:text-center gap-3 sm:gap-2">
+                                <div class="w-8 h-8 rounded-full {{ $step2Paid ? '' : 'bg-white border-2 border-[#DCD3C3] text-[#666666]' }} flex items-center justify-center font-bold text-xs shrink-0 shadow-sm ring-4 ring-white" style="{{ $step2Paid ? 'background-color: #0F4D2E !important; color: #FFFFFF !important;' : '' }}">
+                                    @if($step2Paid)
+                                        <span class="material-symbols-outlined text-base" style="color: #FFFFFF !important;">check</span>
+                                    @else
+                                        <span>2</span>
+                                    @endif
+                                </div>
+                                <div>
+                                    <p class="text-xs font-bold {{ $step2Paid ? 'text-[#111111]' : 'text-[#666666]' }}">Payment</p>
+                                    <p class="text-[10px] text-[#666666]">{{ $step2Paid ? 'Confirmed' : 'Pending' }}</p>
+                                </div>
+                            </div>
 
-                @if ($order->canCancel())
-                    <form
-                        method="POST"
-                        ref="cancelOrderForm"
-                        action="{{ route('shop.customers.account.orders.cancel', $order->id) }}"
-                    >
-                        @csrf
-                    </form>
+                            <!-- Step 3: Cold-Milling & Packing -->
+                            <div class="flex sm:flex-col items-center sm:text-center gap-3 sm:gap-2">
+                                <div class="w-8 h-8 rounded-full {{ $step3Packing ? '' : 'bg-white border-2 border-[#DCD3C3] text-[#666666]' }} flex items-center justify-center font-bold text-xs shrink-0 shadow-sm ring-4 ring-white" style="{{ $step3Packing ? 'background-color: #0F4D2E !important; color: #FFFFFF !important;' : '' }}">
+                                    @if($step3Packing)
+                                        <span class="material-symbols-outlined text-base" style="color: #FFFFFF !important;">check</span>
+                                    @else
+                                        <span>3</span>
+                                    @endif
+                                </div>
+                                <div>
+                                    <p class="text-xs font-bold {{ $step3Packing ? 'text-[#111111]' : 'text-[#666666]' }}">Packing</p>
+                                    <p class="text-[10px] text-[#666666]">Cold-Milled</p>
+                                </div>
+                            </div>
 
-                    <a
-                        class="secondary-button border-zinc-200 px-5 py-3 font-normal max-md:hidden"
-                        href="javascript:void(0);"
-                        @click="$emitter.emit('open-confirm-modal', {
-                            message: '@lang('shop::app.customers.account.orders.view.cancel-confirm-msg')',
+                            <!-- Step 4: Ready to Ship -->
+                            <div class="flex sm:flex-col items-center sm:text-center gap-3 sm:gap-2">
+                                <div class="w-8 h-8 rounded-full {{ $step4Ready ? '' : 'bg-white border-2 border-[#DCD3C3] text-[#666666]' }} flex items-center justify-center font-bold text-xs shrink-0 shadow-sm ring-4 ring-white" style="{{ $step4Ready ? 'background-color: #0F4D2E !important; color: #FFFFFF !important;' : '' }}">
+                                    @if($step4Ready)
+                                        <span class="material-symbols-outlined text-base" style="color: #FFFFFF !important;">check</span>
+                                    @else
+                                        <span>4</span>
+                                    @endif
+                                </div>
+                                <div>
+                                    <p class="text-xs font-bold {{ $step4Ready ? 'text-[#111111]' : 'text-[#666666]' }}">Ready</p>
+                                    <p class="text-[10px] text-[#666666]">Quality Checked</p>
+                                </div>
+                            </div>
 
-                            agree: () => {
-                                this.$refs['cancelOrderForm'].submit()
-                            }
-                        })"
-                    >
-                        @lang('shop::app.customers.account.orders.view.cancel-btn-title')
-                    </a>
-                @endif
+                            <!-- Step 5: Shipped -->
+                            <div class="flex sm:flex-col items-center sm:text-center gap-3 sm:gap-2">
+                                <div class="w-8 h-8 rounded-full {{ $step5Shipped ? '' : 'bg-white border-2 border-[#DCD3C3] text-[#666666]' }} flex items-center justify-center font-bold text-xs shrink-0 shadow-sm ring-4 ring-white" style="{{ $step5Shipped ? 'background-color: #0F4D2E !important; color: #FFFFFF !important;' : '' }}">
+                                    @if($step5Shipped)
+                                        <span class="material-symbols-outlined text-base" style="color: #FFFFFF !important;">check</span>
+                                    @else
+                                        <span>5</span>
+                                    @endif
+                                </div>
+                                <div>
+                                    <p class="text-xs font-bold {{ $step5Shipped ? 'text-[#111111]' : 'text-[#666666]' }}">Dispatched</p>
+                                    <p class="text-[10px] text-[#666666]">In Transit</p>
+                                </div>
+                            </div>
 
-                {!! view_render_event('bagisto.shop.customers.account.orders.cancel_button.after', ['order' => $order]) !!}
+                            <!-- Step 6: Delivered -->
+                            <div class="flex sm:flex-col items-center sm:text-center gap-3 sm:gap-2">
+                                <div class="w-8 h-8 rounded-full {{ $step6Delivered ? '' : 'bg-white border-2 border-[#DCD3C3] text-[#666666]' }} flex items-center justify-center font-bold text-xs shrink-0 shadow-sm ring-4 ring-white" style="{{ $step6Delivered ? 'background-color: #0F4D2E !important; color: #FFFFFF !important;' : '' }}">
+                                    @if($step6Delivered)
+                                        <span class="material-symbols-outlined text-base" style="color: #FFFFFF !important;">done_all</span>
+                                    @else
+                                        <span>6</span>
+                                    @endif
+                                </div>
+                                <div>
+                                    <p class="text-xs font-bold {{ $step6Delivered ? 'text-[#0F4D2E]' : 'text-[#666666]' }}">Delivered</p>
+                                    <p class="text-[10px] text-[#666666]">{{ $step6Delivered ? 'Completed' : 'Pending' }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            @else
+                <div class="p-4 rounded-xl bg-red-50 border border-red-200 text-xs text-red-800 flex items-center gap-2">
+                    <span class="material-symbols-outlined text-base text-red-600">error</span>
+                    <span>This order was canceled on {{ $order->updated_at->format('d M, Y') }}.</span>
+                </div>
+            @endif
+        </div>
 
-                @include('shop::customers.account.eu-withdrawals.button', ['order' => $order])
+        <!-- Ordered Botanical Items Table Card -->
+        <div class="rounded-2xl border border-[#DCD3C3] bg-white p-6 shadow-sm space-y-4">
+            <h2 class="font-serif text-lg font-bold text-[#111111] border-b border-[#DCD3C3]/60 pb-3 flex items-center gap-2">
+                <span class="material-symbols-outlined text-lg text-[#0F4D2E]">spa</span>
+                <span>Items Ordered ({{ $order->items->count() }})</span>
+            </h2>
+
+            <div class="divide-y divide-[#DCD3C3]/60">
+                @foreach ($order->items as $item)
+                    @php
+                        $product = $item->product;
+                        $productImageUrl = $product?->base_image_url ?? bagisto_asset('images/small-product-placeholder.webp');
+                        $attributes = $item->additional['attributes'] ?? [];
+                    @endphp
+
+                    <div class="py-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                        <div class="flex items-center gap-4 min-w-0">
+                            <div class="w-16 h-16 rounded-xl border border-[#DCD3C3] bg-[#F7F5EE] overflow-hidden shrink-0 flex items-center justify-center p-1">
+                                <img
+                                    src="{{ $productImageUrl }}"
+                                    alt="{{ $item->name }}"
+                                    class="w-full h-full object-contain"
+                                >
+                            </div>
+
+                            <div class="space-y-0.5 min-w-0" v-pre>
+                                <p class="font-serif text-sm font-bold text-[#111111] truncate">
+                                    {{ $item->name }}
+                                </p>
+                                <p class="text-xs text-[#666666]">
+                                    SKU: <span class="font-mono">{{ $item->sku }}</span>
+                                </p>
+
+                                @if (! empty($attributes))
+                                    <div class="flex flex-wrap gap-1.5 pt-0.5">
+                                        @foreach ($attributes as $attribute)
+                                            <span class="px-2 py-0.5 rounded bg-[#EBF3EE] text-[#0F4D2E] text-[10px] font-semibold uppercase tracking-wider">
+                                                {{ $attribute['option_label'] ?? $attribute['attribute_name'] }}
+                                            </span>
+                                        @endforeach
+                                    </div>
+                                @endif
+                            </div>
+                        </div>
+
+                        <div class="flex items-center justify-between sm:justify-end gap-6 w-full sm:w-auto text-xs sm:text-sm">
+                            <div class="text-left sm:text-right">
+                                <span class="text-[#666666] text-xs block">Unit Price</span>
+                                <span class="font-semibold text-[#111111]">
+                                    {{ core()->formatPrice($item->price, $order->order_currency_code) }}
+                                </span>
+                            </div>
+
+                            <div class="text-center">
+                                <span class="text-[#666666] text-xs block">Qty</span>
+                                <span class="font-bold text-[#111111] px-2.5 py-0.5 rounded bg-[#F7F5EE] border border-[#DCD3C3]">
+                                    {{ $item->qty_ordered }}
+                                </span>
+                            </div>
+
+                            <div class="text-right min-w-[80px]">
+                                <span class="text-[#666666] text-xs block">Total</span>
+                                <span class="font-serif text-sm font-bold text-[#0F4D2E]">
+                                    {{ core()->formatPrice($item->total, $order->order_currency_code) }}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                @endforeach
+            </div>
+
+            <!-- Financial Totals Section -->
+            <div class="pt-4 border-t border-[#DCD3C3]/60 flex justify-end">
+                <div class="w-full sm:w-80 space-y-2 text-xs">
+                    <div class="flex justify-between text-[#666666]">
+                        <span>Subtotal</span>
+                        <span class="font-semibold text-[#111111]">
+                            {{ core()->formatPrice($order->sub_total, $order->order_currency_code) }}
+                        </span>
+                    </div>
+
+                    @if ($order->discount_amount > 0)
+                        <div class="flex justify-between text-[#0F4D2E]">
+                            <span>Discount {{ $order->coupon_code ? "({$order->coupon_code})" : '' }}</span>
+                            <span class="font-bold">
+                                -{{ core()->formatPrice($order->discount_amount, $order->order_currency_code) }}
+                            </span>
+                        </div>
+                    @endif
+
+                    <div class="flex justify-between text-[#666666]">
+                        <span>Shipping & Handling</span>
+                        <span class="font-semibold text-[#111111]">
+                            @if ($order->shipping_amount == 0)
+                                <span class="text-[#0F4D2E] font-bold">FREE</span>
+                            @else
+                                {{ core()->formatPrice($order->shipping_amount, $order->order_currency_code) }}
+                            @endif
+                        </span>
+                    </div>
+
+                    @if ($order->tax_amount > 0)
+                        <div class="flex justify-between text-[#666666]">
+                            <span>Tax (GST)</span>
+                            <span class="font-semibold text-[#111111]">
+                                {{ core()->formatPrice($order->tax_amount, $order->order_currency_code) }}
+                            </span>
+                        </div>
+                    @endif
+
+                    <div class="pt-2 border-t border-[#DCD3C3]/60 flex justify-between items-center text-sm font-bold text-[#111111]">
+                        <span class="font-serif">Grand Total</span>
+                        <span class="font-serif text-base text-[#0F4D2E]">
+                            {{ core()->formatPrice($order->grand_total, $order->order_currency_code) }}
+                        </span>
+                    </div>
+                </div>
             </div>
         </div>
 
-        @php
-            $hasCustomerRestrictedItem = $order->items->contains(
-                fn ($item) => ! $item->isCancelableByCustomer()
-            );
-        @endphp
-
-        @if ($hasCustomerRestrictedItem)
-            <div class="mt-4 flex items-start gap-3 rounded-md border border-amber-300 bg-amber-50 p-3 text-sm text-amber-900">
-                <span class="icon-warning mt-0.5 text-lg"></span>
-
-                <div>
-                    <p class="font-semibold">
-                        @lang('shop::app.customers.account.orders.view.booking-cancellation-not-allowed.title')
-                    </p>
-
-                    <p class="text-xs">
-                        @lang('shop::app.customers.account.orders.view.booking-cancellation-not-allowed.description')
-                    </p>
-                </div>
-            </div>
-        @endif
-
-        {!! view_render_event('bagisto.shop.customers.account.orders.view.before', ['order' => $order]) !!}
-
-        <!-- Order view tabs -->
-        <div class="mt-8 max-md:mt-5 max-md:grid max-md:gap-4">
-            <x-shop::tabs>
-                <x-shop::tabs.item
-                    class="!px-0 max-md:pb-0 max-md:pt-2"
-                    :title="trans('shop::app.customers.account.orders.view.information.info')"
-                    :is-selected="true"
-                >
-                    <!-- For Desktop -->
-                    <div
-                        class="max-md:hidden"
-                        v-pre
-                    >
-                        <div class="text-base font-medium">
-                            @lang('shop::app.customers.account.orders.view.information.placed-on')
-
-                            {{ core()->formatDate($order->created_at, 'd M Y') }}
-                        </div>
-
-                        <!-- Order Details -->
-                        <div class="relative mt-8 overflow-x-auto rounded-xl border">
-                            <table class="w-full text-left">
-                                <thead class="border-b border-zinc-200 bg-zinc-100 text-sm text-black">
-                                    <tr class="[&>*]:font-medium [&>*]:px-6 [&>*]:py-4">
-                                        <th scope="col">
-                                            @lang('shop::app.customers.account.orders.view.information.sku')
-                                        </th>
-
-                                        <th scope="col">
-                                            @lang('shop::app.customers.account.orders.view.information.product-name')
-                                        </th>
-
-                                        <th scope="col">
-                                            @lang('shop::app.customers.account.orders.view.information.price')
-                                        </th>
-
-                                        <th scope="col">
-                                            @lang('shop::app.customers.account.orders.view.information.item-status')
-                                        </th>
-
-                                        <th scope="col">
-                                            @lang('shop::app.customers.account.orders.view.information.subtotal')
-                                        </th>
-                                    </tr>
-                                </thead>
-
-                                <tbody>
-                                    @foreach ($order->items as $item)
-                                        <tr class="border-b bg-white align-top font-medium [&>*]:px-6 [&>*]:py-4">
-                                            <td data-value="@lang('shop::app.customers.account.orders.view.information.sku')">
-                                                {{ $item->getTypeInstance()->getOrderedItem($item)->sku }}
-                                            </td>
-
-                                            <td data-value="@lang('shop::app.customers.account.orders.view.information.product-name')">
-                                                {{ $item->name }}
-
-                                                @if (isset($item->additional['attributes']))
-                                                    <div>
-                                                        @foreach ($item->additional['attributes'] as $attribute)
-                                                            @if (
-                                                                ! isset($attribute['attribute_type'])
-                                                                || $attribute['attribute_type'] !== 'file'
-                                                            )
-                                                                <b>{{ $attribute['attribute_name'] }} : </b>{{ $attribute['option_label'] }}<br>
-                                                            @else
-                                                                {{ $attribute['attribute_name'] }} :
-
-                                                                <a
-                                                                    href="{{ Storage::url($attribute['option_label']) }}"
-                                                                    class="text-blue-600 hover:underline"
-                                                                    download="{{ File::basename($attribute['option_label']) }}"
-                                                                >
-                                                                    {{ File::basename($attribute['option_label']) }}
-                                                                </a>
-
-                                                                <br>
-                                                            @endif
-                                                        @endforeach
-                                                    </div>
-                                                @endif
-                                            </td>
-
-                                            <td
-                                                class="flex flex-col"
-                                                data-value="@lang('shop::app.customers.account.orders.view.information.price')"
-                                            >
-                                                @if (core()->getConfigData('sales.taxes.sales.display_prices') == 'including_tax')
-                                                    {{ core()->formatPrice($item->price_incl_tax, $order->order_currency_code) }}
-                                                @elseif (core()->getConfigData('sales.taxes.sales.display_prices') == 'both')
-                                                    {{ core()->formatPrice($item->price_incl_tax, $order->order_currency_code) }}
-
-                                                    <span class="whitespace-nowrap text-xs font-normal">
-                                                        @lang('shop::app.customers.account.orders.view.information.excl-tax')
-
-                                                        <span class="font-medium">
-                                                            {{ core()->formatPrice($item->price, $order->order_currency_code) }}
-                                                        </span>
-                                                    </span>
-                                                @else
-                                                    {{ core()->formatPrice($item->price, $order->order_currency_code) }}
-                                                @endif
-                                            </td>
-
-                                            <td data-value="@lang('shop::app.customers.account.orders.view.information.item-status')">
-                                                @if($item->qty_ordered)
-                                                    @lang('shop::app.customers.account.orders.view.information.ordered-item', ['qty_ordered' => $item->qty_ordered])
-                                                @endif
-
-                                                @if($item->qty_invoiced)
-                                                    @lang('shop::app.customers.account.orders.view.information.invoiced-item', ['qty_invoiced' => $item->qty_invoiced])
-                                                @endif
-
-                                                @if($item->qty_shipped)
-                                                    @lang('shop::app.customers.account.orders.view.information.item-shipped', ['qty_shipped' => $item->qty_shipped])
-                                                @endif
-
-                                                @if($item->qty_refunded)
-                                                    @lang('shop::app.customers.account.orders.view.information.item-refunded', ['qty_refunded' => $item->qty_refunded])
-                                                @endif
-
-                                                @if($item->qty_canceled)
-                                                    @lang('shop::app.customers.account.orders.view.information.item-canceled', ['qty_canceled' => $item->qty_canceled])
-                                                @endif
-                                            </td>
-
-                                            <td
-                                                class="flex flex-col"
-                                                data-value="@lang('shop::app.customers.account.orders.view.information.subtotal')"
-                                            >
-                                                @if (core()->getConfigData('sales.taxes.sales.display_prices') == 'including_tax')
-                                                    {{ core()->formatPrice($item->total_incl_tax, $order->order_currency_code) }}
-                                                @elseif (core()->getConfigData('sales.taxes.sales.display_prices') == 'both')
-                                                    {{ core()->formatPrice($item->total_incl_tax, $order->order_currency_code) }}
-
-                                                    <span class="whitespace-nowrap text-xs font-normal">
-                                                        @lang('shop::app.customers.account.orders.view.information.excl-tax')
-
-                                                        {{ core()->formatPrice($item->total, $order->order_currency_code) }}
-                                                    </span>
-                                                @else
-                                                    {{ core()->formatPrice($item->total, $order->order_currency_code) }}
-                                                @endif
-                                            </td>
-                                        </tr>
-                                    @endforeach
-                                </tbody>
-                            </table>
-                        </div>
-
-                        <!-- Payment Details -->
-                        <div class="mt-8 flex items-start gap-10 max-lg:gap-5">
-                            <div class="flex-auto">
-                                <div class="flex justify-end">
-                                    <div class="grid max-w-max gap-2 text-sm">
-                                        {!! view_render_event('bagisto.shop.customers.account.orders.view.information.subtotal.before') !!}
-
-                                        <!-- Sub Total -->
-                                        @if (core()->getConfigData('sales.taxes.sales.display_subtotal') == 'including_tax')
-                                            <div class="flex w-full justify-between gap-x-5">
-                                                @lang('shop::app.customers.account.orders.view.information.subtotal')
-
-                                                <p>
-                                                    {{ core()->formatPrice($order->sub_total_incl_tax, $order->order_currency_code) }}
-                                                </p>
-                                            </div>
-                                        @elseif (core()->getConfigData('sales.taxes.sales.display_subtotal') == 'both')
-                                            <div class="flex w-full justify-between gap-x-5">
-                                                @lang('shop::app.customers.account.orders.view.information.subtotal-excl-tax')
-
-                                                <p>
-                                                    {{ core()->formatPrice($order->sub_total, $order->order_currency_code) }}
-                                                </p>
-                                            </div>
-
-                                            <div class="flex w-full justify-between gap-x-5">
-                                                @lang('shop::app.customers.account.orders.view.information.subtotal-incl-tax')
-
-                                                <p>
-                                                    {{ core()->formatPrice($order->sub_total_incl_tax, $order->order_currency_code) }}
-                                                </p>
-                                            </div>
-                                        @else
-                                            <div class="flex w-full justify-between gap-x-5">
-                                                @lang('shop::app.customers.account.orders.view.information.subtotal')
-
-                                                <p>
-                                                    {{ core()->formatPrice($order->sub_total, $order->order_currency_code) }}
-                                                </p>
-                                            </div>
-                                        @endif
-
-                                        {!! view_render_event('bagisto.shop.customers.account.orders.view.information.subtotal.after') !!}
-
-                                        {!! view_render_event('bagisto.shop.customers.account.orders.view.information.shipping.before') !!}
-
-                                        <!-- Shipping And Handling -->
-                                        @if ($order->haveStockableItems())
-                                            @if (core()->getConfigData('sales.taxes.sales.display_shipping_amount') == 'including_tax')
-                                                <div class="flex w-full justify-between gap-x-5">
-                                                    @lang('shop::app.customers.account.orders.view.information.shipping-handling')
-
-                                                    <p>
-                                                        {{ core()->formatPrice($order->shipping_amount_incl_tax, $order->order_currency_code) }}
-                                                    </p>
-                                                </div>
-                                            @elseif (core()->getConfigData('sales.taxes.sales.display_shipping_amount') == 'both')
-                                                <div class="flex w-full justify-between gap-x-5">
-                                                    @lang('shop::app.customers.account.orders.view.information.shipping-handling-excl-tax')
-
-                                                    <p>
-                                                        {{ core()->formatPrice($order->shipping_amount, $order->order_currency_code) }}
-                                                    </p>
-                                                </div>
-
-                                                <div class="flex w-full justify-between gap-x-5">
-                                                    @lang('shop::app.customers.account.orders.view.information.shipping-handling-incl-tax')
-
-                                                    <p>
-                                                        {{ core()->formatPrice($order->shipping_amount_incl_tax, $order->order_currency_code) }}
-                                                    </p>
-                                                </div>
-                                            @else
-                                                <div class="flex w-full justify-between gap-x-5">
-                                                    @lang('shop::app.customers.account.orders.view.information.shipping-handling')
-
-                                                    <p>
-                                                        {{ core()->formatPrice($order->shipping_amount, $order->order_currency_code) }}
-                                                    </p>
-                                                </div>
-                                            @endif
-                                        @endif
-
-                                        {!! view_render_event('bagisto.shop.customers.account.orders.view.information.shipping.after') !!}
-
-                                        {!! view_render_event('bagisto.shop.customers.account.orders.view.information.tax-amount.before') !!}
-
-                                        <!-- Tax Amount -->
-                                        <div class="flex w-full justify-between gap-x-5">
-                                            @lang('shop::app.customers.account.orders.view.information.tax')
-
-                                            <p>
-                                                {{ core()->formatPrice($order->tax_amount, $order->order_currency_code) }}
-                                            </p>
-                                        </div>
-
-                                        {!! view_render_event('bagisto.shop.customers.account.orders.view.information.tax-amount.after') !!}
-
-                                        {!! view_render_event('bagisto.shop.customers.account.orders.view.information.discount.before') !!}
-
-                                        <!-- Discount Details -->
-                                        @if ($order->base_discount_amount > 0)
-                                            <div class="flex w-full justify-between gap-x-5">
-                                                <p>
-                                                    @lang('shop::app.customers.account.orders.view.information.discount')
-
-                                                    @if ($order->coupon_code)
-                                                        ({{ $order->coupon_code }})
-                                                    @endif
-                                                </p>
-
-                                                <p>
-                                                    {{ core()->formatPrice($order->discount_amount, $order->order_currency_code) }}
-                                                </p>
-                                            </div>
-                                        @endif
-
-                                        {!! view_render_event('bagisto.shop.customers.account.orders.view.information.discount.after') !!}
-
-                                        {!! view_render_event('bagisto.shop.customers.account.orders.view.information.grand-total.before') !!}
-
-                                        <!-- Grand Total -->
-                                        <div class="flex w-full justify-between gap-x-5 font-semibold">
-                                            @lang('shop::app.customers.account.orders.view.information.grand-total')
-
-                                            <p>
-                                                {{ core()->formatPrice($order->grand_total, $order->order_currency_code) }}
-                                            </p>
-                                        </div>
-
-                                        {!! view_render_event('bagisto.shop.customers.account.orders.view.information.grand-total.after') !!}
-
-                                        {!! view_render_event('bagisto.shop.customers.account.orders.view.information.total-paid.before') !!}
-
-                                        <!-- Total Paid -->
-                                        <div class="flex w-full justify-between gap-x-5">
-                                            @lang('shop::app.customers.account.orders.view.information.total-paid')
-
-                                            <p>
-                                                {{ core()->formatPrice($order->grand_total_invoiced, $order->order_currency_code) }}
-                                            </p>
-                                        </div>
-
-                                        {!! view_render_event('bagisto.shop.customers.account.orders.view.information.total-paid.after') !!}
-
-                                        {!! view_render_event('bagisto.shop.customers.account.orders.view.information.total-refunded.before') !!}
-
-                                        <!-- Total Refunded -->
-                                        <div class="flex w-full justify-between gap-x-5">
-                                            @lang('shop::app.customers.account.orders.view.information.total-refunded')
-
-                                            <p>
-                                                {{ core()->formatPrice($order->grand_total_refunded, $order->order_currency_code) }}
-                                            </p>
-                                        </div>
-
-                                        {!! view_render_event('bagisto.shop.customers.account.orders.view.information.total-refunded.after') !!}
-
-                                        {!! view_render_event('bagisto.shop.customers.account.orders.view.information.total-due.before') !!}
-
-                                        <!-- Total Due -->
-                                        <div class="flex w-full justify-between gap-x-5">
-                                            @lang('shop::app.customers.account.orders.view.information.total-due')
-
-                                            @php
-                                                $totalDue = $order->total_due;
-                                            @endphp
-
-                                            @foreach ($order->items as $item)
-                                                @php
-                                                    $totalDue = $totalDue - ($item->base_price * $item->qty_canceled);
-                                                @endphp
-                                            @endforeach
-
-                                            <p>
-                                                @if($order->status !== \Webkul\Sales\Models\Order::STATUS_CANCELED)
-                                                    {{ core()->formatPrice($totalDue, $order->order_currency_code) }}
-                                                @else
-                                                    {{ core()->formatPrice(0.00, $order->order_currency_code) }}
-                                                @endif
-                                            </p>
-                                        </div>
-
-                                        {!! view_render_event('bagisto.shop.customers.account.orders.view.information.total-due.after') !!}
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- For Mobile View -->
-                    <div class="grid gap-4 md:hidden">
-
-                        <div class="rounded-lg border">
-                            <div class="grid gap-1.5 px-4 py-2.5 text-xs font-medium text-zinc-500 [&>*]:flex [&>*]:justify-between">
-                                <div>
-                                    @lang('shop::app.customers.account.orders.view.order-id'):
-
-                                    <p class="text-black">#{{ $order->increment_id }}</p>
-                                </div>
-
-                                <div>
-                                    @lang('shop::app.customers.account.orders.view.information.placed-on'):
-
-                                    <p class="text-black">{{ core()->formatDate($order->created_at, 'd M Y') }}</p>
-                                </div>
-
-                                <div class="items-center">
-                                    @lang('shop::app.customers.account.orders.view.status')
-
-                                    @switch($order->status)
-                                        @case('completed')
-                                            <p class="label-completed">{{ ucfirst($order->status) }}</p>
-                                            @break
-
-                                        @case('pending')
-                                            <p class="label-pending">{{ ucfirst($order->status) }}</p>
-                                            @break
-
-                                        @case('closed')
-                                            <p class="label-closed">{{ ucfirst($order->status) }}</p>
-                                            @break
-
-                                        @case('processing')
-                                            <p class="label-processing">{{ ucfirst($order->status) }}</p>
-                                            @break
-
-                                        @case('canceled')
-                                            <p class="label-canceled">{{ ucfirst($order->status) }}</p>
-                                            @break
-
-                                        @default
-                                            <p class="label-info">{{ ucfirst($order->status) }}</p>
-                                    @endswitch
-                                </div>
-                            </div>
-
-                            <!-- Reorder and Cancel Button -->
-                            <div class="flex w-full justify-center rounded-b-lg border-t text-center">
-                                @if ($order->canReorder())
-                                    <a
-                                        href="{{ route('shop.customers.account.orders.reorder', $order->id) }}"
-                                        class="mx-auto w-full py-3 text-sm font-medium text-navyBlue hover:bg-zinc-100 max-sm:py-2"
-                                    >
-                                        @lang('shop::app.customers.account.orders.view.reorder-btn-title')
-                                    </a>
-                                @endif
-
-                                @if ($order->canCancel())
-                                    <form
-                                        method="POST"
-                                        ref="cancelOrderForm"
-                                        action="{{ route('shop.customers.account.orders.cancel', $order->id) }}"
-                                    >
-                                        @csrf
-                                    </form>
-
-                                    <!-- Seperator -->
-                                    <span class="my-auto h-5 w-0.5 bg-zinc-200 py-3"></span>
-
-                                    <a
-                                        href="javascript:void(0);"
-                                        class="mx-auto w-full py-3 text-sm font-medium hover:bg-zinc-100 max-sm:py-2"
-                                        @click="$emitter.emit('open-confirm-modal', {
-                                            message: '@lang('shop::app.customers.account.orders.view.cancel-confirm-msg')',
-
-                                            agree: () => {
-                                                this.$refs['cancelOrderForm'].submit()
-                                            }
-                                        })"
-                                    >
-                                        @lang('shop::app.customers.account.orders.view.cancel-btn-title')
-                                    </a>
-                                @endif
-
-                                @include('shop::customers.account.eu-withdrawals.button', [
-                                    'order' => $order,
-                                    'variant' => 'mx-auto w-full py-3 text-sm font-medium text-navyBlue hover:bg-zinc-100 max-sm:py-2',
-                                ])
-                            </div>
-                        </div>
-
-                        <!-- Item Ordered -->
-                        <x-shop::accordion
-                            :is-active="true"
-                            class="overflow-hidden rounded-lg !border-none !bg-gray-100"
-                        >
-                            <x-slot:header class="bg-gray-100 !px-4 py-3 text-sm font-medium max-sm:py-2">
-                               @lang('shop::app.customers.account.orders.view.item-ordered')
-                            </x-slot>
-
-                            <x-slot:content class="grid gap-2.5 !bg-gray-100 !p-0">
-                                @foreach ($order->items as $item)
-                                    <div class="rounded-md rounded-t-none border border-t-0 bg-white px-4 py-2">
-                                        <p class="pb-2 text-sm font-medium">
-                                            {{ $item->name }}
-
-                                            @if (isset($item->additional['attributes']))
-                                                <div>
-                                                    @foreach ($item->additional['attributes'] as $attribute)
-                                                        <b  class="max-sm:!font-semibold">{{ $attribute['attribute_name'] }} : </b>{{ $attribute['option_label'] }}<br>
-                                                    @endforeach
-                                                </div>
-                                            @endif
-                                        </p>
-
-                                        <div class="grid gap-1.5 text-xs font-medium">
-                                            <!-- SKU -->
-                                            <div class="flex justify-between">
-                                                <span class="text-zinc-500">
-                                                    @lang('shop::app.customers.account.orders.view.information.sku'):
-                                                </span>
-
-                                                <span>
-                                                    {{ $item->getTypeInstance()->getOrderedItem($item)->sku }}
-                                                </span>
-                                            </div>
-
-                                            <!-- Quantity -->
-                                            <div class="flex justify-between">
-                                                <span class="text-zinc-500">
-                                                    @lang('shop::app.customers.account.orders.view.information.item-status')
-                                                </span>
-
-                                                <div class="[&>*]:text-right">
-                                                    @if($item->qty_ordered)
-                                                        <p>
-                                                            @lang('shop::app.customers.account.orders.view.information.ordered-item', ['qty_ordered' => $item->qty_ordered])
-                                                        </p>
-                                                    @endif
-
-                                                    @if($item->qty_invoiced)
-                                                        <p>
-                                                            @lang('shop::app.customers.account.orders.view.information.invoiced-item', ['qty_invoiced' => $item->qty_invoiced])
-                                                        </p>
-                                                    @endif
-
-                                                    @if($item->qty_shipped)
-                                                        <p>
-                                                            @lang('shop::app.customers.account.orders.view.information.item-shipped', ['qty_shipped' => $item->qty_shipped])
-                                                        </p>
-                                                    @endif
-
-                                                    @if($item->qty_refunded)
-                                                        <span>
-                                                            @lang('shop::app.customers.account.orders.view.information.item-refunded', ['qty_refunded' => $item->qty_refunded])
-                                                        </span>
-                                                    @endif
-
-                                                    @if($item->qty_canceled)
-                                                        <p>
-                                                            @lang('shop::app.customers.account.orders.view.information.item-canceled', ['qty_canceled' => $item->qty_canceled])
-
-                                                        </p>
-                                                    @endif
-                                                </div>
-                                            </div>
-
-                                            <!-- Price -->
-                                            <div class="flex justify-between">
-                                                <span class="text-zinc-500">
-                                                    @lang('shop::app.customers.account.orders.view.information.price'):
-                                                </span>
-
-                                                <span class="[&>*]:text-right">
-                                                    @if (core()->getConfigData('sales.taxes.sales.display_prices') == 'including_tax')
-                                                        {{ core()->formatPrice($item->price_incl_tax, $order->order_currency_code) }}
-                                                    @elseif (core()->getConfigData('sales.taxes.sales.display_prices') == 'both')
-                                                        <p>
-                                                            {{ core()->formatPrice($item->price_incl_tax, $order->order_currency_code) }}
-                                                        </p>
-
-                                                        <p class="whitespace-nowrap text-xs font-normal">
-                                                            @lang('shop::app.customers.account.orders.view.information.excl-tax')
-
-                                                            <span class="font-medium">
-                                                                {{ core()->formatPrice($item->price, $order->order_currency_code) }}
-                                                            </span>
-                                                        </p>
-                                                    @else
-                                                        {{ core()->formatPrice($item->price, $order->order_currency_code) }}
-                                                    @endif
-                                                </span>
-                                            </div>
-
-                                            <!-- Sub Total -->
-                                            <div class="flex justify-between">
-                                                <span class="text-zinc-500">
-                                                    @lang('shop::app.customers.account.orders.view.invoices.subtotal'):
-                                                </span>
-
-                                                <span class="[&>*]:text-right">
-                                                    @if (core()->getConfigData('sales.taxes.sales.display_prices') == 'including_tax')
-                                                        {{ core()->formatPrice($item->total_incl_tax, $order->order_currency_code) }}
-                                                    @elseif (core()->getConfigData('sales.taxes.sales.display_prices') == 'both')
-                                                        <p>
-                                                            {{ core()->formatPrice($item->total_incl_tax, $order->order_currency_code) }}
-                                                        </p>
-
-                                                        <p class="whitespace-nowrap text-xs font-normal">
-                                                            @lang('shop::app.customers.account.orders.view.invoices.excl-tax')
-
-                                                            <span class="font-medium">
-                                                                {{ core()->formatPrice($item->total, $order->order_currency_code) }}
-                                                            </span>
-                                                        </p>
-                                                    @else
-                                                        {{ core()->formatPrice($item->total, $order->order_currency_code) }}
-                                                    @endif
-                                                </span>
-                                            </div>
-
-                                            <!-- Tax Percent -->
-                                            <div class="flex justify-between">
-                                                <span class="text-zinc-500">
-                                                    @lang('shop::app.customers.account.orders.view.information.tax-percent')
-                                                </span>
-
-                                                <p>
-                                                    {{ $item->tax_percent }}
-                                                </p>
-                                            </div>
-
-                                            <!-- Tax Amount -->
-                                            <div class="flex justify-between">
-                                                <span class="text-zinc-500">
-                                                    @lang('shop::app.customers.account.orders.view.information.tax-amount')
-                                                </span>
-
-                                                <p>
-                                                    {{ $item->tax_amount }}
-                                                </p>
-                                            </div>
-
-                                            <!-- Grand Total -->
-                                            <div class="flex justify-between">
-                                                <span class="text-zinc-500">
-                                                    @lang('shop::app.customers.account.orders.view.information.grand-total')
-                                                </span>
-
-                                                <p>
-                                                    {{ core()->formatPrice($order->grand_total, $order->order_currency_code) }}
-                                                </p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                @endforeach
-                            </x-slot>
-                        </x-shop::accordion>
-
-                        <!--Summary -->
-                        <div 
-                            class="w-full rounded-md bg-gray-100"
-                            v-pre
-                        >
-                            <div class="rounded-t-md border-none !px-4 py-3 text-sm font-medium max-sm:py-2">
-                                @lang('shop::app.customers.account.orders.view.information.order-summary')
-                            </div>
-
-                            <div class="grid gap-1.5 rounded-md rounded-t-none border border-t-0 bg-white px-4 py-3 text-xs font-medium">
-
-                                {!! view_render_event('bagisto.shop.customers.account.orders.view.information.subtotal.before') !!}
-
-                                @if (core()->getConfigData('sales.taxes.sales.display_subtotal') == 'including_tax')
-                                    <div class="flex w-full justify-between gap-x-5">
-                                        <p class="text-zinc-500">
-                                            @lang('shop::app.customers.account.orders.view.information.subtotal')
-                                        </p>
-
-                                        <p>
-                                            {{ core()->formatPrice($order->sub_total_incl_tax, $order->order_currency_code) }}
-                                        </p>
-                                    </div>
-                                @elseif (core()->getConfigData('sales.taxes.sales.display_subtotal') == 'both')
-                                    <div class="flex w-full justify-between gap-x-5">
-                                        <p class="text-zinc-500">
-                                            @lang('shop::app.customers.account.orders.view.information.subtotal-excl-tax')
-                                        </p>
-
-                                        <p>
-                                            {{ core()->formatPrice($order->sub_total, $order->order_currency_code) }}
-                                        </p>
-                                    </div>
-
-                                    <div class="flex w-full justify-between gap-x-5">
-                                        <p class="text-zinc-500">
-
-                                            @lang('shop::app.customers.account.orders.view.information.subtotal-incl-tax')
-                                        </p>
-
-                                        <p>
-                                            {{ core()->formatPrice($order->sub_total_incl_tax, $order->order_currency_code) }}
-                                        </p>
-                                    </div>
-                                @else
-                                    <div class="flex w-full justify-between gap-x-5">
-                                        <p class="text-zinc-500">
-                                            @lang('shop::app.customers.account.orders.view.information.subtotal')
-                                        </p>
-
-                                        <p>
-                                            {{ core()->formatPrice($order->sub_total, $order->order_currency_code) }}
-                                        </p>
-                                    </div>
-                                @endif
-
-                                {!! view_render_event('bagisto.shop.customers.account.orders.view.information.subtotal.after') !!}
-
-                                {!! view_render_event('bagisto.shop.customers.account.orders.view.information.shipping.before') !!}
-
-                                @if ($order->haveStockableItems())
-                                    @if (core()->getConfigData('sales.taxes.sales.display_shipping_amount') == 'including_tax')
-                                        <div class="flex w-full justify-between gap-x-5">
-                                            <p class="text-zinc-500">
-                                                @lang('shop::app.customers.account.orders.view.information.shipping-handling')
-                                            </p>
-
-                                            <p>
-                                                {{ core()->formatPrice($order->shipping_amount_incl_tax, $order->order_currency_code) }}
-                                            </p>
-                                        </div>
-                                    @elseif (core()->getConfigData('sales.taxes.sales.display_shipping_amount') == 'both')
-                                        <div class="flex w-full justify-between gap-x-5">
-                                            <p class="text-zinc-500">
-                                                @lang('shop::app.customers.account.orders.view.information.shipping-handling-excl-tax')
-                                            </p>
-
-                                            <p>
-                                                {{ core()->formatPrice($order->shipping_amount, $order->order_currency_code) }}
-                                            </p>
-                                        </div>
-
-                                        <div class="flex w-full justify-between gap-x-5">
-                                            <p class="text-zinc-500">
-                                                @lang('shop::app.customers.account.orders.view.information.shipping-handling-incl-tax')
-                                            </p>
-
-                                            <p>
-                                                {{ core()->formatPrice($order->shipping_amount_incl_tax, $order->order_currency_code) }}
-                                            </p>
-                                        </div>
-                                    @else
-                                        <div class="flex w-full justify-between gap-x-5">
-                                            <p class="text-zinc-500">
-                                                @lang('shop::app.customers.account.orders.view.information.shipping-handling')
-                                            </p>
-
-                                            <p>
-                                                {{ core()->formatPrice($order->shipping_amount, $order->order_currency_code) }}
-                                            </p>
-                                        </div>
-                                    @endif
-                                @endif
-
-                                {!! view_render_event('bagisto.shop.customers.account.orders.view.information.shipping.after') !!}
-
-                                {!! view_render_event('bagisto.shop.customers.account.orders.view.information.tax-amount.before') !!}
-
-                                <!-- Tax Informations -->
-                                <div class="flex w-full justify-between gap-x-5">
-                                    <p class="text-zinc-500">
-                                        @lang('shop::app.customers.account.orders.view.information.tax')
-                                    </p>
-
-                                    <p>
-                                        {{ core()->formatPrice($order->tax_amount, $order->order_currency_code) }}
-                                    </p>
-                                </div>
-
-                                {!! view_render_event('bagisto.shop.customers.account.orders.view.information.tax-amount.after') !!}
-
-                                {!! view_render_event('bagisto.shop.customers.account.orders.view.information.discount.before') !!}
-
-                                @if ($order->base_discount_amount > 0)
-                                    <div class="flex w-full justify-between gap-x-5">
-                                        <p class="text-zinc-500">
-                                            @lang('shop::app.customers.account.orders.view.information.discount')
-
-                                            @if ($order->coupon_code)
-                                                ({{ $order->coupon_code }})
-                                            @endif
-                                        </p>
-
-                                        <p>
-                                            {{ core()->formatPrice($order->discount_amount, $order->order_currency_code) }}
-                                        </p>
-                                    </div>
-                                @endif
-
-                                {!! view_render_event('bagisto.shop.customers.account.orders.view.information.discount.after') !!}
-
-                                {!! view_render_event('bagisto.shop.customers.account.orders.view.information.grand-total.before') !!}
-
-                                <!-- Grand Total -->
-                                <div class="flex w-full justify-between gap-x-5 font-semibold">
-                                    <p class="text-zinc-500">
-                                        @lang('shop::app.customers.account.orders.view.information.grand-total')
-                                    </p>
-
-                                    <p>
-                                        {{ core()->formatPrice($order->grand_total, $order->order_currency_code) }}
-                                    </p>
-                                </div>
-
-                                {!! view_render_event('bagisto.shop.customers.account.orders.view.information.grand-total.after') !!}
-
-                                {!! view_render_event('bagisto.shop.customers.account.orders.view.information.total-paid.before') !!}
-
-                                <!-- Total Paid -->
-                                <div class="flex w-full justify-between gap-x-5">
-                                    <p class="text-zinc-500">
-                                        @lang('shop::app.customers.account.orders.view.information.total-paid')
-                                    </p>
-
-                                    <p>
-                                        {{ core()->formatPrice($order->grand_total_invoiced, $order->order_currency_code) }}
-                                    </p>
-                                </div>
-
-                                {!! view_render_event('bagisto.shop.customers.account.orders.view.information.total-paid.after') !!}
-
-                                {!! view_render_event('bagisto.shop.customers.account.orders.view.information.total-refunded.before') !!}
-
-                                <!-- Total Refunded -->
-                                <div class="flex w-full justify-between gap-x-5">
-                                    <p class="text-zinc-500">
-                                        @lang('shop::app.customers.account.orders.view.information.total-refunded')
-                                    </p>
-
-                                    <p>
-                                        {{ core()->formatPrice($order->grand_total_refunded, $order->order_currency_code) }}
-                                    </p>
-                                </div>
-
-                                {!! view_render_event('bagisto.shop.customers.account.orders.view.information.total-refunded.after') !!}
-
-                                {!! view_render_event('bagisto.shop.customers.account.orders.view.information.total-due.before') !!}
-
-                                <!-- Total Due -->
-                                <div class="flex w-full justify-between gap-x-5">
-                                    <p class="text-zinc-500">
-                                        @lang('shop::app.customers.account.orders.view.information.total-due')
-                                    </p>
-
-                                    @php
-                                        $baseTotalDue = $order->base_total_due;
-                                    @endphp
-
-                                    @foreach ($order->items as $item)
-                                        @php
-                                            $baseTotalDue = $baseTotalDue - ($item->base_price * $item->qty_canceled);
-                                        @endphp
-                                    @endforeach
-
-                                    <p>
-                                        @if($order->status !== \Webkul\Sales\Models\Order::STATUS_CANCELED)
-                                            {{ core()->formatPrice($baseTotalDue, $order->order_currency_code) }}
-                                        @else
-                                            {{ core()->formatPrice(0.00, $order->order_currency_code) }}
-                                        @endif
-                                    </p>
-                                </div>
-
-                                {!! view_render_event('bagisto.shop.customers.account.orders.view.information.total-due.after') !!}
-
-                            </div>
-                        </div>
-                    </div>
-                </x-shop::tabs.item>
-
-                <!-- Invoices tab -->
-                @if ($order->invoices->count())
-                    <x-shop::tabs.item
-                        class="max-md:!px-0 max-md:pb-0 max-md:pt-2"
-                        :title="trans('shop::app.customers.account.orders.view.invoices.invoices')"
-                    >
-                        <div class="flex flex-col gap-10 max-md:gap-8">
-                            @foreach ($order->invoices as $invoice)
-                                <!-- For Mobile View -->
-                                <div class="grid gap-4 md:hidden">
-                                    <div
-                                        class="rounded-lg border"
-                                        v-pre
-                                    >
-                                        <div class="grid gap-1.5 px-4 py-2.5 text-xs font-medium text-zinc-500 [&>*]:flex [&>*]:justify-between">
-                                            <div class="flex justify-between">
-                                                @lang('shop::app.customers.account.orders.view.invoices.individual-invoice', ['invoice_id' => $invoice->increment_id ?? $invoice->id])
-
-                                                <a href="{{ route('shop.customers.account.orders.print-invoice', $invoice->id) }}">
-                                                    <div class="flex items-center gap-1 font-medium text-black">
-                                                        <span class="icon-download text-sm font-semibold"></span>
-
-                                                        @lang('shop::app.customers.account.orders.view.invoices.print')
-                                                    </div>
-                                                </a>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <!-- Item  Invoiced -->
-                                    <x-shop::accordion
-                                        :is-active="true"
-                                        class="overflow-hidden rounded-lg !border-none !bg-gray-100"
-                                    >
-                                        <x-slot:header class="!mb-0 rounded-t-md bg-gray-100 !px-4 py-3 text-sm font-medium max-sm:py-2">
-                                            @lang('shop::app.customers.account.orders.view.item-invoiced')
-                                        </x-slot>
-
-                                        <x-slot:content class="grid gap-2.5 !bg-gray-100 !p-0">
-                                            @foreach ($invoice->items as $item)
-                                                <div class="rounded-md rounded-t-none border border-t-0 bg-white px-4 py-2">
-                                                    <p class="pb-2 text-sm font-medium">
-                                                        {{ $item->name }}
-                                                    </p>
-
-                                                    @if (isset($item->additional['attributes']))
-                                                        <div>
-                                                            @foreach ($item->additional['attributes'] as $attribute)
-                                                                <b>{{ $attribute['attribute_name'] }} : </b>{{ $attribute['option_label'] }}<br>
-                                                            @endforeach
-                                                        </div>
-                                                    @endif
-
-                                                    <div class="grid gap-1.5 text-xs font-medium">
-                                                        <!-- SKU -->
-                                                        <div class="flex justify-between">
-                                                            <span class="text-zinc-500">
-                                                                @lang('shop::app.customers.account.orders.view.invoices.sku'):
-                                                            </span>
-
-                                                            <span>
-                                                                {{ $item->getTypeInstance()->getOrderedItem($item)->sku }}
-                                                            </span>
-                                                        </div>
-
-                                                        <!-- Price -->
-                                                        <div class="flex justify-between">
-                                                            <span class="text-zinc-500">
-                                                                @lang('shop::app.customers.account.orders.view.invoices.price'):
-                                                            </span>
-
-                                                            <span class="[&>*]:text-right">
-                                                                @if (core()->getConfigData('sales.taxes.sales.display_prices') == 'including_tax')
-                                                                    {{ core()->formatPrice($item->price_incl_tax, $order->order_currency_code) }}
-                                                                @elseif (core()->getConfigData('sales.taxes.sales.display_prices') == 'both')
-                                                                    <p>
-                                                                        {{ core()->formatPrice($item->price_incl_tax, $order->order_currency_code) }}
-                                                                    </p>
-
-                                                                    <p class="whitespace-nowrap text-xs font-normal">
-                                                                        @lang('shop::app.customers.account.orders.view.information.excl-tax')
-
-                                                                        <span class="font-medium">
-                                                                            {{ core()->formatPrice($item->price, $order->order_currency_code) }}
-                                                                        </span>
-                                                                    </p>
-                                                                @else
-                                                                    {{ core()->formatPrice($item->price, $order->order_currency_code) }}
-                                                                @endif
-                                                            </span>
-                                                        </div>
-
-                                                        <!-- Quantity -->
-                                                        <div class="flex justify-between">
-                                                            <span class="text-zinc-500">
-                                                                @lang('shop::app.customers.account.orders.view.invoices.qty')
-                                                            </span>
-
-                                                            <span>
-                                                                {{ $item->qty }}
-                                                            </span>
-                                                        </div>
-
-                                                        <!-- Sub Total -->
-                                                        <div class="flex justify-between">
-                                                            <span class="text-zinc-500">
-                                                                @lang('shop::app.customers.account.orders.view.invoices.subtotal'):
-                                                            </span>
-
-                                                            <span class="[&>*]:text-right">
-                                                                @if (core()->getConfigData('sales.taxes.sales.display_prices') == 'including_tax')
-                                                                    {{ core()->formatPrice($item->total_incl_tax, $order->order_currency_code) }}
-                                                                @elseif (core()->getConfigData('sales.taxes.sales.display_prices') == 'both')
-                                                                    <p>
-                                                                        {{ core()->formatPrice($item->total_incl_tax, $order->order_currency_code) }}
-                                                                    </p>
-
-                                                                    <p class="whitespace-nowrap text-xs font-normal">
-                                                                        @lang('shop::app.customers.account.orders.view.invoices.excl-tax')
-
-                                                                        <span class="font-medium">
-                                                                            {{ core()->formatPrice($item->total, $order->order_currency_code) }}
-                                                                        </span>
-                                                                    </p>
-                                                                @else
-                                                                    {{ core()->formatPrice($item->total, $order->order_currency_code) }}
-                                                                @endif
-                                                            </span>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            @endforeach
-                                        </x-slot>
-                                    </x-shop::accordion>
-
-                                    <!--Summary -->
-                                    <div
-                                        class="w-full rounded-md bg-gray-100"
-                                        v-pre
-                                    >
-                                        <div class="rounded-t-md border-none !px-4 py-3 text-sm font-medium max-sm:py-2">
-                                            @lang('Order Summary')
-                                        </div>
-
-                                        <div class="grid gap-1.5 rounded-md rounded-t-none border border-t-0 bg-white px-4 py-3 text-xs font-medium">
-
-                                            {!! view_render_event('bagisto.shop.customers.account.orders.view.invoices.subtotal.before') !!}
-
-                                            @if (core()->getConfigData('sales.taxes.sales.display_subtotal') == 'including_tax')
-                                                <div class="flex w-full justify-between gap-x-5">
-                                                    <p class="text-zinc-500">
-                                                        @lang('shop::app.customers.account.orders.view.invoices.subtotal')
-                                                    </p>
-
-                                                    <p>
-                                                        {{ core()->formatPrice($invoice->sub_total_incl_tax, $order->order_currency_code) }}
-                                                    </p>
-                                                </div>
-                                            @elseif (core()->getConfigData('sales.taxes.sales.display_subtotal') == 'both')
-                                                <div class="flex w-full justify-between gap-x-5">
-                                                    <p class="text-zinc-500">
-                                                        @lang('shop::app.customers.account.orders.view.invoices.subtotal-excl-tax')
-                                                    </p>
-
-                                                    <p>
-                                                        {{ core()->formatPrice($invoice->sub_total, $order->order_currency_code) }}
-                                                    </p>
-                                                </div>
-                                            @else
-                                                <div class="flex w-full justify-between gap-x-5">
-                                                    <p class="text-zinc-500">
-                                                        @lang('shop::app.customers.account.orders.view.invoices.subtotal')
-                                                    </p>
-
-                                                    <p>
-                                                        {{ core()->formatPrice($invoice->sub_total, $order->order_currency_code) }}
-                                                    </p>
-                                                </div>
-                                            @endif
-
-                                            {!! view_render_event('bagisto.shop.customers.account.orders.view.invoices.subtotal.after') !!}
-
-                                            {!! view_render_event('bagisto.shop.customers.account.orders.view.invoices.shipping.before') !!}
-
-                                            @if (core()->getConfigData('sales.taxes.sales.display_shipping_amount') == 'including_tax')
-                                                <div class="flex w-full justify-between gap-x-5">
-                                                    <p class="text-zinc-500">
-                                                        @lang('shop::app.customers.account.orders.view.information.shipping-handling')
-                                                    </p>
-
-                                                    <p>
-                                                        {{ core()->formatPrice($invoice->shipping_amount_incl_tax, $order->order_currency_code) }}
-                                                    </p>
-                                                </div>
-                                            @elseif (core()->getConfigData('sales.taxes.sales.display_shipping_amount') == 'both')
-                                                <div class="flex w-full justify-between gap-x-5">
-                                                    <p class="text-zinc-500">
-                                                        @lang('shop::app.customers.account.orders.view.invoices.shipping-handling-excl-tax')
-                                                    </p>
-
-                                                    <p>
-                                                        {{ core()->formatPrice($invoice->shipping_amount, $order->order_currency_code) }}
-                                                    </p>
-                                                </div>
-
-                                                <div class="flex w-full justify-between gap-x-5">
-                                                    <p class="text-zinc-500">
-                                                        @lang('shop::app.customers.account.orders.view.invoices.shipping-handling-incl-tax')
-                                                    </p>
-
-                                                    <p>
-                                                        {{ core()->formatPrice($invoice->shipping_amount_incl_tax, $order->order_currency_code) }}
-                                                    </p>
-                                                </div>
-                                            @else
-                                                <div class="flex w-full justify-between gap-x-5">
-                                                    <p class="text-zinc-500">
-                                                        @lang('shop::app.customers.account.orders.view.invoices.shipping-handling')
-                                                    </p>
-
-                                                    <p>
-                                                        {{ core()->formatPrice($invoice->shipping_amount, $order->order_currency_code) }}
-                                                    </p>
-                                                </div>
-                                            @endif
-
-                                            {!! view_render_event('bagisto.shop.customers.account.orders.view.invoices.shipping.after') !!}
-
-                                            {!! view_render_event('bagisto.shop.customers.account.orders.view.invoices.discount.before') !!}
-
-                                            @if ($invoice->base_discount_amount > 0)
-                                                <div class="flex w-full justify-between gap-x-5">
-                                                    <p class="text-zinc-500">
-                                                        @lang('shop::app.customers.account.orders.view.invoices.discount')
-                                                    </p>
-
-                                                    <p>
-                                                        {{ core()->formatPrice($invoice->discount_amount, $order->order_currency_code) }}
-                                                    </p>
-                                                </div>
-                                            @endif
-
-                                            {!! view_render_event('bagisto.shop.customers.account.orders.view.invoices.discount.after') !!}
-
-                                            {!! view_render_event('bagisto.shop.customers.account.orders.view.invoices.tax.before') !!}
-
-                                            <!-- Tax Amount -->
-                                            <div class="flex w-full justify-between gap-x-5">
-                                                <p class="text-zinc-500">
-                                                    @lang('shop::app.customers.account.orders.view.invoices.tax')
-                                                </p>
-
-                                                <p>
-                                                    {{ core()->formatPrice($invoice->tax_amount, $order->order_currency_code) }}
-                                                </p>
-                                            </div>
-
-                                            {!! view_render_event('bagisto.shop.customers.account.orders.view.invoices.tax.after') !!}
-
-                                            {!! view_render_event('bagisto.shop.customers.account.orders.view.invoices.grand-total.before') !!}
-
-                                            <!-- Grand Total -->
-                                            <div class="flex w-full justify-between gap-x-5 font-semibold">
-                                                <p class="text-zinc-500">
-                                                    @lang('shop::app.customers.account.orders.view.invoices.grand-total')
-                                                </p>
-
-                                                <p>
-                                                    {{ core()->formatPrice($invoice->grand_total, $order->order_currency_code) }}
-                                                </p>
-                                            </div>
-
-                                            {!! view_render_event('bagisto.shop.customers.account.orders.view.invoices.grand-total.after') !!}
-
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- For Desktop View -->
-                                <div
-                                    class="max-md:hidden"
-                                    v-pre
-                                >
-                                    <div class="flex justify-between">
-                                        <label class="text-base font-medium">
-                                            @lang('shop::app.customers.account.orders.view.invoices.individual-invoice', ['invoice_id' => $invoice->increment_id ?? $invoice->id])
-                                        </label>
-
-                                        <a href="{{ route('shop.customers.account.orders.print-invoice', $invoice->id) }}">
-                                            <div class="flex items-center gap-1 font-semibold">
-                                                <span class="icon-download text-2xl"></span>
-
-                                                @lang('shop::app.customers.account.orders.view.invoices.print')
-                                            </div>
-                                        </a>
-                                    </div>
-
-                                    <div class="relative mt-8 overflow-x-auto rounded-xl border">
-                                        <table class="w-full text-left">
-                                            <thead class="border-b border-zinc-200 bg-zinc-100 text-sm text-black">
-                                                <tr class="[&>*]:font-medium [&>*]:px-6 [&>*]:py-4">
-                                                    <th scope="col">
-                                                        @lang('shop::app.customers.account.orders.view.invoices.sku')
-                                                    </th>
-
-                                                    <th scope="col">
-                                                        @lang('shop::app.customers.account.orders.view.invoices.product-name')
-                                                    </th>
-
-                                                    <th scope="col">
-                                                        @lang('shop::app.customers.account.orders.view.invoices.price')
-                                                    </th>
-
-                                                    <th scope="col">
-                                                        @lang('shop::app.customers.account.orders.view.invoices.qty')
-                                                    </th>
-
-                                                    <th scope="col">
-                                                        @lang('shop::app.customers.account.orders.view.invoices.subtotal')
-                                                    </th>
-                                                </tr>
-                                            </thead>
-
-                                            <tbody>
-                                                @foreach ($invoice->items as $item)
-                                                    <tr class="border-b bg-white text-black [&>*]:font-medium [&>*]:px-6 [&>*]:py-4">
-                                                        <td data-value="@lang('shop::app.customers.account.orders.view.invoices.sku')">
-                                                            {{ $item->getTypeInstance()->getOrderedItem($item)->sku }}
-                                                        </td>
-
-                                                        <td data-value="@lang('shop::app.customers.account.orders.view.invoices.product-name')">
-                                                            {{ $item->name }}
-
-                                                            @if (isset($item->additional['attributes']))
-                                                                <div>
-                                                                    @foreach ($item->additional['attributes'] as $attribute)
-                                                                        <b>{{ $attribute['attribute_name'] }} : </b>{{ $attribute['option_label'] }}<br>
-                                                                    @endforeach
-                                                                </div>
-                                                            @endif
-                                                        </td>
-
-                                                        <td
-                                                            class="flex flex-col"
-                                                            data-value="@lang('shop::app.customers.account.orders.view.invoices.price')"
-                                                        >
-                                                            @if (core()->getConfigData('sales.taxes.sales.display_prices') == 'including_tax')
-                                                                {{ core()->formatPrice($item->price_incl_tax, $order->order_currency_code) }}
-                                                            @elseif (core()->getConfigData('sales.taxes.sales.display_prices') == 'both')
-                                                                {{ core()->formatPrice($item->price_incl_tax, $order->order_currency_code) }}
-
-                                                                <span class="whitespace-nowrap text-xs font-normal">
-                                                                    @lang('shop::app.customers.account.orders.view.information.excl-tax')
-
-                                                                    <span class="font-medium">
-                                                                        {{ core()->formatPrice($item->price, $order->order_currency_code) }}
-                                                                    </span>
-                                                                </span>
-                                                            @else
-                                                                {{ core()->formatPrice($item->price, $order->order_currency_code) }}
-                                                            @endif
-                                                        </td>
-
-                                                        <td data-value="@lang('shop::app.customers.account.orders.view.invoices.qty')">
-                                                            {{ $item->qty }}
-                                                        </td>
-
-                                                        <td
-                                                            class="flex flex-col"
-                                                            data-value="@lang('shop::app.customers.account.orders.view.invoices.subtotal')"
-                                                        >
-                                                            @if (core()->getConfigData('sales.taxes.sales.display_prices') == 'including_tax')
-                                                                {{ core()->formatPrice($item->total_incl_tax, $order->order_currency_code) }}
-                                                            @elseif (core()->getConfigData('sales.taxes.sales.display_prices') == 'both')
-                                                                {{ core()->formatPrice($item->total_incl_tax, $order->order_currency_code) }}
-
-                                                                <span class="whitespace-nowrap text-xs font-normal">
-                                                                    @lang('shop::app.customers.account.orders.view.invoices.excl-tax')
-
-                                                                    <span class="font-medium">
-                                                                        {{ core()->formatPrice($item->total, $order->order_currency_code) }}
-                                                                    </span>
-                                                                </span>
-                                                            @else
-                                                                {{ core()->formatPrice($item->total, $order->order_currency_code) }}
-                                                            @endif
-                                                        </td>
-                                                    </tr>
-                                                @endforeach
-                                            </tbody>
-                                        </table>
-                                    </div>
-
-                                    <!-- Summary -->
-                                    <div class="mt-8 flex items-start gap-10 max-lg:gap-5">
-                                        <div class="flex flex-auto justify-end">
-                                            <div class="grid max-w-max gap-2 text-sm">
-
-                                                {!! view_render_event('bagisto.shop.customers.account.orders.view.invoices.subtotal.before') !!}
-
-                                                <!-- Sub Total -->
-                                                @if (core()->getConfigData('sales.taxes.sales.display_subtotal') == 'including_tax')
-                                                    <div class="flex w-full justify-between gap-x-5">
-                                                        @lang('shop::app.customers.account.orders.view.invoices.subtotal')
-
-                                                        <p>
-                                                            {{ core()->formatPrice($invoice->sub_total_incl_tax, $order->order_currency_code) }}
-                                                        </p>
-                                                    </div>
-                                                @elseif (core()->getConfigData('sales.taxes.sales.display_subtotal') == 'both')
-                                                    <div class="flex w-full justify-between gap-x-5">
-                                                        @lang('shop::app.customers.account.orders.view.invoices.subtotal-excl-tax')
-
-                                                        <p>
-                                                            {{ core()->formatPrice($invoice->sub_total, $order->order_currency_code) }}
-                                                        </p>
-                                                    </div>
-
-                                                    <div class="flex w-full justify-between gap-x-5">
-                                                        @lang('shop::app.customers.account.orders.view.invoices.subtotal-incl-tax')
-
-                                                        <p>
-                                                            {{ core()->formatPrice($invoice->sub_total_incl_tax, $order->order_currency_code) }}
-                                                        </p>
-                                                    </div>
-                                                @else
-                                                    <div class="flex w-full justify-between gap-x-5">
-                                                        @lang('shop::app.customers.account.orders.view.invoices.subtotal')
-
-                                                        <p>
-                                                            {{ core()->formatPrice($invoice->sub_total, $order->order_currency_code) }}
-                                                        </p>
-                                                    </div>
-                                                @endif
-
-                                                {!! view_render_event('bagisto.shop.customers.account.orders.view.invoices.subtotal.after') !!}
-
-                                                {!! view_render_event('bagisto.shop.customers.account.orders.view.invoices.shipping.before') !!}
-
-                                                <!-- Shipping -->
-                                                @if (core()->getConfigData('sales.taxes.sales.display_shipping_amount') == 'including_tax')
-                                                    <div class="flex w-full justify-between gap-x-5">
-                                                        @lang('shop::app.customers.account.orders.view.invoices.shipping-handling')
-
-                                                        <p>
-                                                            {{ core()->formatPrice($invoice->shipping_amount_incl_tax, $order->order_currency_code) }}
-                                                        </p>
-                                                    </div>
-                                                @elseif (core()->getConfigData('sales.taxes.sales.display_shipping_amount') == 'both')
-                                                    <div class="flex w-full justify-between gap-x-5">
-                                                        @lang('shop::app.customers.account.orders.view.invoices.shipping-handling-excl-tax')
-
-                                                        <p>
-                                                            {{ core()->formatPrice($invoice->shipping_amount, $order->order_currency_code) }}
-                                                        </p>
-                                                    </div>
-
-                                                    <div class="flex w-full justify-between gap-x-5">
-                                                        @lang('shop::app.customers.account.orders.view.invoices.shipping-handling-incl-tax')
-
-                                                        <p>
-                                                            {{ core()->formatPrice($invoice->shipping_amount_incl_tax, $order->order_currency_code) }}
-                                                        </p>
-                                                    </div>
-                                                @else
-                                                    <div class="flex w-full justify-between gap-x-5">
-                                                        @lang('shop::app.customers.account.orders.view.invoices.shipping-handling')
-
-                                                        <p>
-                                                            {{ core()->formatPrice($invoice->shipping_amount, $order->order_currency_code) }}
-                                                        </p>
-                                                    </div>
-                                                @endif
-
-                                                {!! view_render_event('bagisto.shop.customers.account.orders.view.invoices.shipping.after') !!}
-
-                                                {!! view_render_event('bagisto.shop.customers.account.orders.view.invoices.discount.before') !!}
-
-                                                <!-- Discount Amount -->
-                                                @if ($invoice->base_discount_amount > 0)
-                                                    <div class="flex w-full justify-between gap-x-5">
-                                                        @lang('shop::app.customers.account.orders.view.invoices.discount')
-
-                                                        <p>
-                                                            {{ core()->formatPrice($invoice->discount_amount, $order->order_currency_code) }}
-                                                        </p>
-                                                    </div>
-                                                @endif
-
-                                                {!! view_render_event('bagisto.shop.customers.account.orders.view.invoices.discount.after') !!}
-
-                                                {!! view_render_event('bagisto.shop.customers.account.orders.view.invoices.tax-amount.before') !!}
-
-                                                <!-- Tax Amount -->
-                                                <div class="flex w-full justify-between gap-x-5">
-                                                    @lang('shop::app.customers.account.orders.view.invoices.tax')
-
-                                                    <p>
-                                                        {{ core()->formatPrice($invoice->tax_amount, $order->order_currency_code) }}
-                                                    </p>
-                                                </div>
-
-                                                {!! view_render_event('bagisto.shop.customers.account.orders.view.invoices.tax-amount.after') !!}
-
-                                                {!! view_render_event('bagisto.shop.customers.account.orders.view.invoices.grand-total.before') !!}
-
-                                                <!-- Grand Total -->
-                                                <div class="flex w-full justify-between gap-x-5 font-semibold">
-                                                    @lang('shop::app.customers.account.orders.view.invoices.grand-total')
-
-                                                    <p>
-                                                        {{ core()->formatPrice($invoice->grand_total, $order->order_currency_code) }}
-                                                    </p>
-                                                </div>
-
-                                                {!! view_render_event('bagisto.shop.customers.account.orders.view.invoices.grand-total.after') !!}
-
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            @endforeach
-                        </div>
-                    </x-shop::tabs.item>
-                @endif
-
-                <!-- Shipment tab -->
-                @if ($order->shipments->count())
-                    <x-shop::tabs.item
-                        class="max-md:!px-0 max-md:py-1.5"
-                        title="{{ trans('shop::app.customers.account.orders.view.shipments.shipments') }}"
-                    >
-                        <div class="flex flex-col gap-10 max-md:gap-8">
-                            @foreach ($order->shipments as $shipment)
-                                <!-- For Desktop View -->
-                                <div
-                                    class="max-md:hidden"
-                                    v-pre
-                                >
-                                    <div>
-                                        <label class="text-base font-medium">
-                                            @lang('shop::app.customers.account.orders.view.shipments.tracking-number')
-                                        </label>
-
-                                        <span>
-                                            {{  $shipment->track_number }}
-                                        </span>
-                                    </div>
-
-                                    <div class="text-base font-medium">
-                                        <span>
-                                            @lang('shop::app.customers.account.orders.view.shipments.individual-shipment', ['shipment_id' => $shipment->id])
-                                        </span>
-                                    </div>
-
-                                    <!-- Table of Contents -->
-                                    <div class="relative mt-5 overflow-x-auto rounded-xl border max-md:hidden">
-                                        <table class="w-full text-left text-sm">
-                                            <thead class="border-b border-zinc-200 bg-zinc-100 text-sm text-black">
-                                                <tr class="[&>*]:font-medium [&>*]:px-6 [&>*]:py-4">
-                                                    <th scope="col">
-                                                        @lang('shop::app.customers.account.orders.view.shipments.sku')
-                                                    </th>
-
-                                                    <th scope="col">
-                                                        @lang('shop::app.customers.account.orders.view.shipments.product-name')
-                                                    </th>
-
-                                                    <th scope="col">
-                                                        @lang('shop::app.customers.account.orders.view.shipments.qty')
-                                                    </th>
-                                                </tr>
-                                            </thead>
-
-                                            <tbody>
-                                                @foreach ($shipment->items as $item)
-                                                    <tr class="border-b bg-white [&>*]:font-medium [&>*]:px-6 [&>*]:py-4 [&>*]:text-black">
-                                                        <td data-value="@lang('shop::app.customers.account.orders.view.shipments.sku')">
-                                                            {{ $item->sku }}
-                                                        </td>
-
-                                                        <td data-value="@lang('shop::app.customers.account.orders.view.shipments.product-name')">
-                                                            {{ $item->name }}
-
-                                                            @if (isset($item->additional['attributes']))
-                                                                <div>
-                                                                    @foreach ($item->additional['attributes'] as $attribute)
-                                                                        <b>{{ $attribute['attribute_name'] }} : </b>{{ $attribute['option_label'] }}<br>
-                                                                    @endforeach
-                                                                </div>
-                                                            @endif
-                                                        </td>
-
-                                                        <td data-value="@lang('shop::app.customers.account.orders.view.shipments.qty')">
-                                                            {{ $item->qty }}
-                                                        </td>
-                                                    </tr>
-                                                @endforeach
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </div>
-
-                                <!-- For Mobile view -->
-                                <div class="grid gap-4 md:hidden">
-                                    <div
-                                        class="rounded-lg border"
-                                        v-pre
-                                    >
-                                        <div class="grid gap-1.5 px-4 py-2.5 text-xs font-medium text-zinc-500 [&>*]:flex [&>*]:justify-between">
-                                            <div class="flex justify-between">
-                                                @lang('shop::app.customers.account.orders.view.shipments.tracking-number'):
-
-                                                <span>
-                                                    {{  $shipment->track_number }}
-                                                </span>
-                                            </div>
-
-                                            @lang('shop::app.customers.account.orders.view.shipments.individual-shipment', ['shipment_id' => $shipment->id])
-                                        </div>
-                                    </div>
-
-                                    <x-shop::accordion
-                                        :is-active="true"
-                                        class="overflow-hidden rounded-lg !border-none !bg-gray-100"
-                                    >
-                                        <x-slot:header class="!mb-0 rounded-t-md bg-gray-100 !px-4 py-3 text-sm font-medium max-sm:py-2">
-                                            @lang('shop::app.customers.account.orders.view.item-shipped')
-                                        </x-slot>
-
-                                        <x-slot:content class="grid gap-2.5 !bg-gray-100 !p-0">
-                                            @foreach ($shipment->items as $item)
-                                                <div class="rounded-md rounded-t-none border border-t-0 bg-white px-4 py-2">
-                                                    <p class="pb-2 text-sm font-medium">
-                                                        {{ $item->name }}
-                                                    </p>
-
-                                                    <div class="grid gap-1.5 text-xs font-medium">
-                                                        <!-- SKU -->
-                                                        <div class="flex justify-between">
-                                                            <span class="text-zinc-500">
-                                                                @lang('shop::app.customers.account.orders.view.shipments.sku'):
-                                                            </span>
-
-                                                            <span>
-                                                                {{ $item->sku }}
-                                                            </span>
-                                                        </div>
-
-                                                        <!-- Quantity -->
-                                                        <div class="flex justify-between">
-                                                            <span class="text-zinc-500">
-                                                                @lang('shop::app.customers.account.orders.view.shipments.qty'):
-                                                            </span>
-
-                                                            <span>{{ $item->qty }}</span>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            @endforeach
-                                        </x-slot>
-                                    </x-shop::accordion>
-                                </div>
-                            @endforeach
-                        </div>
-                    </x-shop::tabs.item>
-                @endif
-
-                <!-- Refund Tab -->
-                @if ($order->refunds->count())
-                    <x-shop::tabs.item
-                        class="max-md:!px-0 max-md:py-1.5"
-                        :title="trans('shop::app.customers.account.orders.view.refunds.refunds')"
-                    >
-                        @foreach ($order->refunds as $refund)
-                            <!-- For Desktop View -->
-                            <div
-                                class="max-md:hidden"
-                                v-pre
-                            >
-                                <div class="text-base font-medium">
-                                    <span>
-                                        @lang('shop::app.customers.account.orders.view.refunds.individual-refund', ['refund_id' => $refund->id])
-                                    </span>
-                                </div>
-
-                                <div class="relative mt-8 overflow-x-auto rounded-xl border">
-                                    <table class="w-full text-left text-sm">
-                                        <thead class="border-b border-zinc-200 bg-zinc-100 text-sm text-black">
-                                            <tr class="[&>*]:font-medium [&>*]:px-6 [&>*]:py-4">
-                                                <th scope="col">
-                                                    @lang('shop::app.customers.account.orders.view.refunds.sku')
-                                                </th>
-
-                                                <th scope="col">
-                                                    @lang('shop::app.customers.account.orders.view.refunds.product-name')
-                                                </th>
-
-                                                <th scope="col">
-                                                    @lang('shop::app.customers.account.orders.view.refunds.price')
-                                                </th>
-
-                                                <th scope="col">
-                                                    @lang('shop::app.customers.account.orders.view.refunds.qty')
-                                                </th>
-
-                                                <th scope="col">
-                                                    @lang('shop::app.customers.account.orders.view.refunds.subtotal')
-                                                </th>
-                                            </tr>
-                                        </thead>
-
-                                        <tbody>
-                                            @foreach ($refund->items as $item)
-                                                <tr class="border-b bg-white [&>*]:font-medium [&>*]:px-6 [&>*]:py-4 [&>*]:text-black">
-                                                    <td data-value="@lang('shop::app.customers.account.orders.view.refunds.sku')">
-                                                        {{ $item->getTypeInstance()->getOrderedItem($item)->sku }}
-                                                    </td>
-
-                                                    <td data-value="@lang('shop::app.customers.account.orders.view.refunds.product-name')">
-                                                        {{ $item->name }}
-
-                                                        @if (isset($item->additional['attributes']))
-                                                            <div>
-                                                                @foreach ($item->additional['attributes'] as $attribute)
-                                                                    <b>{{ $attribute['attribute_name'] }} : </b>{{ $attribute['option_label'] }}<br>
-                                                                @endforeach
-                                                            </div>
-                                                        @endif
-                                                    </td>
-
-                                                    <td
-                                                        class="flex flex-col"
-                                                        data-value="@lang('shop::app.customers.account.orders.view.refunds.price')"
-                                                    >
-                                                        @if (core()->getConfigData('sales.taxes.sales.display_prices') == 'including_tax')
-                                                            {{ core()->formatPrice($item->price_incl_tax, $order->order_currency_code) }}
-                                                        @elseif (core()->getConfigData('sales.taxes.sales.display_prices') == 'both')
-                                                            {{ core()->formatPrice($item->price_incl_tax, $order->order_currency_code) }}
-
-                                                            <span class="whitespace-nowrap text-xs font-normal">
-                                                                @lang('shop::app.customers.account.orders.view.information.excl-tax')
-
-                                                                <span class="font-medium">
-                                                                    {{ core()->formatPrice($item->price, $order->order_currency_code) }}
-                                                                </span>
-                                                            </span>
-                                                        @else
-                                                            {{ core()->formatPrice($item->price, $order->order_currency_code) }}
-                                                        @endif
-                                                    </td>
-
-                                                    <td data-value="@lang('shop::app.customers.account.orders.view.refunds.qty')">
-                                                        {{ $item->qty }}
-                                                    </td>
-
-                                                    <td
-                                                        class="flex flex-col"
-                                                        data-value="@lang('shop::app.customers.account.orders.view.refunds.subtotal')"
-                                                    >
-                                                        @if (core()->getConfigData('sales.taxes.sales.display_prices') == 'including_tax')
-                                                            {{ core()->formatPrice($item->total_incl_tax, $order->order_currency_code) }}
-                                                        @elseif (core()->getConfigData('sales.taxes.sales.display_prices') == 'both')
-                                                            {{ core()->formatPrice($item->total_incl_tax, $order->order_currency_code) }}
-
-                                                            <span class="whitespace-nowrap text-xs font-normal">
-                                                                @lang('shop::app.customers.account.orders.view.information.excl-tax')
-
-                                                                <span class="font-medium">
-                                                                    {{ core()->formatPrice($item->total, $order->order_currency_code) }}
-                                                                </span>
-                                                            </span>
-                                                        @else
-                                                            {{ core()->formatPrice($item->total, $order->order_currency_code) }}
-                                                        @endif
-                                                    </td>
-                                                </tr>
-                                            @endforeach
-
-                                            @if (! $refund->items->count())
-                                                <tr>
-                                                    <td>@lang('shop::app.customers.account.orders.view.refunds.no-result-found')</td>
-                                                </tr>
-                                            @endif
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-
-                            <!-- For Mobile View -->
-                            <div class="grid gap-4 md:hidden">
-
-                                <div
-                                    class="rounded-lg border"
-                                    v-pre
-                                >
-                                    <div class="grid gap-1.5 px-4 py-2.5 text-xs font-medium text-zinc-500 [&>*]:flex [&>*]:justify-between">
-                                        @lang('shop::app.customers.account.orders.view.refunds.individual-refund', ['refund_id' => $refund->id])
-                                    </div>
-                                </div>
-
-                                <x-shop::accordion
-                                    :is-active="true"
-                                    class="overflow-hidden rounded-lg !border-none !bg-gray-100"
-                                >
-                                    <x-slot:header class="!mb-0 rounded-t-md bg-gray-100 !px-4 py-3 text-sm font-medium max-sm:py-2">
-                                        @lang('shop::app.customers.account.orders.view.item-refunded')
-                                    </x-slot>
-
-                                    <x-slot:content class="grid gap-2.5 !bg-gray-100 !p-0">
-                                        @foreach ($invoice->items as $item)
-                                            <div class="rounded-md rounded-t-none border border-t-0 bg-white px-4 py-2">
-                                                <p class="pb-2 text-sm font-medium">
-                                                    {{ $item->name }}
-                                                </p>
-
-                                                <div class="grid gap-1.5 text-xs font-medium">
-                                                    <!-- SKU -->
-                                                    <div class="flex justify-between">
-                                                        <span class="text-zinc-500">
-                                                            @lang('shop::app.customers.account.orders.view.refunds.sku'):
-                                                        </span>
-
-                                                        <span>
-                                                            {{ $item->getTypeInstance()->getOrderedItem($item)->sku }}
-                                                        </span>
-                                                    </div>
-
-                                                    <!-- Price -->
-                                                    <div class="flex justify-between">
-                                                        <span class="text-zinc-500">
-                                                            @lang('shop::app.customers.account.orders.view.refunds.price'):
-                                                        </span>
-
-                                                        <span class="[&>*]:text-right">
-                                                            @if (core()->getConfigData('sales.taxes.sales.display_prices') == 'including_tax')
-                                                                {{ core()->formatPrice($item->price_incl_tax, $order->order_currency_code) }}
-                                                            @elseif (core()->getConfigData('sales.taxes.sales.display_prices') == 'both')
-                                                                <p>
-                                                                    {{ core()->formatPrice($item->price_incl_tax, $order->order_currency_code) }}
-                                                                </p>
-
-                                                                <p class="whitespace-nowrap text-xs font-normal">
-                                                                    @lang('shop::app.customers.account.orders.view.information.excl-tax')
-
-                                                                    <span class="font-medium">
-                                                                        {{ core()->formatPrice($item->price, $order->order_currency_code) }}
-                                                                    </span>
-                                                                </p>
-                                                            @else
-                                                                {{ core()->formatPrice($item->price, $order->order_currency_code) }}
-                                                            @endif
-                                                        </span>
-                                                    </div>
-
-                                                    <!-- Quantity -->
-                                                    <div class="flex justify-between">
-                                                        <span class="text-zinc-500">
-                                                            @lang('shop::app.customers.account.orders.view.refunds.qty')
-                                                        </span>
-
-                                                        <span>
-                                                            {{ $item->qty }}
-                                                        </span>
-                                                    </div>
-
-                                                    <!-- Sub Total -->
-                                                    <div class="flex justify-between">
-                                                        <span class="text-zinc-500">
-                                                            @lang('shop::app.customers.account.orders.view.refunds.subtotal'):
-                                                        </span>
-
-                                                        <span class="[&>*]:text-right">
-                                                            @if (core()->getConfigData('sales.taxes.sales.display_prices') == 'including_tax')
-                                                                {{ core()->formatPrice($item->total_incl_tax, $order->order_currency_code) }}
-                                                            @elseif (core()->getConfigData('sales.taxes.sales.display_prices') == 'both')
-                                                                <p>
-                                                                    {{ core()->formatPrice($item->total_incl_tax, $order->order_currency_code) }}
-                                                                </p>
-
-                                                                <p class="whitespace-nowrap text-xs font-normal">
-                                                                    @lang('shop::app.customers.account.orders.view.information.excl-tax')
-
-                                                                    <span class="font-medium">
-                                                                        {{ core()->formatPrice($item->total, $order->order_currency_code) }}
-                                                                    </span>
-                                                                </p>
-                                                            @else
-                                                                {{ core()->formatPrice($item->total, $order->order_currency_code) }}
-                                                            @endif
-                                                        </span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        @endforeach
-                                    </x-slot>
-                                </x-shop::accordion>
-
-                                <!-- Summary -->
-                                <div
-                                    class="w-full rounded-md bg-gray-100"
-                                    v-pre
-                                >
-                                    <div class="rounded-t-md border-none !px-4 py-3 text-sm font-medium max-sm:py-2">
-                                        @lang('shop::app.customers.account.orders.view.refunds.order-summary')
-                                    </div>
-
-                                    <div class="grid gap-1.5 rounded-md rounded-t-none border border-t-0 bg-white px-4 py-3 text-xs font-medium">
-
-                                        {!! view_render_event('bagisto.shop.customers.account.orders.view.refunds.subtotal.before') !!}
-
-                                        @if (core()->getConfigData('sales.taxes.sales.display_subtotal') == 'including_tax')
-                                            <div class="flex w-full justify-between gap-x-5">
-                                                <p class="text-zinc-500">
-                                                    @lang('shop::app.customers.account.orders.view.refunds.subtotal')
-                                                </p>
-
-                                                <p>
-                                                    {{ core()->formatPrice($refund->sub_total_incl_tax, $order->order_currency_code) }}
-                                                </p>
-                                            </div>
-                                        @elseif (core()->getConfigData('sales.taxes.sales.display_subtotal') == 'both')
-                                            <div class="flex w-full justify-between gap-x-5">
-                                                <p class="text-zinc-500">
-                                                    @lang('shop::app.customers.account.orders.view.refunds.subtotal-excl-tax')
-                                                </p>
-
-                                                <p>
-                                                    {{ core()->formatPrice($refund->sub_total, $order->order_currency_code) }}
-                                                </p>
-                                            </div>
-
-                                            <div class="flex w-full justify-between gap-x-5">
-                                                <p class="text-zinc-500">
-
-                                                    @lang('shop::app.customers.account.orders.view.refunds.subtotal-incl-tax')
-                                                </p>
-
-                                                <p>
-                                                    {{ core()->formatPrice($refund->sub_total_incl_tax, $order->order_currency_code) }}
-                                                </p>
-                                            </div>
-                                        @else
-                                            <div class="flex w-full justify-between gap-x-5">
-                                                <p class="text-zinc-500">
-                                                    @lang('shop::app.customers.account.orders.view.refunds.subtotal')
-                                                </p>
-
-                                                <p>
-                                                    {{ core()->formatPrice($refund->sub_total, $order->order_currency_code) }}
-                                                </p>
-                                            </div>
-                                        @endif
-
-                                        {!! view_render_event('bagisto.shop.customers.account.orders.view.refunds.subtotal.after') !!}
-
-                                        {!! view_render_event('bagisto.shop.customers.account.orders.view.refunds.shipping.before') !!}
-
-                                        @if (core()->getConfigData('sales.taxes.sales.display_shipping_amount') == 'including_tax')
-                                            <div class="flex w-full justify-between gap-x-5">
-                                                <p class="text-zinc-500">
-                                                    @lang('shop::app.customers.account.orders.view.refunds.shipping-handling')
-                                                </p>
-
-                                                <p>
-                                                    {{ core()->formatPrice($refund->shipping_amount_incl_tax, $order->order_currency_code) }}
-                                                </p>
-                                            </div>
-                                        @elseif (core()->getConfigData('sales.taxes.sales.display_shipping_amount') == 'both')
-                                            <div class="flex w-full justify-between gap-x-5">
-                                                <p class="text-zinc-500">
-                                                    @lang('shop::app.customers.account.orders.view.refunds.shipping-handling-excl-tax')
-                                                </p>
-
-                                                <p>
-                                                    {{ core()->formatPrice($refund->shipping_amount, $order->order_currency_code) }}
-                                                </p>
-                                            </div>
-
-                                            <div class="flex w-full justify-between gap-x-5">
-                                                <p class="text-zinc-500">
-                                                    @lang('shop::app.customers.account.orders.view.refunds.shipping-handling-incl-tax')
-                                                </p>
-
-                                                <p>
-                                                    {{ core()->formatPrice($refund->shipping_amount_incl_tax, $order->order_currency_code) }}
-                                                </p>
-                                            </div>
-                                        @else
-                                            <div class="flex w-full justify-between gap-x-5">
-                                                <p class="text-zinc-500">
-                                                    @lang('shop::app.customers.account.orders.view.refunds.shipping-handling')
-                                                </p>
-
-                                                <p>
-                                                    {{ core()->formatPrice($refund->shipping_amount, $order->order_currency_code) }}
-                                                </p>
-                                            </div>
-                                        @endif
-
-                                        {!! view_render_event('bagisto.shop.customers.account.orders.view.refunds.shipping.after') !!}
-
-                                        {!! view_render_event('bagisto.shop.customers.account.orders.view.refunds.discount.before') !!}
-
-                                        <!-- Discount -->
-                                        @if ($refund->discount_amount > 0)
-                                            <div class="flex w-full justify-between gap-x-5">
-                                                @lang('shop::app.customers.account.orders.view.refunds.discount')
-
-                                                <p>
-                                                    {{ core()->formatPrice($order->discount_amount, $order->order_currency_code) }}
-                                                </p>
-                                            </div>
-                                        @endif
-
-                                        {!! view_render_event('bagisto.shop.customers.account.orders.view.refunds.discount.after') !!}
-
-                                        {!! view_render_event('bagisto.shop.customers.account.orders.view.refunds.tax-amount.before') !!}
-
-                                        <!-- Tax Amount -->
-                                        @if ($refund->tax_amount > 0)
-                                            <div class="flex w-full justify-between gap-x-5">
-                                                <p class="text-zinc-500">
-                                                    @lang('shop::app.customers.account.orders.view.refunds.tax')
-                                                </p>
-
-                                                <p>
-                                                    {{ core()->formatPrice($refund->tax_amount, $order->order_currency_code) }}
-                                                </p>
-                                            </div>
-                                        @endif
-
-                                        {!! view_render_event('bagisto.shop.customers.account.orders.view.refunds.tax-amount.after') !!}
-
-                                        {!! view_render_event('bagisto.shop.customers.account.orders.view.refunds.adjustment-refund.before') !!}
-
-                                        <!-- Adjustments Refund -->
-                                        <div class="flex w-full justify-between gap-x-5">
-                                            <p class="text-zinc-500">
-                                                @lang('shop::app.customers.account.orders.view.refunds.adjustment-refund')
-                                            </p>
-
-                                            <p>
-                                                {{ core()->formatPrice($refund->adjustment_refund, $order->order_currency_code) }}
-                                            </p>
-                                        </div>
-
-                                        {!! view_render_event('bagisto.shop.customers.account.orders.view.refunds.adjustment-refund.after') !!}
-
-                                        {!! view_render_event('bagisto.shop.customers.account.orders.view.refunds.adjustment-fee.before') !!}
-
-                                        <!-- Adjustment fee -->
-                                        <div class="flex w-full justify-between gap-x-5">
-                                            <p class="text-zinc-500">
-                                                @lang('shop::app.customers.account.orders.view.refunds.adjustment-fee')
-                                            </p>
-
-                                            <p>
-                                                {{ core()->formatPrice($refund->adjustment_fee, $order->order_currency_code) }}
-                                            </p>
-                                        </div>
-
-                                        {!! view_render_event('bagisto.shop.customers.account.orders.view.refunds.adjustment-fee.after') !!}
-
-                                        {!! view_render_event('bagisto.shop.customers.account.orders.view.refunds.grand-total.before') !!}
-
-                                        <!-- Grand Total -->
-                                        <div class="flex w-full justify-between gap-x-5 font-semibold">
-                                            <p class="text-zinc-500">
-                                                @lang('shop::app.customers.account.orders.view.refunds.grand-total')
-                                            </p>
-
-                                            <p>
-                                                {{ core()->formatPrice($refund->grand_total, $order->order_currency_code) }}
-                                            </p>
-                                        </div>
-
-                                        {!! view_render_event('bagisto.shop.customers.account.orders.view.refunds.grand-total.after') !!}
-
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Summary -->
-                            <div
-                                class="mt-8 flex items-start gap-10 max-lg:gap-5 max-md:hidden"
-                                v-pre
-                            >
-                                <div class="flex flex-auto justify-end">
-                                    <div class="grid max-w-max gap-2 text-sm">
-
-                                        {!! view_render_event('bagisto.shop.customers.account.orders.view.refunds.subtotal.before') !!}
-
-                                        <!-- Sub Total -->
-                                        @if (core()->getConfigData('sales.taxes.sales.display_subtotal') == 'including_tax')
-                                            <div class="flex w-full justify-between gap-x-5 text-sm">
-                                                @lang('shop::app.customers.account.orders.view.refunds.subtotal')
-
-                                                <p>
-                                                    {{ core()->formatPrice($refund->sub_total_incl_tax, $order->order_currency_code) }}
-                                                </p>
-                                            </div>
-                                        @elseif (core()->getConfigData('sales.taxes.sales.display_subtotal') == 'both')
-                                            <div class="flex w-full justify-between gap-x-5 text-sm">
-                                                @lang('shop::app.customers.account.orders.view.refunds.subtotal-excl-tax')
-
-                                                <p>
-                                                    {{ core()->formatPrice($refund->sub_total, $order->order_currency_code) }}
-                                                </p>
-                                            </div>
-
-                                            <div class="flex w-full justify-between gap-x-5 text-sm">
-                                                @lang('shop::app.customers.account.orders.view.refunds.subtotal-incl-tax')
-
-                                                <p>
-                                                    {{ core()->formatPrice($refund->sub_total_incl_tax, $order->order_currency_code) }}
-                                                </p>
-                                            </div>
-                                        @else
-                                            <div class="flex w-full justify-between gap-x-5 text-sm">
-                                                @lang('shop::app.customers.account.orders.view.refunds.subtotal')
-
-                                                <p>
-                                                    {{ core()->formatPrice($refund->sub_total, $order->order_currency_code) }}
-                                                </p>
-                                            </div>
-                                        @endif
-
-                                        {!! view_render_event('bagisto.shop.customers.account.orders.view.refunds.subtotal.after') !!}
-
-                                        {!! view_render_event('bagisto.shop.customers.account.orders.view.refunds.shipping.before') !!}
-
-                                        <!-- Shipping And Handling -->
-                                        @if (core()->getConfigData('sales.taxes.sales.display_shipping_amount') == 'including_tax')
-                                            <div class="flex w-full justify-between gap-x-5">
-                                                @lang('shop::app.customers.account.orders.view.refunds.shipping-handling')
-
-                                                <p>
-                                                    {{ core()->formatPrice($refund->shipping_amount_incl_tax, $order->order_currency_code) }}
-                                                </p>
-                                            </div>
-                                        @elseif (core()->getConfigData('sales.taxes.sales.display_shipping_amount') == 'both')
-                                            <div class="flex w-full justify-between gap-x-5">
-                                                @lang('shop::app.customers.account.orders.view.refunds.shipping-handling-excl-tax')
-
-                                                <p>
-                                                    {{ core()->formatPrice($refund->shipping_amount, $order->order_currency_code) }}
-                                                </p>
-                                            </div>
-
-                                            <div class="flex w-full justify-between gap-x-5">
-                                                @lang('shop::app.customers.account.orders.view.refunds.shipping-handling-incl-tax')
-
-                                                <p>
-                                                    {{ core()->formatPrice($refund->shipping_amount_incl_tax, $order->order_currency_code) }}
-                                                </p>
-                                            </div>
-                                        @else
-                                            <div class="flex w-full justify-between gap-x-5">
-                                                @lang('shop::app.customers.account.orders.view.refunds.shipping-handling')
-
-                                                <p>
-                                                    {{ core()->formatPrice($refund->shipping_amount, $order->order_currency_code) }}
-                                                </p>
-                                            </div>
-                                        @endif
-
-                                        {!! view_render_event('bagisto.shop.customers.account.orders.view.refunds.shipping.after') !!}
-
-                                        {!! view_render_event('bagisto.shop.customers.account.orders.view.refunds.discount.before') !!}
-
-                                        <!-- Discount -->
-                                        @if ($refund->discount_amount > 0)
-                                            <div class="flex w-full justify-between gap-x-5">
-                                                @lang('shop::app.customers.account.orders.view.refunds.discount')
-
-                                                <p>
-                                                    {{ core()->formatPrice($order->discount_amount, $order->order_currency_code) }}
-                                                </p>
-                                            </div>
-                                        @endif
-
-                                        {!! view_render_event('bagisto.shop.customers.account.orders.view.refunds.discount.after') !!}
-
-                                        {!! view_render_event('bagisto.shop.customers.account.orders.view.refunds.tax-amount.before') !!}
-
-                                        <!-- Tax Amount -->
-                                        @if ($refund->tax_amount > 0)
-                                            <div class="flex w-full justify-between gap-x-5">
-                                                @lang('shop::app.customers.account.orders.view.refunds.tax')
-
-                                                <p>
-                                                    {{ core()->formatPrice($refund->tax_amount, $order->order_currency_code) }}
-                                                </p>
-                                            </div>
-                                        @endif
-
-                                        {!! view_render_event('bagisto.shop.customers.account.orders.view.refunds.tax-amount.after') !!}
-
-                                        {!! view_render_event('bagisto.shop.customers.account.orders.view.refunds.adjustment-refund.before') !!}
-
-                                        <!-- Adjustments Refund -->
-                                        <div class="flex w-full justify-between gap-x-5">
-                                            @lang('shop::app.customers.account.orders.view.refunds.adjustment-refund')
-
-                                            <p>
-                                                {{ core()->formatPrice($refund->adjustment_refund, $order->order_currency_code) }}
-                                            </p>
-                                        </div>
-
-                                        {!! view_render_event('bagisto.shop.customers.account.orders.view.refunds.adjustment-refund.after') !!}
-
-                                        {!! view_render_event('bagisto.shop.customers.account.orders.view.refunds.adjustment-fee.before') !!}
-
-                                        <!-- Adjustment fee -->
-                                        <div class="flex w-full justify-between gap-x-5">
-                                            @lang('shop::app.customers.account.orders.view.refunds.adjustment-fee')
-
-                                            <p>
-                                                {{ core()->formatPrice($refund->adjustment_fee, $order->order_currency_code) }}
-                                            </p>
-                                        </div>
-
-                                        {!! view_render_event('bagisto.shop.customers.account.orders.view.refunds.adjustment-fee.after') !!}
-
-                                        {!! view_render_event('bagisto.shop.customers.account.orders.view.refunds.grand-total.before') !!}
-
-                                        <!-- Grand Total -->
-                                        <div class="flex w-full justify-between gap-x-5 font-semibold">
-                                            @lang('shop::app.customers.account.orders.view.refunds.grand-total')
-
-                                            <p>
-                                                {{ core()->formatPrice($refund->grand_total, $order->order_currency_code) }}
-                                            </p>
-                                        </div>
-
-                                        {!! view_render_event('bagisto.shop.customers.account.orders.view.refunds.grand-total.after') !!}
-
-                                    </div>
-                                </div>
-                            </div>
-                        @endforeach
-                    </x-shop::tabs.item>
-                @endif
-            </x-shop::tabs>
-
-            <!-- Shipping Address and Payment methods for mobile view -->
-            <div
-                class="w-full rounded-md bg-gray-100 md:hidden"
-                v-pre
-            >
-                <div class="rounded-t-md border-none !px-4 py-3 text-sm font-medium max-sm:py-2">
-                    @lang('shop::app.customers.account.orders.view.shipping-and-payment')
-                </div>
-
-                <div class="grid gap-1.5 rounded-md rounded-t-none border border-t-0 bg-white px-4 py-3 text-xs font-medium">
+        <!-- Address & Payment Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- Shipping & Billing Addresses -->
+            <div class="rounded-2xl border border-[#DCD3C3] bg-white p-6 shadow-sm space-y-4">
+                <h3 class="font-serif text-base font-bold text-[#111111] border-b border-[#DCD3C3]/60 pb-3 flex items-center gap-2">
+                    <span class="material-symbols-outlined text-lg text-[#0F4D2E]">location_on</span>
+                    <span>Addresses</span>
+                </h3>
+
+                <div class="space-y-4 text-xs">
                     <!-- Shipping Address -->
                     @if ($order->shipping_address)
-                        <div class="text-sm font-medium text-zinc-500">
-                            @lang('shop::app.customers.account.orders.view.shipping-address')
-
-                            <div class="mt-1 grid gap-2 text-xs text-black">
-                                <div class="grid gap-2.5 max-md:gap-0">
-                                    @include ('shop::customers.account.orders.view.address', ['address' => $order->shipping_address])
-                                </div>
-
-                                {!! view_render_event('bagisto.shop.customers.account.orders.view.shipping_address_details.after', ['order' => $order]) !!}
-                            </div>
-
-                            {!! view_render_event('bagisto.shop.customers.account.orders.view.shipping_address.after', ['order' => $order]) !!}
-
+                        <div class="space-y-1">
+                            <span class="text-[11px] font-bold uppercase tracking-wider text-[#8B6F45]">Shipping Destination</span>
+                            <p class="font-bold text-[#111111] text-sm" v-pre>
+                                {{ $order->shipping_address->first_name }} {{ $order->shipping_address->last_name }}
+                            </p>
+                            <p class="text-[#666666] leading-relaxed" v-pre>
+                                {{ $order->shipping_address->address }}<br>
+                                {{ $order->shipping_address->city }}, {{ $order->shipping_address->state }} {{ $order->shipping_address->postcode }}<br>
+                                {{ $order->shipping_address->country }}
+                            </p>
+                            @if ($order->shipping_address->phone)
+                                <p class="text-[11px] text-[#8B6F45] pt-0.5" v-pre>
+                                    Phone: {{ $order->shipping_address->phone }}
+                                </p>
+                            @endif
                         </div>
                     @endif
 
                     <!-- Billing Address -->
                     @if ($order->billing_address)
-                        <div class="text-sm font-medium text-zinc-500">
-                            @lang('shop::app.customers.account.orders.view.billing-address')
-
-                            <div class="mt-1 grid gap-2 text-xs text-gray-800">
-                                <div class="grid gap-2.5 max-md:gap-0">
-                                    @include ('shop::customers.account.orders.view.address', ['address' => $order->billing_address])
-                                </div>
-
-                                {!! view_render_event('bagisto.shop.customers.account.orders.view.billing_address_details.after', ['order' => $order]) !!}
-
-                            </div>
-
-                            {!! view_render_event('bagisto.shop.customers.account.orders.view.billing_address.after', ['order' => $order]) !!}
-
+                        <div class="pt-3 border-t border-[#DCD3C3]/60 space-y-1">
+                            <span class="text-[11px] font-bold uppercase tracking-wider text-[#8B6F45]">Billing Address</span>
+                            <p class="font-bold text-[#111111]" v-pre>
+                                {{ $order->billing_address->first_name }} {{ $order->billing_address->last_name }}
+                            </p>
+                            <p class="text-[#666666] leading-relaxed text-[11px]" v-pre>
+                                {{ $order->billing_address->address }}, {{ $order->billing_address->city }}, {{ $order->billing_address->state }} {{ $order->billing_address->postcode }}
+                            </p>
                         </div>
                     @endif
+                </div>
+            </div>
+
+            <!-- Shipping Carrier & Payment Method -->
+            <div class="rounded-2xl border border-[#DCD3C3] bg-white p-6 shadow-sm space-y-4 flex flex-col justify-between">
+                <div class="space-y-4 text-xs">
+                    <h3 class="font-serif text-base font-bold text-[#111111] border-b border-[#DCD3C3]/60 pb-3 flex items-center gap-2">
+                        <span class="material-symbols-outlined text-lg text-[#0F4D2E]">credit_card</span>
+                        <span>Logistics & Payment</span>
+                    </h3>
 
                     <!-- Shipping Method -->
-                    @if ($order->shipping_address)
-                        <div class="text-sm font-medium text-zinc-500">
-                            @lang('shop::app.customers.account.orders.view.shipping-method')
-
-                            <div class="mt-1 grid gap-2.5 text-xs text-gray-800">
-                                {{ $order->shipping_title }}
-
-                                {!! view_render_event('bagisto.shop.customers.account.orders.view.shipping_method_details.after', ['order' => $order]) !!}
+                    <div class="space-y-1">
+                        <span class="text-[11px] font-bold uppercase tracking-wider text-[#8B6F45]">Shipping Carrier</span>
+                        <p class="font-semibold text-[#111111]">
+                            {{ $order->shipping_title ?? 'Navanidhi Standard Delivery' }}
+                        </p>
+                        @if ($order->shipments->isNotEmpty())
+                            <div class="p-2.5 rounded-xl bg-[#EBF3EE] border border-[#0F4D2E]/20 mt-1.5 space-y-0.5">
+                                @foreach ($order->shipments as $shipment)
+                                    <p class="font-bold text-[#0F4D2E] text-xs">Tracking: {{ $shipment->track_number ?? 'Pending Carrier Scan' }}</p>
+                                    <p class="text-[11px] text-[#666666]">Carrier: {{ $shipment->carrier_title }}</p>
+                                @endforeach
                             </div>
-
-                            {!! view_render_event('bagisto.shop.customers.account.orders.view.shipping_method.after', ['order' => $order]) !!}
-
-                        </div>
-                    @endif
+                        @else
+                            <p class="text-[11px] text-[#666666]">Consignment packed securely in eco-friendly barrier pouch.</p>
+                        @endif
+                    </div>
 
                     <!-- Payment Method -->
-                    <div class="text-sm font-medium text-zinc-500">
-                        @lang('shop::app.customers.account.orders.view.payment-method')
-
-                        <div class="mt-1 grid gap-2.5 text-xs text-black">
-                            {{ core()->getConfigData('sales.payment_methods.' . $order->payment->method . '.title') }}
-
-                            @if (! empty($additionalDetails))
-                                <div class="instructions">
-                                    <label>{{ $additionalDetails['title'] }}</label>
-                                </div>
-                            @endif
-
-                            {!! view_render_event('bagisto.shop.customers.account.orders.view.payment_method_details.after', ['order' => $order]) !!}
-
-                        </div>
-
-                        {!! view_render_event('bagisto.shop.customers.account.orders.view.payment_method.after', ['order' => $order]) !!}
+                    <div class="pt-3 border-t border-[#DCD3C3]/60 space-y-1">
+                        <span class="text-[11px] font-bold uppercase tracking-wider text-[#8B6F45]">Payment Details</span>
+                        <p class="font-semibold text-[#111111]">
+                            {{ core()->getConfigData('sales.payment_methods.' . $order->payment?->method . '.title') ?? ucfirst($order->payment?->method) }}
+                        </p>
+                        <p class="text-[11px] text-[#666666]">
+                            Status: <span class="font-semibold {{ $step2Paid ? 'text-emerald-700' : 'text-amber-700' }}">{{ $step2Paid ? 'Paid' : 'Pending' }}</span>
+                        </p>
                     </div>
                 </div>
-            </div>
 
-            <!-- Desktop View -->
-            <div
-                class="mt-11 flex flex-wrap justify-between gap-x-11 gap-y-8 border-t border-zinc-200 pt-7 max-md:hidden"
-                v-pre
-            >
-                <!-- Billing Address -->
-                @if ($order->billing_address)
-                    <div class="grid max-w-[200px] gap-4 max-868:w-full max-868:max-w-full max-md:max-w-full max-md:gap-2">
-                        <p class="text-base text-zinc-500 max-md:text-lg max-md:text-black">
-                            @lang('shop::app.customers.account.orders.view.billing-address')
-                        </p>
-
-                        <div class="grid gap-2.5 max-md:gap-0">
-                            <p class="text-sm">
-                                @include ('shop::customers.account.orders.view.address', ['address' => $order->billing_address])
-                            </p>
-                        </div>
-
-                        {!! view_render_event('bagisto.shop.customers.account.orders.view.billing_address_details.after', ['order' => $order]) !!}
-                    </div>
-
-                {!! view_render_event('bagisto.shop.customers.account.orders.view.billing_address.after', ['order' => $order]) !!}
-
-                @endif
-
-                <!-- Shipping Address -->
-                @if ($order->shipping_address)
-                    <div class="grid max-w-[200px] gap-4 max-868:w-full max-868:max-w-full max-md:max-w-full max-md:gap-2">
-                        <p class="text-base text-zinc-500 max-md:text-lg max-md:text-black">
-                            @lang('shop::app.customers.account.orders.view.shipping-address')
-                        </p>
-
-                        <div class="grid gap-2.5 max-md:gap-0">
-                            <p class="text-sm">
-                                @include ('shop::customers.account.orders.view.address', ['address' => $order->shipping_address])
-                            </p>
-                        </div>
-
-                        {!! view_render_event('bagisto.shop.customers.account.orders.view.shipping_address_details.after', ['order' => $order]) !!}
-                    </div>
-
-                    {!! view_render_event('bagisto.shop.customers.account.orders.view.shipping_address.after', ['order' => $order]) !!}
-
-                    <!-- Shipping Method -->
-                    <div class="grid max-w-[200px] place-content-baseline gap-4 max-868:w-full max-868:max-w-full max-md:max-w-full max-md:gap-2">
-                        <p class="text-base text-zinc-500 max-md:text-lg max-md:text-black">
-                            @lang('shop::app.customers.account.orders.view.shipping-method')
-                        </p>
-
-                        <p class="text-sm">
-                            {{ $order->shipping_title }}
-                        </p>
-
-                        {!! view_render_event('bagisto.shop.customers.account.orders.view.shipping_method_details.after', ['order' => $order]) !!}
-                    </div>
-
-                    {!! view_render_event('bagisto.shop.customers.account.orders.view.shipping_method.after', ['order' => $order]) !!}
-
-                @endif
-
-                <!-- Payment Method -->
-                <div class="grid max-w-[200px] place-content-baseline gap-4 max-868:w-full max-868:max-w-full max-md:max-w-full max-md:gap-2">
-                    <p class="text-base text-zinc-500 max-md:text-lg max-md:text-black">
-                        @lang('shop::app.customers.account.orders.view.payment-method')
+                <!-- Certified Facility Quality Stamp -->
+                <div class="pt-4 border-t border-[#DCD3C3]/60 p-3 rounded-xl bg-[#F7F5EE] text-[11px] text-[#666666] leading-relaxed space-y-1">
+                    <p class="font-bold text-[#0F4D2E] uppercase tracking-wider text-[10px] flex items-center gap-1">
+                        <span class="material-symbols-outlined text-xs">verified</span>
+                        <span>Facility Dispatch Guarantee</span>
                     </p>
-
-                    <p class="text-sm">
-                        {{ core()->getConfigData('sales.payment_methods.' . $order->payment->method . '.title') }}
-                    </p>
-
-                    @if (! empty($additionalDetails))
-                        <div class="instructions">
-                            <label>{{ $additionalDetails['title'] }}</label>
-                        </div>
-                    @endif
-
-                    {!! view_render_event('bagisto.shop.customers.account.orders.view.payment_method_details.after', ['order' => $order]) !!}
+                    <p>Processed & packed under sterile conditions at the certified facility of <strong>MAN AGRO FOODS</strong>. FSSAI Lic: 10020042001234.</p>
                 </div>
-
-                {!! view_render_event('bagisto.shop.customers.account.orders.view.payment_method.after', ['order' => $order]) !!}
             </div>
         </div>
-
-        {!! view_render_event('bagisto.shop.customers.account.orders.view.after', ['order' => $order]) !!}
-
     </div>
 </x-shop::layouts.account>

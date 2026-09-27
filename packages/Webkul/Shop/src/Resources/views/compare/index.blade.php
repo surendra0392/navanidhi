@@ -8,7 +8,7 @@
 <x-shop::layouts>
     <!-- Page Title -->
     <x-slot:title>
-        @lang('shop::app.compare.title') | ELIOR
+        @lang('shop::app.compare.title') | Navanidhi Naturals
     </x-slot>
 
     <div class="bg-elior-cream min-h-screen">

@@ -6,17 +6,18 @@
 
 <!-- SEO Meta Content -->
 @push('meta')
-    <meta name="title" content="{{ $title }} | ELIOR" />
-    <meta name="description" content="Search ELIOR's collection of single-origin botanical powders, functional superblends, and culinary ingredients." />
+    <meta name="title" content="{{ $title }} | Navanidhi Naturals" />
+    <meta name="description" content="Search Navanidhi Naturals' collection of pure farm spices, single-origin botanical powders, and kitchen culinary essentials." />
+    <meta name="robots" content="noindex, follow" />
 @endPush
 
 <x-shop::layouts :has-feature="false">
     <!-- Page Title -->
     <x-slot:title>
-        {{ $title }} | ELIOR
+        {{ $title }} | Navanidhi Naturals
     </x-slot>
 
-    <div class="bg-[#f4f0e6] min-h-screen">
+    <div class="bg-[#f4f0e6] min-h-screen" style="padding-bottom: 5rem !important;">
         @if (core()->getConfigData('general.general.breadcrumbs.shop'))
             <!-- Breadcrumbs -->
             <div class="site-container pt-4 pb-2 sm:pt-6 sm:pb-3">
@@ -39,7 +40,7 @@
                 @if ($query)
                     Search results for <span class="text-[#205132]">"{{ $query }}"</span>
                 @else
-                    Search ELIOR Botanicals
+                    Search Navanidhi Naturals Spices &amp; Botanicals
                 @endif
             </h1>
 
@@ -50,7 +51,7 @@
                 class="relative max-w-2xl mx-auto flex items-center pt-2"
                 role="search"
             >
-                <label for="search-page-input" class="sr-only">Search ELIOR products</label>
+                <label for="search-page-input" class="sr-only">Search Navanidhi Naturals products</label>
 
                 <div class="pointer-events-none absolute left-5 top-1/2 -translate-y-1/2 flex items-center justify-center text-[#677a6d]">
                     <span class="material-symbols-outlined text-[22px]" aria-hidden="true" style="font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;">search</span>
@@ -62,8 +63,8 @@
                     name="query"
                     value="{{ $query }}"
                     class="w-full h-12 sm:h-14 pl-14 pr-32 text-sm sm:text-base text-[#163923] placeholder:text-[#677a6d] bg-white border border-[#e5decb] rounded-full shadow-sm focus:border-[#205132] focus:ring-1 focus:ring-[#205132] outline-none transition-all"
-                    placeholder="Search botanical powders, blends..."
-                    aria-label="Search ELIOR products"
+                    placeholder="Search pure spices, botanical powders, blends..."
+                    aria-label="Search Navanidhi Naturals products"
                     autocomplete="off"
                     required
                 >
@@ -81,12 +82,12 @@
             <!-- Popular Search Suggestions -->
             <div class="pt-2 flex items-center justify-center gap-1.5 flex-wrap text-xs text-[#677a6d]">
                 <span class="font-medium text-[#163923]/80 mr-1">Popular:</span>
-                <a href="{{ route('shop.search.index', ['query' => 'Moringa']) }}" class="px-2.5 py-1 rounded-full bg-white border border-[#e5decb] hover:bg-[#f4f0e6] hover:text-[#205132] transition-colors">Moringa</a>
-                <a href="{{ route('shop.search.index', ['query' => 'Beetroot']) }}" class="px-2.5 py-1 rounded-full bg-white border border-[#e5decb] hover:bg-[#f4f0e6] hover:text-[#205132] transition-colors">Beetroot</a>
+                <a href="{{ route('shop.search.index', ['query' => 'Red Chilli']) }}" class="px-2.5 py-1 rounded-full bg-white border border-[#e5decb] hover:bg-[#f4f0e6] hover:text-[#205132] transition-colors">Red Chilli</a>
                 <a href="{{ route('shop.search.index', ['query' => 'Turmeric']) }}" class="px-2.5 py-1 rounded-full bg-white border border-[#e5decb] hover:bg-[#f4f0e6] hover:text-[#205132] transition-colors">Turmeric</a>
+                <a href="{{ route('shop.search.index', ['query' => 'Moringa']) }}" class="px-2.5 py-1 rounded-full bg-white border border-[#e5decb] hover:bg-[#f4f0e6] hover:text-[#205132] transition-colors">Moringa</a>
                 <a href="{{ route('shop.search.index', ['query' => 'Amla']) }}" class="px-2.5 py-1 rounded-full bg-white border border-[#e5decb] hover:bg-[#f4f0e6] hover:text-[#205132] transition-colors">Amla</a>
+                <a href="{{ route('shop.search.index', ['query' => 'Beetroot']) }}" class="px-2.5 py-1 rounded-full bg-white border border-[#e5decb] hover:bg-[#f4f0e6] hover:text-[#205132] transition-colors">Beetroot</a>
                 <a href="{{ route('shop.search.index', ['query' => 'Ashwagandha']) }}" class="px-2.5 py-1 rounded-full bg-white border border-[#e5decb] hover:bg-[#f4f0e6] hover:text-[#205132] transition-colors">Ashwagandha</a>
-                <a href="{{ route('shop.search.index', ['query' => 'Spirulina']) }}" class="px-2.5 py-1 rounded-full bg-white border border-[#e5decb] hover:bg-[#f4f0e6] hover:text-[#205132] transition-colors">Spirulina</a>
             </div>
 
             @if ($searchInstead)
@@ -123,7 +124,7 @@
         </section>
 
         <!-- Product Search Results Vue Component -->
-        <main class="site-container pb-20">
+        <main class="site-container" style="padding-bottom: 5rem !important;">
             <v-search>
                 <x-shop::shimmer.categories.view />
             </v-search>

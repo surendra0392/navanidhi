@@ -618,6 +618,26 @@ return [
         'name' => 'admin::app.acl.delete',
         'route' => 'admin.customers.gdpr.delete',
         'sort' => 2,
+    ], [
+        'key' => 'customers.enquiries',
+        'name' => 'Enquiries',
+        'route' => 'admin.customers.enquiries.index',
+        'sort' => 7,
+    ], [
+        'key' => 'customers.enquiries.view',
+        'name' => 'admin::app.acl.view',
+        'route' => 'admin.customers.enquiries.view',
+        'sort' => 1,
+    ], [
+        'key' => 'customers.enquiries.edit',
+        'name' => 'admin::app.acl.edit',
+        'route' => 'admin.customers.enquiries.update',
+        'sort' => 2,
+    ], [
+        'key' => 'customers.enquiries.delete',
+        'name' => 'admin::app.acl.delete',
+        'route' => 'admin.customers.enquiries.delete',
+        'sort' => 3,
     ],
 
     /*
@@ -1098,10 +1118,49 @@ return [
         'route' => 'admin.settings.inventory_sources.delete',
         'sort' => 3,
     ], [
+        'key' => 'settings.inventory_ledger',
+        'name' => 'Stock Ledger',
+        'route' => 'admin.settings.inventory_ledger.index',
+        'sort' => 5,
+    ], [
+        'key' => 'settings.inventory_adjustments',
+        'name' => 'Inventory Adjustments',
+        'route' => [
+            'admin.settings.inventory_adjustments.index',
+            'admin.settings.inventory_adjustments.create',
+            'admin.settings.inventory_adjustments.store',
+            'admin.settings.inventory_adjustments.view',
+        ],
+        'sort' => 6,
+    ], [
+        'key' => 'settings.inventory_transfers',
+        'name' => 'Inventory Transfers',
+        'route' => [
+            'admin.settings.inventory_transfers.index',
+            'admin.settings.inventory_transfers.create',
+            'admin.settings.inventory_transfers.store',
+            'admin.settings.inventory_transfers.view',
+            'admin.settings.inventory_transfers.dispatch',
+            'admin.settings.inventory_transfers.receive',
+        ],
+        'sort' => 7,
+    ], [
+        'key' => 'settings.product_batches',
+        'name' => 'Product Batches',
+        'route' => [
+            'admin.settings.product_batches.index',
+            'admin.settings.product_batches.create',
+            'admin.settings.product_batches.store',
+            'admin.settings.product_batches.edit',
+            'admin.settings.product_batches.update',
+            'admin.settings.product_batches.delete',
+        ],
+        'sort' => 8,
+    ], [
         'key' => 'settings.channels',
         'name' => 'admin::app.acl.channels',
         'route' => 'admin.settings.channels.index',
-        'sort' => 5,
+        'sort' => 9,
     ], [
         'key' => 'settings.channels.create',
         'name' => 'admin::app.acl.create',

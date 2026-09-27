@@ -5,7 +5,7 @@
 >
     <!-- Page Title -->
     <x-slot:title>
-        @lang('shop::app.checkout.success.thanks') | ELIOR
+        @lang('shop::app.checkout.success.thanks') | Navanidhi Naturals
     </x-slot>
 
     <div class="bg-elior-cream min-h-[calc(100vh-80px)]">
