@@ -1,0 +1,376 @@
+/**
+ * NAVANIDHI NATURALS — Master Modern Design System & CSS Animation Engine
+ * Brand: NAVANIDHI NATURALS
+ * Manufacturer: MAN AGRO FOODS
+ * Pure CSS • 60fps GPU-Accelerated • Lightweight
+ */
+
+:root {
+    /* Modern Organic Botanical Palette */
+    --nv-emerald:          #0D5C3A;
+    --nv-emerald-dark:     #073520;
+    --nv-emerald-light:    #E8F5EE;
+    --nv-emerald-subtle:   #F0F8F4;
+    --nv-gold:             #D4A359;
+    --nv-gold-dark:        #B8873E;
+    --nv-gold-light:       #FEF9EF;
+    --nv-terracotta:       #9E5A38;
+    --nv-canvas:           #FCFBF7;
+    --nv-surface:          #FFFFFF;
+    --nv-text-main:        #111827;
+    --nv-text-body:        #374151;
+    --nv-text-muted:       #6B7280;
+    --nv-border:           #E5E7EB;
+    --nv-border-emerald:   rgba(13, 92, 58, 0.14);
+
+    /* Typography Stacks */
+    --nv-font-display:     'Playfair Display', Georgia, serif;
+    --nv-font-body:        'Montserrat', system-ui, -apple-system, sans-serif;
+
+    /* Elevation Shadows */
+    --nv-shadow-sm:        0 2px 8px -1px rgba(13, 92, 58, 0.05);
+    --nv-shadow-md:        0 8px 24px -4px rgba(13, 92, 58, 0.08);
+    --nv-shadow-lg:        0 20px 35px -8px rgba(13, 92, 58, 0.14);
+    --nv-shadow-gold:      0 8px 25px -4px rgba(212, 163, 89, 0.35);
+
+    /* Transitions */
+    --nv-ease-spring:      cubic-bezier(0.16, 1, 0.3, 1);
+    --nv-transition-fast:  180ms var(--nv-ease-spring);
+    --nv-transition-base:  280ms var(--nv-ease-spring);
+    --nv-transition-slow:  450ms var(--nv-ease-spring);
+}
+
+/* ==========================================================================
+   1. KEYFRAME ANIMATIONS (Pure CSS GPU-Accelerated)
+   ========================================================================== */
+
+/* Gentle Floating Effect for Botanical Trust Badges */
+@keyframes navanidhi-float {
+    0%, 100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-7px);
+    }
+}
+
+/* Radiant Shimmer Sweep across Primary Buttons */
+@keyframes navanidhi-shimmer {
+    0% {
+        background-position: -200% 0;
+    }
+    100% {
+        background-position: 200% 0;
+    }
+}
+
+/* Living Pulse Ring around Badges & Urgent Deals */
+@keyframes navanidhi-pulse-glow {
+    0%, 100% {
+        box-shadow: 0 0 0 0 rgba(13, 92, 58, 0.3);
+        transform: scale(1);
+    }
+    50% {
+        box-shadow: 0 0 0 6px rgba(13, 92, 58, 0);
+        transform: scale(1.02);
+    }
+}
+
+@keyframes navanidhi-pulse-gold {
+    0%, 100% {
+        box-shadow: 0 0 0 0 rgba(212, 163, 89, 0.4);
+    }
+    50% {
+        box-shadow: 0 0 0 8px rgba(212, 163, 89, 0);
+    }
+}
+
+/* Smooth Entrance Slide Up */
+@keyframes navanidhi-fade-up {
+    from {
+        opacity: 0;
+        transform: translateY(18px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Cart Badge Bounce */
+@keyframes navanidhi-cart-bounce {
+    0%, 100% { transform: scale(1); }
+    30% { transform: scale(1.3) rotate(-5deg); }
+    60% { transform: scale(0.9) rotate(3deg); }
+}
+
+/* Infinite Marquee Loop */
+@keyframes navanidhi-marquee {
+    0% { transform: translateX(0%); }
+    100% { transform: translateX(-50%); }
+}
+
+/* ==========================================================================
+   2. ANIMATION UTILITY CLASSES
+   ========================================================================== */
+
+.animate-float {
+    animation: navanidhi-float 4.5s ease-in-out infinite;
+}
+
+.animate-float-delayed {
+    animation: navanidhi-float 5s ease-in-out infinite 1.5s;
+}
+
+.animate-pulse-glow {
+    animation: navanidhi-pulse-glow 2.5s infinite;
+}
+
+.animate-pulse-gold {
+    animation: navanidhi-pulse-gold 2.2s infinite;
+}
+
+.animate-cart-bounce {
+    animation: navanidhi-cart-bounce 0.6s var(--nv-ease-spring);
+}
+
+.animate-fade-up {
+    animation: navanidhi-fade-up 0.5s var(--nv-ease-spring) forwards;
+}
+
+.animate-marquee-smooth {
+    display: flex;
+    width: max-content;
+    animation: navanidhi-marquee 28s linear infinite;
+}
+
+.animate-marquee-smooth:hover {
+    animation-play-state: paused;
+}
+
+/* ==========================================================================
+   3. MODERN BUTTONS & INTERACTIVE ELEMENTS
+   ========================================================================== */
+
+/* Primary Emerald Button with Golden Shimmer */
+.btn-emerald-primary {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.75rem;
+    border-radius: 9999px;
+    font-family: var(--nv-font-body);
+    font-size: 0.8125rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #FFFFFF !important;
+    background: linear-gradient(135deg, #0D5C3A 0%, #073520 100%);
+    border: 1px solid rgba(212, 163, 89, 0.35);
+    box-shadow: 0 4px 14px rgba(13, 92, 58, 0.25);
+    transition: all var(--nv-transition-base);
+    overflow: hidden;
+    cursor: pointer;
+    text-decoration: none !important;
+}
+
+.btn-emerald-primary::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -150%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(255, 255, 255, 0.25),
+        transparent
+    );
+    transition: left 0.75s ease;
+}
+
+.btn-emerald-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(13, 92, 58, 0.35);
+    border-color: var(--nv-gold);
+    color: #FFFFFF !important;
+}
+
+.btn-emerald-primary:hover::before {
+    left: 150%;
+}
+
+.btn-emerald-primary:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 8px rgba(13, 92, 58, 0.2);
+}
+
+/* Warm Gold Accent Button */
+.btn-gold-accent {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.75rem;
+    border-radius: 9999px;
+    font-family: var(--nv-font-body);
+    font-size: 0.8125rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #FFFFFF !important;
+    background: linear-gradient(135deg, #D4A359 0%, #B8873E 100%);
+    box-shadow: var(--nv-shadow-gold);
+    transition: all var(--nv-transition-base);
+    cursor: pointer;
+    text-decoration: none !important;
+}
+
+.btn-gold-accent:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 28px -4px rgba(212, 163, 89, 0.45);
+    filter: brightness(1.05);
+}
+
+/* Modern Outline Pill */
+.btn-emerald-outline {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.75rem;
+    border-radius: 9999px;
+    font-family: var(--nv-font-body);
+    font-size: 0.8125rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--nv-emerald) !important;
+    background: rgba(255, 255, 255, 0.9);
+    border: 1.5px solid var(--nv-emerald);
+    box-shadow: 0 2px 8px rgba(13, 92, 58, 0.06);
+    backdrop-filter: blur(8px);
+    transition: all var(--nv-transition-base);
+    text-decoration: none !important;
+}
+
+.btn-emerald-outline:hover {
+    background: var(--nv-emerald);
+    color: #FFFFFF !important;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(13, 92, 58, 0.2);
+}
+
+/* ==========================================================================
+   4. MODERN CARDS & SURFACES
+   ========================================================================== */
+
+/* Modern Card with Hover Elevation & Ambient Tint */
+.card-modern {
+    background-color: var(--nv-surface);
+    border: 1px solid var(--nv-border);
+    border-radius: 1.25rem;
+    box-shadow: var(--nv-shadow-sm);
+    transition: all var(--nv-transition-base);
+}
+
+.card-modern:hover {
+    border-color: rgba(13, 92, 58, 0.3);
+    box-shadow: var(--nv-shadow-lg);
+    transform: translateY(-5px);
+}
+
+/* Glass Surface (Header, Drawers, Hero Overlays) */
+.glass-surface {
+    background: rgba(255, 255, 255, 0.88);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-bottom: 1px solid rgba(13, 92, 58, 0.08);
+}
+
+/* Botanical Pill Badges */
+.badge-botanical {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    font-size: 0.6875rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    background-color: var(--nv-emerald-light);
+    color: var(--nv-emerald);
+    border: 1px solid rgba(13, 92, 58, 0.18);
+}
+
+.badge-gold {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    font-size: 0.6875rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    background-color: var(--nv-gold-light);
+    color: var(--nv-gold-dark);
+    border: 1px solid rgba(212, 163, 89, 0.3);
+}
+
+/* Gradient Text for Headlines */
+.text-gradient-emerald {
+    background: linear-gradient(135deg, #0D5C3A 0%, #073520 60%, #D4A359 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+/* Navigation Pill Links */
+.nav-link-pill {
+    padding: 0.375rem 0.875rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    font-weight: 700;
+    transition: all 0.2s ease;
+    color: #1F2937 !important;
+    text-decoration: none !important;
+    display: inline-flex;
+    align-items: center;
+}
+
+.nav-link-pill:hover {
+    background-color: #FFFFFF !important;
+    color: #0D5C3A !important;
+}
+
+.nav-link-pill.active {
+    background-color: #0D5C3A !important;
+    color: #FFFFFF !important;
+    box-shadow: 0 2px 6px rgba(13, 92, 58, 0.25) !important;
+}
+
+.nav-link-pill.active:hover {
+    background-color: #073520 !important;
+    color: #FFFFFF !important;
+}
+
+/* Accessibility: respect user prefers-reduced-motion */
+@media (prefers-reduced-motion: reduce) {
+    .animate-float,
+    .animate-float-delayed,
+    .animate-pulse-glow,
+    .animate-pulse-gold,
+    .animate-cart-bounce,
+    .animate-marquee-smooth {
+        animation: none !important;
+        transform: none !important;
+    }
+}
+

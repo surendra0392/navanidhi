@@ -57,6 +57,8 @@ class ShopServiceProvider extends ServiceProvider
 
         if (file_exists(base_path('resources/themes/navanidhi/views/components'))) {
             Blade::anonymousComponentPath(base_path('resources/themes/navanidhi/views/components'), 'navanidhi');
+        } else {
+            Blade::anonymousComponentPath(__DIR__.'/../Resources/views/components', 'navanidhi');
         }
 
         $this->app->register(EventServiceProvider::class);

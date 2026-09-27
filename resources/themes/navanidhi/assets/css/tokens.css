@@ -1,0 +1,112 @@
+/**
+ * NAVANIDHI NATURALS — Master Design Tokens
+ * 
+ * Consumer Brand: NAVANIDHI NATURALS
+ * Manufacturing & Legal Entity: MAN AGRO FOODS
+ * 
+ * Primary Display Font: Playfair Display
+ * Secondary / UI Font: Montserrat
+ */
+
+:root {
+    /* ─────────────────────────────────────────────────────────────
+       1. Approved Brand Color Palette
+       ───────────────────────────────────────────────────────────── */
+    --navanidhi-color-deep-green:     #0F4D2E; /* Primary Brand Forest Green */
+    --navanidhi-color-deep-green-dark:#0A3520; /* Dark Forest Green Hover */
+    --navanidhi-color-sage-green:     #7BA05B; /* Accent Leaf Sage Green */
+    --navanidhi-color-earth-brown:    #8B6F45; /* Warm Earth Terracotta / Soil */
+    --navanidhi-color-warm-gold:      #D4B381; /* Premium Ochre Gold Accent */
+    --navanidhi-color-warm-gold-dark: #BFA06E; /* Warm Gold Hover */
+    --navanidhi-color-light-beige:    #EADFCF; /* Warm Linen Canvas Background */
+    --navanidhi-color-off-white:      #F7F5EE; /* Clean Card Surface Background */
+    --navanidhi-color-black:          #111111; /* Primary Typography Text */
+    --navanidhi-color-white:          #FFFFFF; /* Pure White Card / Highlights */
+    --navanidhi-color-muted:          #666666; /* Muted Body Copy */
+    --navanidhi-color-border:         #DCD3C3; /* Linen Subtle Border */
+
+    /* Functional / Status Colors */
+    --navanidhi-color-success:        #15803D; /* Fresh Herbal Green */
+    --navanidhi-color-warning:        #D97706; /* Amber Ochre */
+    --navanidhi-color-error:          #DC2626; /* Deep Berry Red */
+    --navanidhi-color-info:           #0284C7; /* Botanical Sky Blue */
+
+    /* Semantic Roles */
+    --navanidhi-primary:              var(--navanidhi-color-deep-green);
+    --navanidhi-primary-hover:        var(--navanidhi-color-deep-green-dark);
+    --navanidhi-secondary:            var(--navanidhi-color-sage-green);
+    --navanidhi-accent:               var(--navanidhi-color-warm-gold);
+    --navanidhi-background:           var(--navanidhi-color-light-beige);
+    --navanidhi-surface:              var(--navanidhi-color-off-white);
+    --navanidhi-card:                 var(--navanidhi-color-white);
+    --navanidhi-text:                 var(--navanidhi-color-black);
+    --navanidhi-text-muted:           var(--navanidhi-color-muted);
+    --navanidhi-border:               var(--navanidhi-color-border);
+
+    /* Compatibility Aliases (maps any lingering elior tokens smoothly) */
+    --elior-green:                    var(--navanidhi-color-deep-green);
+    --elior-green-dark:               var(--navanidhi-color-deep-green-dark);
+    --elior-green-light:              #E8F2EC;
+    --elior-gold:                     var(--navanidhi-color-warm-gold);
+    --elior-gold-dark:                var(--navanidhi-color-warm-gold-dark);
+    --elior-gold-light:               #F7F5EE;
+    --elior-bg:                       var(--navanidhi-color-light-beige);
+    --elior-surface:                  var(--navanidhi-color-off-white);
+    --elior-card:                     var(--navanidhi-color-white);
+    --elior-border:                   var(--navanidhi-color-border);
+    --elior-text:                     var(--navanidhi-color-black);
+    --elior-muted:                    var(--navanidhi-color-muted);
+
+    /* ─────────────────────────────────────────────────────────────
+       2. Typography Stacks
+       ───────────────────────────────────────────────────────────── */
+    --navanidhi-font-display:         'Playfair Display', Georgia, 'Times New Roman', serif;
+    --navanidhi-font-body:            'Montserrat', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+
+    /* ─────────────────────────────────────────────────────────────
+       3. Spacing System
+       ───────────────────────────────────────────────────────────── */
+    --navanidhi-space-2xs:            0.125rem; /* 2px */
+    --navanidhi-space-xs:             0.25rem;  /* 4px */
+    --navanidhi-space-sm:             0.5rem;   /* 8px */
+    --navanidhi-space-md:             1rem;     /* 16px */
+    --navanidhi-space-lg:             1.5rem;   /* 24px */
+    --navanidhi-space-xl:             2rem;     /* 32px */
+    --navanidhi-space-2xl:            3rem;     /* 48px */
+    --navanidhi-space-3xl:            4rem;     /* 64px */
+
+    /* ─────────────────────────────────────────────────────────────
+       4. Border Radius
+       ───────────────────────────────────────────────────────────── */
+    --navanidhi-radius-sm:            4px;
+    --navanidhi-radius-md:            8px;
+    --navanidhi-radius-lg:            12px;
+    --navanidhi-radius-pill:          9999px;
+
+    /* ─────────────────────────────────────────────────────────────
+       5. Elevation & Shadows
+       ───────────────────────────────────────────────────────────── */
+    --navanidhi-shadow-subtle:        0 2px 12px -2px rgba(15, 77, 46, 0.06);
+    --navanidhi-shadow-card:          0 10px 30px -5px rgba(15, 77, 46, 0.08);
+    --navanidhi-shadow-hover:         0 20px 40px -10px rgba(15, 77, 46, 0.14);
+    --navanidhi-shadow-gold:          0 8px 24px -4px rgba(212, 179, 129, 0.35);
+
+    /* ─────────────────────────────────────────────────────────────
+       6. Transitions & Motion
+       ───────────────────────────────────────────────────────────── */
+    --navanidhi-transition-fast:      150ms cubic-bezier(0.4, 0, 0.2, 1);
+    --navanidhi-transition-base:      250ms cubic-bezier(0.4, 0, 0.2, 1);
+    --navanidhi-transition-slow:      350ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Reduced motion preference */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    ::before,
+    ::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+}
