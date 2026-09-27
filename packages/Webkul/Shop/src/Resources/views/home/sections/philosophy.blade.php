@@ -120,7 +120,7 @@
                                     src="{{ asset('images/products/navanidhi-red-chilli-powder.jpg') }}" 
                                     alt="Guntur Sannam Red Chilli Powder" 
                                     class="w-full h-full object-cover object-center group-hover/p1:scale-105 transition-transform duration-700"
-                                    onerror="this.onerror=null; this.src='/storage/products/3542/navanidhi-red-chilli-powder.jpg';"
+                                    onerror="this.onerror=null; this.src='{{ asset('images/backgrounds/navanidhi_hero_product.jpg') }}';"
                                 />
                                 <div class="absolute bottom-1.5 inset-x-1.5 p-1 rounded-lg bg-black/60 backdrop-blur-sm text-[9px] font-bold text-white uppercase tracking-wider">
                                     Sun-Dried
@@ -137,7 +137,7 @@
                                     src="{{ asset('images/products/navanidhi-turmeric-powder.jpg') }}" 
                                     alt="Lakadong High-Curcumin Turmeric Powder" 
                                     class="w-full h-full object-cover object-center group-hover/p2:scale-105 transition-transform duration-700"
-                                    onerror="this.onerror=null; this.src='/storage/products/3541/navanidhi-turmeric-powder.jpg';"
+                                    onerror="this.onerror=null; this.src='{{ asset('images/backgrounds/navanidhi_hero_product.jpg') }}';"
                                 />
                                 <div class="absolute bottom-1.5 inset-x-1.5 p-1 rounded-lg bg-emerald-700/80 backdrop-blur-sm text-[9px] font-bold text-white uppercase tracking-wider">
                                     7-9% Curcumin
@@ -154,7 +154,7 @@
                                     src="{{ asset('images/products/navanidhi-moringa-powder.jpg') }}" 
                                     alt="Organic Cold-Milled Moringa Leaf Powder" 
                                     class="w-full h-full object-cover object-center group-hover/p3:scale-105 transition-transform duration-700"
-                                    onerror="this.onerror=null; this.src='/storage/products/3538/navanidhi-moringa-powder.jpg';"
+                                    onerror="this.onerror=null; this.src='{{ asset('images/backgrounds/navanidhi_hero_product.jpg') }}';"
                                 />
                                 <div class="absolute bottom-1.5 inset-x-1.5 p-1 rounded-lg bg-black/60 backdrop-blur-sm text-[9px] font-bold text-white uppercase tracking-wider">
                                     100% Raw
