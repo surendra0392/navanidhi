@@ -102,12 +102,12 @@
                         style="border-radius: 32px; overflow: hidden; border: 1.5px solid rgba(255, 255, 255, 0.28); background: rgba(4, 26, 14, 0.45); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); box-shadow: 0 30px 70px rgba(0,0,0,0.65), 0 0 35px rgba(34, 197, 94, 0.25);"
                     >
                         <img 
-                            src="/storage/products/3542/navanidhi-red-chilli-powder.jpg" 
+                            src="{{ asset('images/backgrounds/navanidhi_hero_product.jpg') }}" 
                             alt="Navanidhi Pure Sun-Dried Farm Red Chilli Powder in Traditional Ceramic Bowl" 
                             class="w-full h-full object-cover object-center transition-transform duration-700 group-hover:scale-105"
                             fetchpriority="high"
                             loading="eager"
-                            onerror="this.onerror=null; this.src='/storage/products/41/navanidhi-moringa-powder.jpg';"
+                            onerror="this.onerror=null; this.src='{{ asset('images/products/navanidhi-red-chilli-powder.jpg') }}';"
                         />
 
                         {{-- Delicate Gradient Overlay --}}

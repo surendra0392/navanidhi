@@ -36,7 +36,8 @@
             <!-- Hero Feature Image Card -->
             <div class="relative mt-10 overflow-hidden rounded-3xl border border-white/20 bg-black/40 shadow-2xl">
                 <img
-                    src="{{ asset('storage/theme/cms/navanidhi-harvest-story.webp') }}?v={{ filemtime(public_path('storage/theme/cms/navanidhi-harvest-story.webp')) }}"
+                    src="{{ asset('storage/theme/cms/navanidhi-harvest-story.webp') }}"
+                    onerror="this.onerror=null; this.src='{{ asset('images/backgrounds/waterfall_nature_bg.jpg') }}';"
                     alt="Navanidhi Naturals Authentic Indian Farm Harvest"
                     class="h-64 sm:h-96 lg:h-[460px] w-full object-cover transition-transform duration-700 hover:scale-105"
                 />

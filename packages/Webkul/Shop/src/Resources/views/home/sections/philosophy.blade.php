@@ -117,10 +117,10 @@
                         <div class="group/p1 flex flex-col items-center text-center">
                             <div class="relative w-full aspect-square rounded-2xl overflow-hidden border border-white/20 bg-[#0a2314] shadow-lg mb-3 transition-transform duration-500 group-hover/p1:-translate-y-2">
                                 <img 
-                                    src="/storage/products/3542/navanidhi-red-chilli-powder.jpg" 
+                                    src="{{ asset('images/products/navanidhi-red-chilli-powder.jpg') }}" 
                                     alt="Guntur Sannam Red Chilli Powder" 
                                     class="w-full h-full object-cover object-center group-hover/p1:scale-105 transition-transform duration-700"
-                                    onerror="this.onerror=null; this.src='/storage/products/41/navanidhi-moringa-powder.jpg';"
+                                    onerror="this.onerror=null; this.src='/storage/products/3542/navanidhi-red-chilli-powder.jpg';"
                                 />
                                 <div class="absolute bottom-1.5 inset-x-1.5 p-1 rounded-lg bg-black/60 backdrop-blur-sm text-[9px] font-bold text-white uppercase tracking-wider">
                                     Sun-Dried
@@ -134,10 +134,10 @@
                         <div class="group/p2 flex flex-col items-center text-center">
                             <div class="relative w-full aspect-square rounded-2xl overflow-hidden border-2 border-emerald-400/50 bg-[#0a2314] shadow-[0_0_24px_rgba(34,197,94,0.3)] mb-3 transform -translate-y-2 transition-transform duration-500 group-hover/p2:-translate-y-4">
                                 <img 
-                                    src="/storage/products/3541/navanidhi-turmeric-powder.jpg" 
+                                    src="{{ asset('images/products/navanidhi-turmeric-powder.jpg') }}" 
                                     alt="Lakadong High-Curcumin Turmeric Powder" 
                                     class="w-full h-full object-cover object-center group-hover/p2:scale-105 transition-transform duration-700"
-                                    onerror="this.onerror=null; this.src='/storage/products/41/navanidhi-moringa-powder.jpg';"
+                                    onerror="this.onerror=null; this.src='/storage/products/3541/navanidhi-turmeric-powder.jpg';"
                                 />
                                 <div class="absolute bottom-1.5 inset-x-1.5 p-1 rounded-lg bg-emerald-700/80 backdrop-blur-sm text-[9px] font-bold text-white uppercase tracking-wider">
                                     7-9% Curcumin
@@ -151,10 +151,10 @@
                         <div class="group/p3 flex flex-col items-center text-center">
                             <div class="relative w-full aspect-square rounded-2xl overflow-hidden border border-white/20 bg-[#0a2314] shadow-lg mb-3 transition-transform duration-500 group-hover/p3:-translate-y-2">
                                 <img 
-                                    src="/storage/products/3538/navanidhi-moringa-powder.jpg" 
+                                    src="{{ asset('images/products/navanidhi-moringa-powder.jpg') }}" 
                                     alt="Organic Cold-Milled Moringa Leaf Powder" 
                                     class="w-full h-full object-cover object-center group-hover/p3:scale-105 transition-transform duration-700"
-                                    onerror="this.onerror=null; this.src='/storage/products/41/navanidhi-moringa-powder.jpg';"
+                                    onerror="this.onerror=null; this.src='/storage/products/3538/navanidhi-moringa-powder.jpg';"
                                 />
                                 <div class="absolute bottom-1.5 inset-x-1.5 p-1 rounded-lg bg-black/60 backdrop-blur-sm text-[9px] font-bold text-white uppercase tracking-wider">
                                     100% Raw

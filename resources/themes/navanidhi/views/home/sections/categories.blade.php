@@ -17,7 +17,7 @@
             'title'       => 'Farm-Direct Spices',
             'eyebrow'     => 'Organically Sourced',
             'desc'        => 'Sun-dried Guntur chillies and single-estate spices stone-milled without Sudan dyes, lead chromate, or polishing oils.',
-            'image'       => "/storage/products/{$chilliId}/navanidhi-red-chilli-powder.jpg",
+            'image'       => asset('images/products/navanidhi-red-chilli-powder.jpg'),
             'icon'        => 'eco',
             'badge_color' => 'bg-emerald-600',
             'action'      => 'Explore Spices',
@@ -28,7 +28,7 @@
             'title'       => 'Cold-Milled Botanicals',
             'eyebrow'     => 'Living Whole Foods',
             'desc'        => 'Living whole food nutrition cold-dehydrated below 42°C to safeguard vital cellular enzymes, chlorophyll, and pure aroma.',
-            'image'       => "/storage/products/{$moringaId}/navanidhi-moringa-powder.jpg",
+            'image'       => asset('images/products/navanidhi-moringa-powder.jpg'),
             'icon'        => 'bolt',
             'badge_color' => 'bg-emerald-700',
             'action'      => 'Explore Botanicals',
@@ -39,7 +39,7 @@
             'title'       => 'Essential Wellness Blends',
             'eyebrow'     => 'Ayurvedic Formulations',
             'desc'        => 'Synergistic Ayurvedic botanical elixirs crafted for daily immune resilience, vitality, and cellular rejuvenation.',
-            'image'       => "/storage/products/{$immunityId}/navanidhi-golden-immunity.jpg",
+            'image'       => asset('images/products/navanidhi-golden-immunity.jpg'),
             'icon'        => 'favorite',
             'badge_color' => 'bg-[#D4A359]',
             'action'      => 'Explore Blends',
@@ -108,7 +108,7 @@
                                 alt="{{ $card['title'] }}"
                                 class="w-full h-full object-cover object-center transition-transform duration-700 group-hover:scale-110"
                                 loading="lazy"
-                                onerror="this.onerror=null; this.src='/storage/products/41/navanidhi-moringa-powder.jpg';"
+                                onerror="this.onerror=null; this.src='{{ asset('images/products/navanidhi-moringa-powder.jpg') }}';"
                             />
                         </div>
 
