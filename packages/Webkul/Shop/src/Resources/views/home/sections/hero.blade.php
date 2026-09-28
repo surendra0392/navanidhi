@@ -263,7 +263,7 @@
                     </div>
 
                     {{-- Right Column: User's Real Authentic Farm Spice Showcase Stage --}}
-                    <div class="lg:col-span-5 relative flex items-center justify-center">
+                    <div class="lg:col-span-5 relative flex flex-col items-center justify-center">
                         <div class="relative w-full max-w-[440px] mx-auto">
                             
                             {{-- Ambient Back-Glow Behind Product Stage --}}
@@ -310,51 +310,32 @@
                                 </div>
                             </div>
 
+                            {{-- Modern Line-Type Slider Indicators Positioned Directly Under The Image --}}
+                            @if (count($slides) > 1)
+                                <div class="flex items-center justify-center gap-3 pt-5 pb-1 relative z-20">
+                                    <span class="text-[11px] font-mono text-emerald-300 font-bold tracking-wider">0{{ $idx + 1 }}</span>
+                                    
+                                    <div class="flex items-center gap-2 px-3 py-1.5 rounded-full bg-black/40 border border-white/15 backdrop-blur-md shadow-inner">
+                                        @foreach ($slides as $subIdx => $subSlide)
+                                            <button 
+                                                type="button"
+                                                onclick="window.nvHeroGo && window.nvHeroGo({{ $subIdx }}, event)"
+                                                class="nv-slide-indicator h-1.5 rounded-full transition-all duration-300 cursor-pointer {{ $subIdx === $idx ? 'w-10 bg-gradient-to-r from-emerald-400 via-[#E6C687] to-emerald-300 shadow-[0_0_12px_rgba(52,211,153,0.9)]' : 'w-3.5 bg-white/25 hover:bg-white/60 hover:w-5' }}"
+                                                data-target-slide="{{ $subIdx }}"
+                                                aria-label="Go to Slide {{ $subIdx + 1 }}: {{ $subSlide['title_line1'] }}"
+                                            ></button>
+                                        @endforeach
+                                    </div>
+
+                                    <span class="text-[11px] font-mono text-white/40 font-bold tracking-wider">0{{ count($slides) }}</span>
+                                </div>
+                            @endif
+
                         </div>
                     </div>
                 </div>
             @endforeach
         </div>
-
-        {{-- Luxury Frosted Slider Navigation & Pagination Controls --}}
-        @if (count($slides) > 1)
-            <div class="flex items-center justify-between max-w-4xl mx-auto pt-6 pb-2 relative z-20">
-                {{-- Prev Arrow Button --}}
-                <button 
-                    type="button"
-                    id="nv-hero-prev"
-                    onclick="window.nvHeroPrev && window.nvHeroPrev(event)"
-                    class="w-10 h-10 rounded-full flex items-center justify-center text-white/80 hover:text-white border border-white/20 bg-white/[0.08] backdrop-blur-md transition-all active:scale-95 cursor-pointer shadow-md"
-                    aria-label="Previous Slide"
-                >
-                    <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M15 19l-7-7 7-7"/></svg>
-                </button>
-
-                {{-- Interactive Slide Dot Indicators --}}
-                <div class="flex items-center gap-2.5">
-                    @foreach ($slides as $idx => $slide)
-                        <button 
-                            type="button"
-                            onclick="window.nvHeroGo && window.nvHeroGo({{ $idx }}, event)"
-                            class="nv-slide-indicator h-2.5 rounded-full transition-all duration-300 cursor-pointer {{ $idx === 0 ? 'w-8 bg-emerald-400 shadow-[0_0_12px_rgba(52,211,153,0.8)]' : 'w-2.5 bg-white/30 hover:bg-white/60' }}"
-                            data-target-slide="{{ $idx }}"
-                            aria-label="Go to Slide {{ $idx + 1 }}"
-                        ></button>
-                    @endforeach
-                </div>
-
-                {{-- Next Arrow Button --}}
-                <button 
-                    type="button"
-                    id="nv-hero-next"
-                    onclick="window.nvHeroNext && window.nvHeroNext(event)"
-                    class="w-10 h-10 rounded-full flex items-center justify-center text-white/80 hover:text-white border border-white/20 bg-white/[0.08] backdrop-blur-md transition-all active:scale-95 cursor-pointer shadow-md"
-                    aria-label="Next Slide"
-                >
-                    <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 5l7 7-7 7"/></svg>
-                </button>
-            </div>
-        @endif
 
         {{-- Floating Trust Ribbon (Image 2 Axolyt Benchmark) --}}
         <div class="mt-8 sm:mt-12">
@@ -413,11 +394,12 @@
                 }
             });
 
-            indicators.forEach((ind, i) => {
-                if (i === index) {
-                    ind.className = 'nv-slide-indicator h-2.5 rounded-full transition-all duration-300 cursor-pointer w-8 bg-emerald-400 shadow-[0_0_12px_rgba(52,211,153,0.8)]';
+            indicators.forEach((ind) => {
+                const target = parseInt(ind.getAttribute('data-target-slide'), 10);
+                if (target === index) {
+                    ind.className = 'nv-slide-indicator h-1.5 rounded-full transition-all duration-300 cursor-pointer w-10 bg-gradient-to-r from-emerald-400 via-[#E6C687] to-emerald-300 shadow-[0_0_12px_rgba(52,211,153,0.9)]';
                 } else {
-                    ind.className = 'nv-slide-indicator h-2.5 rounded-full transition-all duration-300 cursor-pointer w-2.5 bg-white/30 hover:bg-white/60';
+                    ind.className = 'nv-slide-indicator h-1.5 rounded-full transition-all duration-300 cursor-pointer w-3.5 bg-white/25 hover:bg-white/60 hover:w-5';
                 }
             });
 
@@ -465,6 +447,20 @@
             if (stage) {
                 stage.addEventListener('mouseenter', stopAutoplay);
                 stage.addEventListener('mouseleave', startAutoplay);
+
+                let touchStartX = 0;
+                let touchEndX = 0;
+                stage.addEventListener('touchstart', (e) => {
+                    touchStartX = e.changedTouches[0].screenX;
+                }, { passive: true });
+                stage.addEventListener('touchend', (e) => {
+                    touchEndX = e.changedTouches[0].screenX;
+                    if (touchStartX - touchEndX > 50) {
+                        window.nvHeroNext();
+                    } else if (touchEndX - touchStartX > 50) {
+                        window.nvHeroPrev();
+                    }
+                }, { passive: true });
             }
             startAutoplay();
         }
