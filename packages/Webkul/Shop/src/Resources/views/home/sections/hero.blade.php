@@ -312,17 +312,22 @@
 
                             {{-- Ultra-Sleek Segmented Line Bars Under The Image (One Bar Per Slide) --}}
                             @if (count($slides) > 1)
-                                <div class="w-full max-w-[380px] mx-auto pt-4 relative z-20">
-                                    <div class="flex items-center gap-2 sm:gap-2.5">
+                                <style>.nv-slide-indicator:hover .nv-slide-bar { background: rgba(255,255,255,0.5) !important; }</style>
+                                <div class="w-full mx-auto pt-4 relative z-20" style="max-width: 380px;">
+                                    <div class="flex items-center" style="gap: 8px;">
                                         @foreach ($slides as $subIdx => $subSlide)
                                             <button 
                                                 type="button"
                                                 onclick="window.nvHeroGo && window.nvHeroGo({{ $subIdx }}, event)"
-                                                class="nv-slide-indicator group flex-1 py-2.5 -my-2.5 focus:outline-none cursor-pointer"
+                                                class="nv-slide-indicator group flex-1 focus:outline-none cursor-pointer"
+                                                style="padding: 10px 0; margin: -10px 0;"
                                                 data-target-slide="{{ $subIdx }}"
                                                 aria-label="Show Slide {{ $subIdx + 1 }}: {{ $subSlide['title_line1'] }}"
                                             >
-                                                <span class="nv-slide-bar block w-full h-[2.5px] rounded-full transition-all duration-300 {{ $subIdx === $idx ? 'bg-gradient-to-r from-emerald-400 via-[#E6C687] to-emerald-300 shadow-[0_0_10px_rgba(52,211,153,0.95)]' : 'bg-white/20 group-hover:bg-white/50' }}"></span>
+                                                <span 
+                                                    class="nv-slide-bar block w-full rounded-full"
+                                                    style="height: 3px; transition: all 0.3s ease; {{ $subIdx === $idx ? 'background: linear-gradient(to right, #34d399, #E6C687, #6ee7b7); box-shadow: 0 0 10px rgba(52,211,153,0.95);' : 'background: rgba(255,255,255,0.2);' }}"
+                                                ></span>
                                             </button>
                                         @endforeach
                                     </div>
@@ -397,10 +402,12 @@
                 const bar = ind.querySelector('.nv-slide-bar');
                 if (bar) {
                     if (target === index) {
-                        bar.className = 'nv-slide-bar block w-full h-[2.5px] rounded-full transition-all duration-300 bg-gradient-to-r from-emerald-400 via-[#E6C687] to-emerald-300 shadow-[0_0_10px_rgba(52,211,153,0.95)]';
+                        bar.style.background = 'linear-gradient(to right, #34d399, #E6C687, #6ee7b7)';
+                        bar.style.boxShadow = '0 0 10px rgba(52,211,153,0.95)';
                         ind.setAttribute('aria-current', 'true');
                     } else {
-                        bar.className = 'nv-slide-bar block w-full h-[2.5px] rounded-full transition-all duration-300 bg-white/20 group-hover:bg-white/50';
+                        bar.style.background = 'rgba(255,255,255,0.2)';
+                        bar.style.boxShadow = 'none';
                         ind.removeAttribute('aria-current');
                     }
                 }
