@@ -310,24 +310,22 @@
                                 </div>
                             </div>
 
-                            {{-- Modern Line-Type Slider Indicators Positioned Directly Under The Image --}}
+                            {{-- Ultra-Sleek Segmented Line Bars Under The Image (One Bar Per Slide) --}}
                             @if (count($slides) > 1)
-                                <div class="flex items-center justify-center gap-3 pt-5 pb-1 relative z-20">
-                                    <span class="text-[11px] font-mono text-emerald-300 font-bold tracking-wider">0{{ $idx + 1 }}</span>
-                                    
-                                    <div class="flex items-center gap-2 px-3 py-1.5 rounded-full bg-black/40 border border-white/15 backdrop-blur-md shadow-inner">
+                                <div class="w-full max-w-[380px] mx-auto pt-4 relative z-20">
+                                    <div class="flex items-center gap-2 sm:gap-2.5">
                                         @foreach ($slides as $subIdx => $subSlide)
                                             <button 
                                                 type="button"
                                                 onclick="window.nvHeroGo && window.nvHeroGo({{ $subIdx }}, event)"
-                                                class="nv-slide-indicator h-1.5 rounded-full transition-all duration-300 cursor-pointer {{ $subIdx === $idx ? 'w-10 bg-gradient-to-r from-emerald-400 via-[#E6C687] to-emerald-300 shadow-[0_0_12px_rgba(52,211,153,0.9)]' : 'w-3.5 bg-white/25 hover:bg-white/60 hover:w-5' }}"
+                                                class="nv-slide-indicator group flex-1 py-2.5 -my-2.5 focus:outline-none cursor-pointer"
                                                 data-target-slide="{{ $subIdx }}"
-                                                aria-label="Go to Slide {{ $subIdx + 1 }}: {{ $subSlide['title_line1'] }}"
-                                            ></button>
+                                                aria-label="Show Slide {{ $subIdx + 1 }}: {{ $subSlide['title_line1'] }}"
+                                            >
+                                                <span class="nv-slide-bar block w-full h-[2.5px] rounded-full transition-all duration-300 {{ $subIdx === $idx ? 'bg-gradient-to-r from-emerald-400 via-[#E6C687] to-emerald-300 shadow-[0_0_10px_rgba(52,211,153,0.95)]' : 'bg-white/20 group-hover:bg-white/50' }}"></span>
+                                            </button>
                                         @endforeach
                                     </div>
-
-                                    <span class="text-[11px] font-mono text-white/40 font-bold tracking-wider">0{{ count($slides) }}</span>
                                 </div>
                             @endif
 
@@ -396,10 +394,15 @@
 
             indicators.forEach((ind) => {
                 const target = parseInt(ind.getAttribute('data-target-slide'), 10);
-                if (target === index) {
-                    ind.className = 'nv-slide-indicator h-1.5 rounded-full transition-all duration-300 cursor-pointer w-10 bg-gradient-to-r from-emerald-400 via-[#E6C687] to-emerald-300 shadow-[0_0_12px_rgba(52,211,153,0.9)]';
-                } else {
-                    ind.className = 'nv-slide-indicator h-1.5 rounded-full transition-all duration-300 cursor-pointer w-3.5 bg-white/25 hover:bg-white/60 hover:w-5';
+                const bar = ind.querySelector('.nv-slide-bar');
+                if (bar) {
+                    if (target === index) {
+                        bar.className = 'nv-slide-bar block w-full h-[2.5px] rounded-full transition-all duration-300 bg-gradient-to-r from-emerald-400 via-[#E6C687] to-emerald-300 shadow-[0_0_10px_rgba(52,211,153,0.95)]';
+                        ind.setAttribute('aria-current', 'true');
+                    } else {
+                        bar.className = 'nv-slide-bar block w-full h-[2.5px] rounded-full transition-all duration-300 bg-white/20 group-hover:bg-white/50';
+                        ind.removeAttribute('aria-current');
+                    }
                 }
             });
 
