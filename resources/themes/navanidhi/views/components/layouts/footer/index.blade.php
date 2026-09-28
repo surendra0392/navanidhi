@@ -84,8 +84,8 @@
                     <form 
                         action="{{ route('shop.subscription.store') }}" 
                         method="POST" 
-                        class="flex items-center rounded-full border border-white/25 p-1.5 focus-within:border-emerald-400 w-full max-w-xl transition-all"
-                        style="background: transparent !important; box-shadow: none !important;"
+                        class="flex items-center rounded-full p-1.5 w-full max-w-xl transition-all"
+                        style="background: rgba(0, 0, 0, 0.28) !important; border: none !important; box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.3) !important;"
                     >
                         @csrf
                         <input
@@ -93,7 +93,7 @@
                             name="email"
                             placeholder="Your email address"
                             class="w-full min-w-0 px-4 py-2.5 text-xs sm:text-sm text-white placeholder:text-emerald-100/50 focus:outline-none"
-                            style="background: transparent !important;"
+                            style="background: transparent !important; border: none !important; border-radius: 0 !important; box-shadow: none !important; backdrop-filter: none !important; -webkit-backdrop-filter: none !important;"
                             required
                         >
                         <button

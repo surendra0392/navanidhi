@@ -41,7 +41,8 @@
                             name="email"
                             required
                             placeholder="Your email address"
-                            class="flex-1 px-5 py-3.5 rounded-full text-white placeholder-emerald-200/50 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-emerald-400 transition-all shadow-inner bg-white/10 border border-white/20 backdrop-blur-md"
+                            class="flex-1 px-5 py-3.5 rounded-full text-white placeholder-emerald-200/50 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-emerald-400 transition-all shadow-inner"
+                            style="background: rgba(0, 0, 0, 0.28) !important; border: none !important; box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.3) !important;"
                             autocomplete="email"
                         />
 
