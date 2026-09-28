@@ -757,30 +757,138 @@
                 background: rgba(255, 255, 255, 0.08) !important;
             }
 
-            /* Global Form Controls (Inputs, Selects, Textareas) */
-            input[type="text"]:not([class*="mobile-search-input"]),
-            input[type="email"],
-            input[type="password"],
-            input[type="number"],
-            input[type="tel"],
+            /* ── Global Form Controls (Unified Round Corner, Frosted Background & Vibrant Emerald Focus) ── */
+            input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="submit"]):not([type="button"]):not([type="reset"]):not([type="hidden"]):not([type="file"]),
             select,
-            textarea {
-                background: rgba(255, 255, 255, 0.08) !important;
+            .custom-select {
+                background: rgba(0, 0, 0, 0.35) !important;
                 border: 1px solid rgba(255, 255, 255, 0.20) !important;
                 color: #FFFFFF !important;
-                border-radius: 0.75rem !important;
-                backdrop-filter: blur(8px) !important;
-                -webkit-backdrop-filter: blur(8px) !important;
-                transition: all 0.25s ease !important;
+                border-radius: 9999px !important;
+                padding-left: 1.25rem !important;
+                padding-right: 1.25rem !important;
+                backdrop-filter: blur(12px) !important;
+                -webkit-backdrop-filter: blur(12px) !important;
+                box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3) !important;
+                transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
             }
+
+            textarea {
+                background: rgba(0, 0, 0, 0.35) !important;
+                border: 1px solid rgba(255, 255, 255, 0.20) !important;
+                color: #FFFFFF !important;
+                border-radius: 1.25rem !important;
+                padding: 1rem 1.25rem !important;
+                backdrop-filter: blur(12px) !important;
+                -webkit-backdrop-filter: blur(12px) !important;
+                box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3) !important;
+                transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
+            }
+
+            input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="submit"]):not([type="button"]):not([type="reset"]):not([type="hidden"]):not([type="file"]):hover,
+            select:hover,
+            textarea:hover {
+                border-color: rgba(255, 255, 255, 0.38) !important;
+                background: rgba(0, 0, 0, 0.45) !important;
+            }
+
+            input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="submit"]):not([type="button"]):not([type="reset"]):not([type="hidden"]):not([type="file"]):focus,
+            input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="submit"]):not([type="button"]):not([type="reset"]):not([type="hidden"]):not([type="file"]):focus-visible,
+            select:focus,
+            select:focus-visible,
+            textarea:focus,
+            textarea:focus-visible {
+                background: rgba(0, 0, 0, 0.58) !important;
+                border-color: #34D399 !important;
+                box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3), 0 0 0 3px rgba(52, 211, 153, 0.35), 0 0 16px rgba(52, 211, 153, 0.3) !important;
+                outline: none !important;
+            }
+
             input::placeholder, textarea::placeholder {
                 color: rgba(255, 255, 255, 0.45) !important;
             }
-            input:focus, select:focus, textarea:focus {
+
+            select option {
+                background-color: #041a0e !important;
+                color: #FFFFFF !important;
+                padding: 8px 12px !important;
+            }
+
+            /* Dedicated Newsletter Pill Styling */
+            .nv-newsletter-input {
+                background: rgba(0, 0, 0, 0.35) !important;
+                border: 1px solid rgba(255, 255, 255, 0.20) !important;
+                border-radius: 9999px !important;
+                box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3) !important;
+                color: #FFFFFF !important;
+                transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
+            }
+            .nv-newsletter-input:hover {
+                border-color: rgba(255, 255, 255, 0.38) !important;
+                background: rgba(0, 0, 0, 0.45) !important;
+            }
+            .nv-newsletter-input:focus,
+            .nv-newsletter-input:focus-visible {
+                background: rgba(0, 0, 0, 0.58) !important;
                 border-color: #34D399 !important;
-                background: rgba(255, 255, 255, 0.12) !important;
-                box-shadow: 0 0 0 3px rgba(52, 211, 153, 0.25) !important;
+                box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3), 0 0 0 3px rgba(52, 211, 153, 0.35), 0 0 16px rgba(52, 211, 153, 0.3) !important;
                 outline: none !important;
+            }
+
+            .nv-newsletter-btn {
+                background: linear-gradient(135deg, #15803d 0%, #0d5c3a 100%) !important;
+                border: 1px solid rgba(110, 231, 183, 0.4) !important;
+                color: #FFFFFF !important;
+                box-shadow: 0 4px 14px rgba(21, 128, 61, 0.35) !important;
+                border-radius: 9999px !important;
+                cursor: pointer !important;
+                transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
+            }
+            .nv-newsletter-btn:hover {
+                background: linear-gradient(135deg, #16a34a 0%, #15803d 100%) !important;
+                border-color: rgba(110, 231, 183, 0.8) !important;
+                box-shadow: 0 8px 24px rgba(22, 163, 74, 0.5), 0 0 20px rgba(34, 197, 94, 0.4) !important;
+                transform: translateY(-2px) scale(1.02) !important;
+            }
+            .nv-newsletter-btn:active {
+                transform: translateY(0) scale(0.98) !important;
+                box-shadow: 0 2px 8px rgba(21, 128, 61, 0.3) !important;
+            }
+
+            /* ── Global Interactive Button States & Hover Glows ── */
+            .primary-button,
+            .nv-glass-btn-primary,
+            .nv-btn-cart,
+            .elior-btn-primary,
+            button[type="submit"]:not([class*="quantity"]):not([class*="qty"]):not([class*="drawer"]):not([class*="close"]) {
+                background: linear-gradient(135deg, #15803d 0%, #0d5c3a 50%, #064e3b 100%) !important;
+                color: #FFFFFF !important;
+                border: 1px solid rgba(110, 231, 183, 0.4) !important;
+                border-radius: 9999px !important;
+                box-shadow: 0 4px 14px rgba(21, 128, 61, 0.35) !important;
+                cursor: pointer !important;
+                transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
+            }
+
+            .primary-button:hover,
+            .nv-glass-btn-primary:hover,
+            .nv-btn-cart:hover,
+            .elior-btn-primary:hover,
+            button[type="submit"]:not([class*="quantity"]):not([class*="qty"]):not([class*="drawer"]):not([class*="close"]):hover {
+                background: linear-gradient(135deg, #16a34a 0%, #15803d 100%) !important;
+                border-color: rgba(110, 231, 183, 0.8) !important;
+                box-shadow: 0 8px 24px rgba(22, 163, 74, 0.5), 0 0 20px rgba(34, 197, 94, 0.4) !important;
+                transform: translateY(-2px) scale(1.02) !important;
+                color: #FFFFFF !important;
+            }
+
+            .primary-button:active,
+            .nv-glass-btn-primary:active,
+            .nv-btn-cart:active,
+            .elior-btn-primary:active,
+            button[type="submit"]:not([class*="quantity"]):not([class*="qty"]):not([class*="drawer"]):not([class*="close"]):active {
+                transform: translateY(0) scale(0.98) !important;
+                box-shadow: 0 2px 8px rgba(21, 128, 61, 0.3) !important;
             }
 
             /* Category Discovery Pills & Filter Chips */

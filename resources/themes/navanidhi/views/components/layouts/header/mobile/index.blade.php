@@ -160,8 +160,7 @@
                         type="text"
                         name="query"
                         value="{{ request('query') }}"
-                        class="w-full h-11 pl-10 pr-11 text-xs text-white placeholder:text-white/40 bg-white/10 border border-white/20 rounded-xl focus:border-emerald-400 focus:ring-1 focus:ring-emerald-400 transition-all outline-none"
-                        style="background: rgba(255, 255, 255, 0.08); color: #ffffff;"
+                        class="w-full h-11 pl-10 pr-11 text-xs text-white placeholder:text-white/40 border border-white/20 rounded-full focus:border-emerald-400 transition-all outline-none"
                         placeholder="Search pure spices, botanicals, blends..."
                         autocomplete="off"
                         required

@@ -92,14 +92,12 @@
                             type="email"
                             name="email"
                             placeholder="Your email address"
-                            class="flex-1 min-w-0 px-5 py-3 text-xs sm:text-sm text-white placeholder:text-emerald-100/50 focus:outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-400/30 hover:border-white/30 transition-all duration-200"
-                            style="background: rgba(0, 0, 0, 0.35) !important; border: 1px solid rgba(255, 255, 255, 0.18) !important; border-radius: 9999px !important; box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.3) !important;"
+                            class="nv-newsletter-input flex-1 min-w-0 px-5 py-3 text-xs sm:text-sm text-white placeholder:text-emerald-100/50"
                             required
                         >
                         <button
                             type="submit"
-                            class="px-7 py-3 text-xs font-bold uppercase tracking-wider text-white rounded-full shrink-0 shadow-md cursor-pointer hover:brightness-110 hover:scale-[1.02] hover:shadow-emerald-500/30 active:scale-95 transition-all duration-200"
-                            style="background: linear-gradient(135deg, #15803d 0%, #0d5c3a 100%) !important; border: 1px solid rgba(110, 231, 183, 0.35) !important;"
+                            class="nv-newsletter-btn px-7 py-3 text-xs font-bold uppercase tracking-wider text-white rounded-full shrink-0 shadow-md cursor-pointer"
                             aria-label="Subscribe"
                         >
                             Subscribe

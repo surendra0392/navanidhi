@@ -41,14 +41,13 @@
                             name="email"
                             required
                             placeholder="Your email address"
-                            class="flex-1 px-5 py-3.5 rounded-full text-white placeholder-emerald-200/50 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-emerald-400 transition-all shadow-inner"
-                            style="background: rgba(0, 0, 0, 0.28) !important; border: none !important; box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.3) !important;"
+                            class="nv-newsletter-input flex-1 px-5 py-3.5 rounded-full text-white placeholder-emerald-200/50 text-xs sm:text-sm"
                             autocomplete="email"
                         />
 
                         <button
                             type="submit"
-                            class="nv-glass-btn-primary px-8 py-3.5 rounded-full text-xs uppercase tracking-widest font-bold text-white whitespace-nowrap shadow-lg cursor-pointer"
+                            class="nv-newsletter-btn px-8 py-3.5 rounded-full text-xs uppercase tracking-widest font-bold text-white whitespace-nowrap shadow-lg cursor-pointer"
                         >
                             <span>Subscribe</span>
                         </button>
