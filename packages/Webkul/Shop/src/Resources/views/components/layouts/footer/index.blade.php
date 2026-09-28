@@ -23,6 +23,12 @@
 
 <!-- AXOLYT-BENCHMARKED FLOATING FROSTED GLASS FOOTER -->
 <footer class="w-full bg-transparent pt-6 pb-12 sm:pb-16 relative z-10" aria-label="Site Footer">
+    <style>
+        footer, footer *, footer *:hover, footer *:focus {
+            transform: none !important;
+            transition: none !important;
+        }
+    </style>
     <div class="site-container">
         <div class="rounded-[32px] p-8 sm:p-12 lg:p-14 border border-white/15 bg-white/[0.06] backdrop-blur-2xl shadow-[0_30px_70px_rgba(0,0,0,0.6)] text-white" style="border-radius: 32px !important; transform: none !important; transition: none !important;">
             
@@ -85,7 +91,7 @@
                         action="{{ route('shop.subscription.store') }}" 
                         method="POST" 
                         class="flex items-center gap-3 sm:gap-4 w-full max-w-xl"
-                        style="background: transparent !important; border: none !important; box-shadow: none !important; padding: 0 !important;"
+                        style="background: transparent !important; border: none !important; outline: none !important; box-shadow: none !important; padding: 0 !important;"
                     >
                         @csrf
                         <input
@@ -93,12 +99,13 @@
                             name="email"
                             placeholder="Your email address"
                             class="flex-1 min-w-0 px-5 py-3 text-xs sm:text-sm text-white placeholder:text-emerald-100/50 focus:outline-none"
-                            style="background: rgba(0, 0, 0, 0.3) !important; border: 1px solid rgba(255, 255, 255, 0.14) !important; border-radius: 9999px !important; box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.3) !important; outline: none !important;"
+                            style="background: rgba(0, 0, 0, 0.35) !important; border: 1px solid rgba(255, 255, 255, 0.15) !important; border-radius: 9999px !important; box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.3) !important; outline: none !important;"
                             required
                         >
                         <button
                             type="submit"
-                            class="nv-glass-btn-primary px-7 py-3 text-xs font-bold uppercase tracking-wider text-white rounded-full shrink-0 shadow-md cursor-pointer"
+                            class="px-7 py-3 text-xs font-bold uppercase tracking-wider text-white rounded-full shrink-0 shadow-md cursor-pointer"
+                            style="background: linear-gradient(135deg, #15803d 0%, #0d5c3a 100%) !important; border: 1px solid rgba(110, 231, 183, 0.35) !important; transform: none !important; transition: none !important;"
                             aria-label="Subscribe"
                         >
                             Subscribe
