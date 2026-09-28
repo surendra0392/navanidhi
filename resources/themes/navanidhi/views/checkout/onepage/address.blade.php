@@ -2,7 +2,7 @@
 
 <!-- Address Step Card -->
 <div class="rounded-3xl border border-[#0D5C3A]/12 bg-white p-5 sm:p-7 shadow-xs space-y-6">
-    <div class="flex items-center justify-between border-b border-[#0D5C3A]/10 pb-4">
+    <div class="flex items-center justify-between border-b !border-white/[0.06] pb-5 mb-2">
         <div class="flex items-center gap-3">
             <span class="flex h-7 w-7 items-center justify-center rounded-full bg-[#0D5C3A] text-white text-xs font-bold font-mono shadow-xs">
                 01

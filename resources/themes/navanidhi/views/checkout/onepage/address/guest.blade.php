@@ -28,7 +28,7 @@
 
                     <!-- Billing Address Header -->
                     <div class="flex items-center justify-between">
-                        <h3 class="font-serif text-lg sm:text-xl font-bold text-[#1C2A22] pb-2 border-b border-[#EDE8DE] mb-3 w-full">
+                        <h3 class="font-serif text-lg sm:text-xl font-bold text-[#1C2A22] pb-3 border-b !border-white/[0.06] mb-6 w-full">
                             @lang('shop::app.checkout.onepage.address.billing-address')
                         </h3>
                     </div>
@@ -41,7 +41,7 @@
 
                     <!-- Use for Shipping Checkbox -->
                     <div
-                        class="mt-4 p-3.5 rounded-xl bg-[#FAF8F5] border border-[#DCD3C3] flex items-center gap-3 select-none transition-all hover:border-[#0F4D2E]/50"
+                        class="mt-6 p-3.5 rounded-xl bg-white/[0.04] border !border-white/[0.08] flex items-center gap-3 select-none transition-all hover:border-[#0F4D2E]/50"
                         v-if="cart.have_stockable_items"
                     >
                         <input

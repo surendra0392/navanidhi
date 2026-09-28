@@ -30,6 +30,7 @@
             loading="lazy"
             class="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-108"
             style="border-radius: 20px !important;"
+            onerror="this.onerror=null; this.src='{{ bagisto_asset('images/large-product-placeholder.webp') }}';"
         />
 
         <!-- Gradient Fade to Blend Image into Glass Card -->

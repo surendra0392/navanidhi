@@ -42,6 +42,7 @@
                 alt="{{ $product->name }}"
                 loading="lazy"
                 class="w-full h-full object-cover object-center transition-transform duration-700 ease-out group-hover:scale-105"
+                onerror="this.onerror=null; this.src='{{ bagisto_asset('images/medium-product-placeholder.webp') }}';"
             />
         </a>
     </div>

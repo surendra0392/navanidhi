@@ -17,13 +17,52 @@ class NavanidhiThemeCustomizationSeeder extends Seeder
 
         $now = Carbon::now();
 
-        // 1. Deactivate default Bagisto demo theme carousels if they exist
+        // 1. Deactivate default Bagisto demo theme blocks (except id 1 which we configure below)
         DB::table('theme_customizations')
-            ->whereIn('id', [1, 2, 3, 4, 5, 6, 9, 10, 11, 12, 13, 14])
+            ->whereIn('id', [2, 3, 4, 5, 6, 9, 10, 11, 12, 13, 14])
             ->update(['status' => 0]);
+
+        // Configure 3-Slide Hero Carousel (ID 1 & Navanidhi Theme)
+        $heroCarouselOptions = json_encode([
+            'images' => [
+                [
+                    'title' => 'Guntur Sannam Red Chilli',
+                    'link' => '/spices',
+                    'image' => 'images/products/navanidhi-red-chilli-powder.jpg',
+                ],
+                [
+                    'title' => 'Lakadong High-Curcumin Turmeric',
+                    'link' => '/products',
+                    'image' => 'images/products/navanidhi-turmeric-powder.jpg',
+                ],
+                [
+                    'title' => 'Cold-Milled Organic Moringa Leaf',
+                    'link' => '/botanical-powders',
+                    'image' => 'images/products/navanidhi-moringa-powder.jpg',
+                ],
+            ],
+        ]);
+
+        DB::table('theme_customizations')->where('id', 1)->update([
+            'status' => 1,
+            'name' => 'Hero Carousel (3 Slides)',
+        ]);
+        DB::table('theme_customization_translations')->where('theme_customization_id', 1)->update([
+            'options' => $heroCarouselOptions,
+        ]);
 
         // 2. Define Navanidhi Naturals Custom Theme Blocks
         $customizations = [
+            [
+                'id' => 31,
+                'theme_code' => 'navanidhi',
+                'type' => 'image_carousel',
+                'name' => 'Navanidhi Hero Carousel (3 Slides)',
+                'sort_order' => 1,
+                'status' => 1,
+                'channel_id' => 1,
+                'options' => $heroCarouselOptions,
+            ],
             [
                 'id' => 16,
                 'theme_code' => 'default',

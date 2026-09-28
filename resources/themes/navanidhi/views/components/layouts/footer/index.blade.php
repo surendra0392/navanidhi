@@ -32,7 +32,7 @@
                 <!-- Left: Logo & Social Media Icons -->
                 <div class="lg:col-span-5 space-y-5">
                     <a href="{{ route('shop.home.index') }}" class="inline-flex items-center gap-3.5 group">
-                        <div class="w-12 h-12 rounded-2xl bg-white/10 border border-white/15 flex items-center justify-center text-[#D4A359] group-hover:scale-105 group-hover:border-[#D4A359]/40 transition-all shadow-md">
+                        <div class="w-12 h-12 rounded-2xl bg-white/10 border border-white/15 flex items-center justify-center text-[#D4A359] shadow-md">
                             <svg width="26" height="26" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M5 4H8V20H5V4Z" fill="#FFFFFF"/>
                                 <path d="M8 4L16 16V20L8 8V4Z" fill="#FFFFFF"/>
@@ -57,13 +57,13 @@
                     <!-- Round Frosted Social Icon Buttons (Only Instagram & Facebook as configured in Admin) -->
                     <div class="flex items-center gap-3 pt-1">
                         @if ($instagramUrl)
-                            <a href="{{ $instagramUrl }}" target="_blank" rel="noopener noreferrer" class="w-9 h-9 rounded-full bg-white/10 border border-white/15 flex items-center justify-center text-white hover:bg-emerald-500/30 hover:border-emerald-400 hover:text-emerald-300 hover:-translate-y-1 transition-all" aria-label="Instagram">
+                            <a href="{{ $instagramUrl }}" target="_blank" rel="noopener noreferrer" class="w-9 h-9 rounded-full bg-white/10 border border-white/15 flex items-center justify-center text-white" aria-label="Instagram">
                                 <svg class="w-4 h-4 fill-currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
                             </a>
                         @endif
 
                         @if ($facebookUrl)
-                            <a href="{{ $facebookUrl }}" target="_blank" rel="noopener noreferrer" class="w-9 h-9 rounded-full bg-white/10 border border-white/15 flex items-center justify-center text-white hover:bg-emerald-500/30 hover:border-emerald-400 hover:text-emerald-300 hover:-translate-y-1 transition-all" aria-label="Facebook">
+                            <a href="{{ $facebookUrl }}" target="_blank" rel="noopener noreferrer" class="w-9 h-9 rounded-full bg-white/10 border border-white/15 flex items-center justify-center text-white" aria-label="Facebook">
                                 <svg class="w-4 h-4 fill-currentColor" viewBox="0 0 24 24"><path d="M9 8H6v4h3v12h5V12h3.642L18 8h-4V6.333C14 5.374 14.5 5 15.688 5H18V0h-3.882C10.5 0 9 1.583 9 4.615V8z"/></svg>
                             </a>
                         @endif
@@ -116,10 +116,10 @@
                         Spices &amp; Powders
                     </span>
                     <ul class="space-y-2.5 text-emerald-100/75">
-                        <li><a href="{{ url('/spices') }}" class="hover:text-emerald-300 hover:translate-x-1 inline-block transition-all font-semibold text-white">Pure Farm Spices</a></li>
-                        <li><a href="{{ url('/botanical-powders') }}" class="hover:text-emerald-300 hover:translate-x-1 inline-block transition-all">Botanical Herbs</a></li>
-                        <li><a href="{{ url('/functional-blends') }}" class="hover:text-emerald-300 hover:translate-x-1 inline-block transition-all">Daily Blends</a></li>
-                        <li><a href="{{ url('/products') }}" class="hover:text-emerald-300 hover:translate-x-1 inline-block transition-all">All Products</a></li>
+                        <li><a href="{{ url('/spices') }}" class="inline-block font-semibold text-white">Pure Farm Spices</a></li>
+                        <li><a href="{{ url('/botanical-powders') }}" class="inline-block">Botanical Herbs</a></li>
+                        <li><a href="{{ url('/functional-blends') }}" class="inline-block">Daily Blends</a></li>
+                        <li><a href="{{ url('/products') }}" class="inline-block">All Products</a></li>
                     </ul>
                 </div>
 
@@ -129,10 +129,10 @@
                         Pure Standards
                     </span>
                     <ul class="space-y-2.5 text-emerald-100/75">
-                        <li><a href="{{ route('shop.cms.page', 'about-us') }}" class="hover:text-emerald-300 hover:translate-x-1 inline-block transition-all">About MAN Agro</a></li>
-                        <li><a href="{{ route('shop.cms.page', 'quality') }}" class="hover:text-emerald-300 hover:translate-x-1 inline-block transition-all">Quality Promise</a></li>
-                        <li><a href="{{ route('shop.recipes.index') }}" class="hover:text-emerald-300 hover:translate-x-1 inline-block transition-all">Botanical Recipes</a></li>
-                        <li><a href="{{ route('shop.home.contact_us') }}" class="hover:text-emerald-300 hover:translate-x-1 inline-block transition-all">Contact Support</a></li>
+                        <li><a href="{{ route('shop.cms.page', 'about-us') }}" class="inline-block">About MAN Agro</a></li>
+                        <li><a href="{{ route('shop.cms.page', 'quality') }}" class="inline-block">Quality Promise</a></li>
+                        <li><a href="{{ route('shop.recipes.index') }}" class="inline-block">Botanical Recipes</a></li>
+                        <li><a href="{{ route('shop.home.contact_us') }}" class="inline-block">Contact Support</a></li>
                     </ul>
                 </div>
 
@@ -142,10 +142,10 @@
                         Customer Care
                     </span>
                     <ul class="space-y-2.5 text-emerald-100/75">
-                        <li><a href="{{ route('shop.cms.page', 'shipping-policy') }}" class="hover:text-emerald-300 hover:translate-x-1 inline-block transition-all">Shipping Policy</a></li>
-                        <li><a href="{{ route('shop.cms.page', 'return-policy') }}" class="hover:text-emerald-300 hover:translate-x-1 inline-block transition-all">Returns &amp; Refunds</a></li>
-                        <li><a href="{{ route('shop.cms.page', 'faq') }}" class="hover:text-emerald-300 hover:translate-x-1 inline-block transition-all">FAQ &amp; Help Center</a></li>
-                        <li><a href="mailto:care@navanidhinaturals.com" class="hover:text-emerald-300 hover:translate-x-1 inline-block transition-all">care@navanidhinaturals.com</a></li>
+                        <li><a href="{{ route('shop.cms.page', 'shipping-policy') }}" class="inline-block">Shipping Policy</a></li>
+                        <li><a href="{{ route('shop.cms.page', 'return-policy') }}" class="inline-block">Returns &amp; Refunds</a></li>
+                        <li><a href="{{ route('shop.cms.page', 'faq') }}" class="inline-block">FAQ &amp; Help Center</a></li>
+                        <li><a href="mailto:care@navanidhinaturals.com" class="inline-block">care@navanidhinaturals.com</a></li>
                     </ul>
                 </div>
 
@@ -172,13 +172,13 @@
                 </div>
 
                 <div class="flex flex-wrap items-center gap-3 sm:gap-4 text-[11px]">
-                    <a href="{{ route('shop.cms.page', 'privacy-policy') }}" class="hover:text-white transition-colors">Privacy Policy</a>
+                    <a href="{{ route('shop.cms.page', 'privacy-policy') }}" class="text-white/60">Privacy Policy</a>
                     <span>&bull;</span>
-                    <a href="{{ route('shop.cms.page', 'terms-conditions') }}" class="hover:text-white transition-colors">Terms of Sale</a>
+                    <a href="{{ route('shop.cms.page', 'terms-conditions') }}" class="text-white/60">Terms of Sale</a>
                     <span>&bull;</span>
-                    <a href="{{ route('shop.cms.page', 'terms-of-use') }}" class="hover:text-white transition-colors">Terms of Service</a>
+                    <a href="{{ route('shop.cms.page', 'terms-of-use') }}" class="text-white/60">Terms of Service</a>
                     <span>&bull;</span>
-                    <a href="{{ route('shop.cms.page', 'shipping-policy') }}" class="hover:text-white transition-colors">Shipping &amp; Returns</a>
+                    <a href="{{ route('shop.cms.page', 'shipping-policy') }}" class="text-white/60">Shipping &amp; Returns</a>
                 </div>
             </div>
 

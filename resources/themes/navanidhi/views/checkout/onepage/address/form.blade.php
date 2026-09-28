@@ -3,7 +3,7 @@
         type="text/x-template"
         id="v-checkout-address-form-template"
     >
-        <div class="space-y-4">
+        <div class="space-y-5">
             <x-shop::form.control-group class="hidden">
                 <x-shop::form.control-group.control
                     type="text"
@@ -286,7 +286,7 @@
             </div>
 
             <!-- Optional Business / Company Details -->
-            <div class="pt-2 border-t border-[#EDE8DE]">
+            <div class="pt-4 border-t !border-white/[0.06] mt-2">
                 <details class="group">
                     <summary class="cursor-pointer text-xs font-semibold uppercase tracking-wider text-[#55695B] hover:text-[#0F4D2E] flex items-center justify-between list-none py-1 transition-colors select-none">
                         <span class="flex items-center gap-1.5">

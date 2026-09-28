@@ -1,6 +1,6 @@
 <div class="rounded-3xl border border-[#e5decb] bg-white p-6 sm:p-8 shadow-sm space-y-6">
     <!-- Header -->
-    <div class="border-b border-[#e5decb]/60 pb-4">
+    <div class="border-b !border-white/[0.06] pb-5">
         <h2 class="font-serif text-xl sm:text-2xl font-bold text-[#163923]" role="heading" aria-level="2">
             @lang('shop::app.checkout.onepage.summary.cart-summary')
             <span class="text-xs font-sans font-normal text-[#677a6d]" v-if="cart?.items?.length">
@@ -10,9 +10,9 @@
     </div>
 
     <!-- Cart Items (Compact) -->
-    <div class="divide-y divide-elior-border/60 max-h-64 overflow-y-auto pr-1">
+    <div class="divide-y divide-white/[0.06] max-h-64 overflow-y-auto pr-1">
         <div
-            class="py-3.5 first:pt-0 last:pb-0 flex gap-3 items-center justify-between"
+            class="py-4 first:pt-0 last:pb-0 flex gap-3 items-center justify-between"
             v-for="item in cart.items"
         >
             <div class="flex items-center gap-3 min-w-0">
@@ -57,7 +57,7 @@
     </div>
 
     <!-- Cart Totals Breakdown -->
-    <div class="border-t border-elior-border/60 pt-4 space-y-3 text-xs sm:text-sm">
+    <div class="border-t !border-white/[0.06] pt-5 space-y-4 text-xs sm:text-sm">
         <!-- Original Price (MRP) when discount exists -->
         <div class="flex justify-between items-center text-xs text-[#677a6d]" v-if="cart.has_discount">
             <span>Original Price (MRP)</span>
@@ -68,7 +68,7 @@
         <div class="flex justify-between items-center text-xs font-semibold text-[#205132]" v-if="cart.has_discount">
             <span class="inline-flex items-center gap-1.5">
                 <span class="material-symbols-outlined text-[14px]">local_offer</span>
-                Discount & Savings
+                Discount &amp; Savings
             </span>
             <span>- @{{ cart.formatted_total_discount }}</span>
         </div>
@@ -76,7 +76,7 @@
         <!-- Sub Total -->
         {!! view_render_event('bagisto.shop.checkout.onepage.summary.sub_total.before') !!}
 
-        <div class="flex justify-between items-center text-elior-slate" :class="{'pt-1 border-t border-[#e5decb]/60': cart.has_discount}">
+        <div class="flex justify-between items-center text-elior-slate" :class="{'pt-3 border-t !border-white/[0.06]': cart.has_discount}">
             <span>@lang('shop::app.checkout.onepage.summary.sub-total')</span>
 
             <span class="font-semibold text-elior-charcoal">
@@ -110,7 +110,7 @@
         <!-- Coupon Application -->
         {!! view_render_event('bagisto.shop.checkout.onepage.summary.coupon.before') !!}
 
-        <div class="pt-1 pb-1 border-t border-elior-border/60">
+        <div class="pt-3 pb-3 border-t !border-white/[0.06]">
             @include('shop::checkout.coupon')
         </div>
 
@@ -153,7 +153,7 @@
         <!-- Grand Total -->
         {!! view_render_event('bagisto.shop.checkout.onepage.summary.grand_total.before') !!}
 
-        <div class="pt-3 border-t border-elior-border/80 flex justify-between items-baseline">
+        <div class="pt-5 border-t !border-white/[0.08] flex justify-between items-baseline">
             <span class="font-serif text-base font-bold text-elior-charcoal">
                 @lang('shop::app.checkout.onepage.summary.grand-total')
             </span>
@@ -178,7 +178,7 @@
         </div>
 
         <!-- Trust Badges -->
-        <div class="pt-3 border-t border-elior-border/60 space-y-1.5 text-[11px] text-elior-muted">
+        <div class="pt-4 border-t !border-white/[0.06] space-y-2 text-[11px] text-elior-muted">
             <div class="flex items-center gap-2">
                 <span><span class="material-symbols-outlined align-text-bottom text-inherit text-[1.2em] leading-none" aria-hidden="true" style="font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;">lock</span></span>
                 <span>256-Bit Encrypted Secure Checkout</span>
