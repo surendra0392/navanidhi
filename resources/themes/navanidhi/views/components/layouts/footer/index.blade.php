@@ -30,7 +30,7 @@
         }
     </style>
     <div class="site-container">
-        <div class="rounded-[32px] p-8 sm:p-12 lg:p-14 border border-white/15 bg-white/[0.06] backdrop-blur-2xl shadow-[0_30px_70px_rgba(0,0,0,0.6)] text-white" style="border-radius: 32px !important; transform: none !important; transition: none !important;">
+        <div class="nv-glass-card rounded-[32px] p-8 sm:p-12 lg:p-14 border border-white/20 text-white" style="border-radius: 32px !important; background: rgba(255, 255, 255, 0.06) !important; backdrop-filter: blur(28px) saturate(180%) !important; -webkit-backdrop-filter: blur(28px) saturate(180%) !important; border: 1px solid rgba(255, 255, 255, 0.18) !important; box-shadow: 0 30px 70px rgba(0, 0, 0, 0.6) !important; transform: none !important; transition: none !important;">
             
             <!-- Top Axolyt-Benchmark Row: Brand & Socials + "Stay In The Loop" Newsletter -->
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center" style="padding-bottom: 36px !important; border-bottom: 1px solid rgba(255, 255, 255, 0.12) !important;">
