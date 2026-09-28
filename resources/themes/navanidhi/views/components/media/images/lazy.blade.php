@@ -20,7 +20,7 @@
             :data-src="src"
             :id="'image-' + $.uid"
             @load="onLoad"
-            @error="onError"
+            v-on:error="onError"
             v-show="! isLoading"
             v-if="lazy"
         >
@@ -30,7 +30,7 @@
             :data-src="src"
             :id="'image-' + $.uid"
             @load="onLoad"
-            @error="onError"
+            v-on:error="onError"
             v-else
             v-show="! isLoading"
         >
