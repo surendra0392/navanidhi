@@ -24,7 +24,7 @@
 <!-- AXOLYT-BENCHMARKED FLOATING FROSTED GLASS FOOTER -->
 <footer class="w-full bg-transparent pt-6 pb-12 sm:pb-16 relative z-10" aria-label="Site Footer">
     <div class="site-container">
-        <div class="nv-glass-card rounded-[32px] p-8 sm:p-12 lg:p-14 border border-white/20 bg-white/[0.06] backdrop-blur-2xl shadow-[0_30px_70px_rgba(0,0,0,0.6)] text-white" style="border-radius: 32px !important;">
+        <div class="rounded-[32px] p-8 sm:p-12 lg:p-14 border border-white/15 bg-white/[0.06] backdrop-blur-2xl shadow-[0_30px_70px_rgba(0,0,0,0.6)] text-white" style="border-radius: 32px !important; transform: none !important; transition: none !important;">
             
             <!-- Top Axolyt-Benchmark Row: Brand & Socials + "Stay In The Loop" Newsletter -->
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center" style="padding-bottom: 36px !important; border-bottom: 1px solid rgba(255, 255, 255, 0.12) !important;">
@@ -84,21 +84,21 @@
                     <form 
                         action="{{ route('shop.subscription.store') }}" 
                         method="POST" 
-                        class="flex items-center rounded-full p-1.5 w-full max-w-xl transition-all"
-                        style="background: rgba(0, 0, 0, 0.28) !important; border: none !important; box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.3) !important;"
+                        class="flex items-center gap-3 sm:gap-4 w-full max-w-xl"
+                        style="background: transparent !important; border: none !important; box-shadow: none !important; padding: 0 !important;"
                     >
                         @csrf
                         <input
                             type="email"
                             name="email"
                             placeholder="Your email address"
-                            class="w-full min-w-0 px-4 py-2.5 text-xs sm:text-sm text-white placeholder:text-emerald-100/50 focus:outline-none"
-                            style="background: transparent !important; border: none !important; border-radius: 0 !important; box-shadow: none !important; backdrop-filter: none !important; -webkit-backdrop-filter: none !important;"
+                            class="flex-1 min-w-0 px-5 py-3 text-xs sm:text-sm text-white placeholder:text-emerald-100/50 focus:outline-none"
+                            style="background: rgba(0, 0, 0, 0.3) !important; border: 1px solid rgba(255, 255, 255, 0.14) !important; border-radius: 9999px !important; box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.3) !important; outline: none !important;"
                             required
                         >
                         <button
                             type="submit"
-                            class="nv-glass-btn-primary px-6 sm:px-8 py-2.5 text-xs font-bold uppercase tracking-wider text-white rounded-full shrink-0 shadow-md cursor-pointer transition-all"
+                            class="nv-glass-btn-primary px-7 py-3 text-xs font-bold uppercase tracking-wider text-white rounded-full shrink-0 shadow-md cursor-pointer"
                             aria-label="Subscribe"
                         >
                             Subscribe

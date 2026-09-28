@@ -288,6 +288,15 @@
                 box-shadow: 0 30px 60px -15px rgba(0, 0, 0, 0.5), 0 0 35px rgba(34, 197, 94, 0.18) !important;
             }
 
+            /* Completely suppress any hover movements or transforms on site footer */
+            footer,
+            footer *,
+            footer > div > div,
+            footer > div > div:hover {
+                transform: none !important;
+                transition: none !important;
+            }
+
             .nv-glass-ribbon {
                 background: rgba(255, 255, 255, 0.06) !important;
                 backdrop-filter: blur(14px) !important;
